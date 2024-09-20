@@ -22,10 +22,16 @@ const ProductForm = () => {
         </label>
         <input
         />
+          <label>
+            Subir imagen <span>*</span>
+          </label>
+          <input
+            type="file"
+          />
         <button
             type="submit">
             Agregar Producto
-        </button>
+          </button>      
       </form>
     </div>
   );
