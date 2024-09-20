@@ -5,6 +5,8 @@ const ProductForm = () => {
     name: "",
     price: "",
     image: null,
+    id: "",
+    description: "",
   });
 
   const handleChange = (e) => {
@@ -47,11 +49,22 @@ const ProductForm = () => {
             ID para el producto<span>*</span>
         </label>
         <input
+        type="text"
+        name="id"
+        value={form.id}
+        onChange={handleChange}
+        required
         />
         <label>
             Descripcion <span>*</span>
         </label>
-        <input
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          rows="5"   
+          cols="35"  
+          required
         />
           <label>
             Subir imagen <span>*</span>
