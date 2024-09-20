@@ -2,23 +2,25 @@ const ProductForm = () => {
   return (
     <div>
       <form>
-        <div>
-          <label>
+        <label>
             Nombre del Producto <span>*</span>
-          </label>
-          <input
-          />
-          <label>
+        </label>
+        <input
+        />
+        <label>
             Precio <span>*</span>
-          </label>
-          <input
-          />
-          <button
+        </label>
+        <input
+        />
+        <label>
+            ID para el producto<span>*</span>
+        </label>
+        <input
+        />
+        <button
             type="submit">
             Agregar Producto
-          </button>
-        </div>
-        
+        </button>
       </form>
     </div>
   );
