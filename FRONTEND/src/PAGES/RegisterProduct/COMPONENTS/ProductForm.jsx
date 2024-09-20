@@ -8,6 +8,11 @@ const ProductForm = () => {
           </label>
           <input
           />
+          <label>
+            Precio <span>*</span>
+          </label>
+          <input
+          />
           <button
             type="submit">
             Agregar Producto
