@@ -8,12 +8,12 @@ const ProductForm = () => {
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, files } = e.target;
     setForm({
       ...form,
-      [name]: value, 
+      [name]: type === "file" ? files[0] : value,
     });
-  };
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
