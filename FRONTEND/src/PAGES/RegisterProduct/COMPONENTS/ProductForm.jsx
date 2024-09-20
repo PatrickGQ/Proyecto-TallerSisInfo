@@ -4,6 +4,7 @@ const ProductForm = () => {
   const [form, setForm] = useState({
     name: "",
     price: "",
+    image: null,
   });
 
   const handleChange = (e) => {
@@ -57,6 +58,9 @@ const ProductForm = () => {
           </label>
           <input
             type="file"
+            name="image"
+            onChange={handleChange}
+            required
           />
         <button
             type="submit">
