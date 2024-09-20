@@ -17,6 +17,11 @@ const ProductForm = () => {
         </label>
         <input
         />
+        <label>
+            Descripcion <span>*</span>
+        </label>
+        <input
+        />
         <button
             type="submit">
             Agregar Producto
