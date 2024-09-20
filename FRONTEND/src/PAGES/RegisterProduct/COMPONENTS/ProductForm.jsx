@@ -3,6 +3,7 @@ import { useState } from "react";
 const ProductForm = () => {
   const [form, setForm] = useState({
     name: "",
+    id: "",
   });
 
   const handleChange = (e) => {
@@ -40,6 +41,11 @@ const ProductForm = () => {
             ID para el producto<span>*</span>
         </label>
         <input
+        type="text"
+        name="id"
+        value={form.id}
+        onChange={handleChange}
+        required
         />
         <label>
             Descripcion <span>*</span>
