@@ -4,6 +4,7 @@ const ProductForm = () => {
   const [form, setForm] = useState({
     name: "",
     id: "",
+    description: "",
   });
 
   const handleChange = (e) => {
@@ -50,14 +51,20 @@ const ProductForm = () => {
         <label>
             Descripcion <span>*</span>
         </label>
-        <input
+        <textarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
+          rows="5"   
+          cols="35"  
+          required
         />
-          <label>
-            Subir imagen <span>*</span>
-          </label>
-          <input
-            type="file"
-          />
+        <label>
+          Subir imagen <span>*</span>
+        </label>
+        <input
+          type="file"
+        />
         <button
             type="submit">
             Agregar Producto
