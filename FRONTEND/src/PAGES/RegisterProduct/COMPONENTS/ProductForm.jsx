@@ -15,28 +15,27 @@ const ProductForm = () => {
   
     setForm((prevForm) => ({
       ...prevForm,
-      [name]: type === "file" ? files[0] : value, // Captura correctamente el archivo
+      [name]: type === "file" ? files[0] : value,
     }));
   };  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
   
-    // Verificar el estado antes de crear el FormData
     console.log("Formulario actual:", form);
-  
-    const formData = new FormData();
-    formData.append("name", form.name);
-    formData.append("price", form.price);
-    if (form.image) formData.append("image", form.image); // Verifica si la imagen está presente
-  
-    console.log("Datos a enviar:", form);
-  
-    console.log(form);
+
     try {
-      const res = await registerProductRequest(form);
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("price", form.price);
+      formData.append("id", form.id);
+      formData.append("description", form.description);
+
+      if (form.image) formData.append("image", form.image);
+
+      const res = await registerProductRequest(formData);
       console.log(res);
-      // Limpiar el formulario
+
       setForm({ name: "", price: "", image: null, id: "", description: "" });
     } catch (error) {
       console.log(error);
@@ -51,6 +50,7 @@ const ProductForm = () => {
         <label>
             Nombre del Producto <span>*</span>
         </label>
+        <br />
         <input
           type="text"
           name="name"
@@ -58,9 +58,11 @@ const ProductForm = () => {
           onChange={handleChange}
           required
         />
+        <br />
         <label>
             Precio <span>*</span>
         </label>
+        <br />
         <input
           type="number"
           name="price"
@@ -68,9 +70,11 @@ const ProductForm = () => {
           onChange={handleChange}
           required
         />
+        <br />
         <label>
             ID para el producto<span>*</span>
         </label>
+        <br />
         <input
         type="text"
         name="id"
@@ -78,9 +82,11 @@ const ProductForm = () => {
         onChange={handleChange}
         required
         />
+        <br />
         <label>
             Descripcion <span>*</span>
         </label>
+        <br />
         <textarea
           name="description"
           value={form.description}
@@ -89,19 +95,22 @@ const ProductForm = () => {
           cols="35"  
           required
         />
-          <label>
-            Subir imagen <span>*</span>
-          </label>
-          <input
-            type="file"
-            name="image"
-            onChange={handleChange}
-            required
-          />
+        <br />
+        <label>
+          Subir imagen <span>*</span>
+        </label>
+        <br />
+        <input
+          type="file"
+          name="image"
+          onChange={handleChange}
+          required
+        />
+        <br />
         <button
-            type="submit">
-            Agregar Producto
-          </button>      
+          type="submit">
+          Agregar Producto
+        </button>      
       </form>
     </div>
   );
