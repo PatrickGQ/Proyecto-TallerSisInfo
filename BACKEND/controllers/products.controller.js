@@ -1,7 +1,7 @@
 import Product from '../models/product.model.js';
 
 export const registerProduct = async (req, res) => {
-    const { name, price, id, image } = req.body;
+    const { name, price, id, image, description } = req.body;
 
     console.log(req.body)
 
@@ -9,7 +9,8 @@ export const registerProduct = async (req, res) => {
         name,
         price,
         id,
-        image
+        image, 
+        description
     });
 
     try {
