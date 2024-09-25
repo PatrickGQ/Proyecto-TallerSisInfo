@@ -2,7 +2,6 @@ import Product from '../models/product.model.js';
 
 export const registerProduct = async (req, res) => {
     const { name, price, id, image, description } = req.body;
-
     console.log(req.body)
 
     const newProduct = new Product({
