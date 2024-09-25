@@ -8,7 +8,12 @@ const productModel = new Schema({
   price: {
     type: Number,
     required: true,
-  }
+  },
+  id: {
+    type: String,
+    required: true,
+    unique: true,
+  },
 });
 
 export default mongoose.model('Product', productModel);

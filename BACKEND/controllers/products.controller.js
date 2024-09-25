@@ -1,12 +1,14 @@
 import Product from '../models/product.model.js';
 
 export const registerProduct = async (req, res) => {
-    const { name } = req.body;
+    const { name, price, id } = req.body;
 
     console.log(req.body)
 
     const newProduct = new Product({
-        name
+        name,
+        price,
+        id
     });
 
     try {
