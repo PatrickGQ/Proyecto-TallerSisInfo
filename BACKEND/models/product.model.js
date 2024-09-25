@@ -14,6 +14,10 @@ const productModel = new Schema({
     required: true,
     unique: true,
   },
+  image: {
+    type: String,
+    required: true,
+  },
 });
 
 export default mongoose.model('Product', productModel);
