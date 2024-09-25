@@ -8,7 +8,8 @@ export const registerProduct = async (req, res) => {
     const newProduct = new Product({
         name,
         price,
-        id
+        id,
+        image
     });
 
     try {
