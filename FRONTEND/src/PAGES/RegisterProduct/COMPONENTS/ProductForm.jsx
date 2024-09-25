@@ -17,7 +17,7 @@ const ProductForm = () => {
       ...prevForm,
       [name]: type === "file" ? files[0] : value,
     }));
-  };  
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -41,76 +41,77 @@ const ProductForm = () => {
       console.log(error);
     }
   };
-  
-
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <label>
-            Nombre del Producto <span>*</span>
-        </label>
-        <br />
-        <input
-          type="text"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          required
-        />
-        <br />
-        <label>
-            Precio <span>*</span>
-        </label>
-        <br />
-        <input
-          type="number"
-          name="price"
-          value={form.price}
-          onChange={handleChange}
-          required
-        />
-        <br />
-        <label>
-            ID para el producto<span>*</span>
-        </label>
-        <br />
-        <input
-        type="text"
-        name="id"
-        value={form.id}
-        onChange={handleChange}
-        required
-        />
-        <br />
-        <label>
-            Descripcion <span>*</span>
-        </label>
-        <br />
-        <textarea
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          rows="5"   
-          cols="35"  
-          required
-        />
-        <br />
-        <label>
-          Subir imagen <span>*</span>
-        </label>
-        <br />
-        <input
-          type="file"
-          name="image"
-          onChange={handleChange}
-          required
-        />
-        <br />
+    <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Agregar Nuevo Producto</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        
+        <div>
+          <label className="block text-gray-700 font-medium">Nombre del Producto <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium">Precio <span className="text-red-500">*</span></label>
+          <input
+            type="number"
+            name="price"
+            value={form.price}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium">ID para el producto<span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            name="id"
+            value={form.id}
+            onChange={handleChange}
+            required
+            className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium">Descripción <span className="text-red-500">*</span></label>
+          <textarea
+            name="description"
+            value={form.description}
+            onChange={handleChange}
+            rows="5"
+            required
+            className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-gray-700 font-medium">Subir imagen <span className="text-red-500">*</span></label>
+          <input
+            type="file"
+            name="image"
+            onChange={handleChange}
+            required
+            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer mt-1"
+          />
+        </div>
+
         <button
-          type="submit">
+          type="submit"
+          className="w-full bg-red-600 text-white p-2 rounded-md font-semibold hover:bg-red-700 transition duration-300"
+        >
           Agregar Producto
-        </button>      
+        </button>
       </form>
     </div>
   );

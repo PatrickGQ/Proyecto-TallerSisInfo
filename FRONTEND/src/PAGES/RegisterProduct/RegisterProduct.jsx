@@ -8,4 +8,4 @@ const RegisterProduct = () => {
   )
 }
 
-export default RegisterProduct
+export default RegisterProduct;
