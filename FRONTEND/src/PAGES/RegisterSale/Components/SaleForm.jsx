@@ -14,6 +14,14 @@ const SaleForm = () => {
   
   const [step, setStep] = useState(1);  // Controla los pasos (1: Ingreso, 2: Confirmación, 3: Método de pago)
   const [paymentMethod, setPaymentMethod] = useState("");  // Almacena el método de pago seleccionado
+  
+  // Estado para los datos de la tarjeta
+  const [cardDetails, setCardDetails] = useState({
+    cardNumber: "",
+    cardHolder: "",
+    expirationDate: "",
+    cvv: "",
+  });
 
   // Cálculo del total
   useEffect(() => {
@@ -32,6 +40,15 @@ const SaleForm = () => {
     const { name, value } = e.target;
     setForm({
       ...form,
+      [name]: value,
+    });
+  };
+
+  // Manejo de cambios en los datos de la tarjeta
+  const handleCardChange = (e) => {
+    const { name, value } = e.target;
+    setCardDetails({
+      ...cardDetails,
       [name]: value,
     });
   };
@@ -55,11 +72,28 @@ const SaleForm = () => {
   // Manejar el cambio del método de pago
   const handlePaymentMethodChange = (e) => {
     setPaymentMethod(e.target.value);
+    // Reiniciar los detalles de la tarjeta al cambiar el método de pago
+    if (e.target.value !== "card") {
+      setCardDetails({
+        cardNumber: "",
+        cardHolder: "",
+        expirationDate: "",
+        cvv: "",
+      });
+    }
   };
 
   // Finalizar la compra y mostrar el mensaje de agradecimiento
   const handleFinish = () => {
     alert("¡Gracias por comprar en Los Pollos Hermanos!");
+  };
+
+  // Confirmar pago con tarjeta
+  const handleCardConfirm = (e) => {
+    e.preventDefault();
+    // Aquí podrías agregar lógica adicional para validar los datos de la tarjeta.
+    alert("Pago con tarjeta confirmado. ¡Gracias por su compra!");
+    handleFinish();
   };
 
   return (
@@ -115,7 +149,6 @@ const SaleForm = () => {
             <option value="card">Pago con tarjeta</option>
           </select>
 
-          {/* Mostrar comportamiento basado en el método de pago seleccionado */}
           {paymentMethod === "cash" && (
             <div>
               <p>Gracias por su compra</p>
@@ -132,10 +165,21 @@ const SaleForm = () => {
           )}
 
           {paymentMethod === "card" && (
-            <div>
-              <p>Por favor, registre su tarjeta (esta función se implementará en el futuro).</p>
-              <button onClick={handleFinish}>Finalizar</button>
-            </div>
+            <form onSubmit={handleCardConfirm} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <label>Número de tarjeta <span>*</span></label>
+              <input type="text" name="cardNumber" value={cardDetails.cardNumber} onChange={handleCardChange} required />
+
+              <label>Nombre del titular <span>*</span></label>
+              <input type="text" name="cardHolder" value={cardDetails.cardHolder} onChange={handleCardChange} required />
+
+              <label>Fecha de expiración <span>*</span></label>
+              <input type="month" name="expirationDate" value={cardDetails.expirationDate} onChange={handleCardChange} required />
+
+              <label>CVV <span>*</span></label>
+              <input type="text" name="cvv" value={cardDetails.cvv} onChange={handleCardChange} required />
+
+              <button type="submit">Confirmar Pago</button>
+            </form>
           )}
         </div>
       )}
