@@ -2,6 +2,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import RegisterProduct from "./PAGES/RegisterProduct/RegisterProduct";
 import Header from "./GENERALCOMPONENTS/header";
 import { Routes, Route } from "react-router-dom";
+import Products from './PAGES/Products';
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Header />
       <Routes>
         <Route path="/productos/registrar/producto" element={<RegisterProduct />} />
+        <Route path="/products" element={<Products />} />
       </Routes>
     </Router>
   );
