@@ -6,9 +6,9 @@ const SaleForm = () => {
     quantity: 1,
     price: 0,
     discount: 0,
-    tax: 15,  // Impuesto fijo del 15%
+    tax: 0,  
     totalAmount: 0,
-    date: "",  
+    date: new Date().toISOString().split('T')[0],  // Fecha actual por defecto
     time: "",  
   });
 
@@ -115,8 +115,6 @@ const SaleForm = () => {
           <label>Descuento aplicado (%) <span>*</span></label>
           <input type="number" name="discount" value={form.discount} onChange={handleChange} required />
 
-          <label>Fecha de Compra <span>*</span></label>
-          <input type="date" name="date" value={form.date} onChange={handleChange} required />
 
           <label>Total a pagar</label>
           <input type="number" name="totalAmount" value={form.totalAmount} readOnly />
