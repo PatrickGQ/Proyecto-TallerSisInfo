@@ -22,3 +22,16 @@ export const registerProduct = async (req, res) => {
         res.json(error);
     }
 };
+export const getProductDB = async (req, res) => {
+    const idProduct = req.params.id; 
+    try{
+        const productFound = await Product.findById(idProduct);
+
+        if(!productFound) return res.json({message: "Product not found"});
+
+        res.json(productFound);
+
+    } catch(error) {
+        res.json(error);
+    }
+};
