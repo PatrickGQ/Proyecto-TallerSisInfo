@@ -11,7 +11,7 @@ export const registerProduct = async (req, res) => {
         name,
         price,
         id,
-        image, 
+        image: req.file.filename, 
         description
     });
 
