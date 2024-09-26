@@ -5,6 +5,7 @@ const SaleForm = () => {
     productName: "",  // Estado inicial con el nombre del producto
     quantity: 1,      // Estado inicial para la cantidad del producto
     price: 0,         // Estado inicial para el precio del producto
+    discount: 0,      // Estado inicial para el descuento aplicado
   });
 
   const handleChange = (e) => {
@@ -17,7 +18,7 @@ const SaleForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(form);  // Mostrar nombre, cantidad y precio en la consola al enviar
+    console.log(form);  // Mostrar nombre, cantidad, precio y descuento en la consola al enviar
   };
 
   return (
@@ -52,6 +53,17 @@ const SaleForm = () => {
           type="number"
           name="price"
           value={form.price}
+          onChange={handleChange}
+          required
+        />
+
+        <label>
+          Descuento aplicado <span>*</span>
+        </label>
+        <input
+          type="number"
+          name="discount"
+          value={form.discount}
           onChange={handleChange}
           required
         />
