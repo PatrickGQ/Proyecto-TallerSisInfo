@@ -1,24 +1,21 @@
 import { useState } from "react";
 
 const SaleForm = () => {
-  // Estado inicial con solo el nombre del producto
   const [form, setForm] = useState({
-    productName: "",
+    productName: "", // Estado inicial con el nombre del producto
   });
 
-  // Maneja cambios en el input del nombre del producto
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({
       ...form,
-      [name]: value,
+      [name]: value, 
     });
   };
 
-  // Maneja el envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(form);  // Simula el envío mostrando solo el nombre del producto en consola
+    console.log(form); // Mostrar los detalles del producto en la consola al enviar
   };
 
   return (
