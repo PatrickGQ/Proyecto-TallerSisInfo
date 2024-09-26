@@ -35,3 +35,12 @@ export const getProductDB = async (req, res) => {
         res.json(error);
     }
 };
+export const getProductsDB = async (req, res) => {
+    try{
+        const products = await Product.find();
+        
+        res.json(products);
+    } catch(error){
+        res.json(error);
+    }
+}
