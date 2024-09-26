@@ -6,9 +6,10 @@ const SaleForm = () => {
     quantity: 1,
     price: 0,
     discount: 0,
-    tax: 0,
+    tax: 15,  // Impuesto fijo del 15%
     totalAmount: 0,
-    date: "",
+    date: "",  // Nueva propiedad para almacenar la fecha seleccionada
+    time: "",  // Nueva propiedad para almacenar la hora automáticamente
   });
   
   const [step, setStep] = useState(1);  // Controla los pasos (1: Ingreso, 2: Confirmación, 3: Método de pago)
@@ -19,13 +20,13 @@ const SaleForm = () => {
     const subtotal = form.price * form.quantity;
     const discountAmount = (form.discount / 100) * subtotal;
     const subtotalWithDiscount = subtotal - discountAmount;
-    const taxAmount = (form.tax / 100) * subtotalWithDiscount;
+    const taxAmount = (form.tax / 100) * subtotalWithDiscount;  // Impuesto fijo
     const total = subtotalWithDiscount + taxAmount;
     setForm((prevForm) => ({
       ...prevForm,
       totalAmount: total.toFixed(2),
     }));
-  }, [form.price, form.quantity, form.discount, form.tax]);
+  }, [form.price, form.quantity, form.discount]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -38,6 +39,11 @@ const SaleForm = () => {
   // Pasar al paso de confirmación
   const handleReview = (e) => {
     e.preventDefault();
+    const currentTime = new Date().toLocaleTimeString(); // Obtener la hora actual en formato local
+    setForm((prevForm) => ({
+      ...prevForm,
+      time: currentTime, // Asignar la hora al formulario
+    }));
     setStep(2);  // Cambiamos al paso de confirmación
   };
 
@@ -56,12 +62,6 @@ const SaleForm = () => {
     alert("¡Gracias por comprar en Los Pollos Hermanos!");
   };
 
-   // Función para formatear la fecha en DD/MM/YYYY
-   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("es-ES"); // Formato español (DD/MM/YYYY)
-  };
-
   return (
     <div>
       {step === 1 && (
@@ -78,9 +78,7 @@ const SaleForm = () => {
           <label>Descuento aplicado (%) <span>*</span></label>
           <input type="number" name="discount" value={form.discount} onChange={handleChange} required />
 
-          <label>Impuestos aplicados (%) <span>*</span></label>
-          <input type="number" name="tax" value={form.tax} onChange={handleChange} required />
-
+          {/* Nuevo campo para seleccionar la fecha */}
           <label>Fecha de Compra <span>*</span></label>
           <input type="date" name="date" value={form.date} onChange={handleChange} required />
 
@@ -100,6 +98,7 @@ const SaleForm = () => {
           <p><strong>Descuento:</strong> {form.discount}%</p>
           <p><strong>Impuestos:</strong> {form.tax}%</p> {/* Impuesto fijo */}
           <p><strong>Fecha de Compra:</strong> {form.date}</p>  {/* Mostrar la fecha seleccionada */}
+          <p><strong>Hora de Compra:</strong> {form.time}</p>  {/* Mostrar la hora seleccionada */}
           <p><strong>Total a pagar:</strong> {form.totalAmount}</p>
 
           <button onClick={handleConfirm}>Confirmar Venta</button>
@@ -127,7 +126,7 @@ const SaleForm = () => {
           {paymentMethod === "qr" && (
             <div>
               <p>Por favor, escanee el código QR para completar el pago:</p>
-              <img src="https://prodbgwebportal.blob.core.windows.net/assets/pdf-webinar-cobros-qr.pdf" alt="Código QR" width="200" />
+              <img src="https://example.com/qr-code" alt="Código QR" width="200" />
               <button onClick={handleFinish}>Finalizar</button>
             </div>
           )}
