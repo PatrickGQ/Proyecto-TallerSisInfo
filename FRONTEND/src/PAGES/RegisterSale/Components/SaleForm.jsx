@@ -8,6 +8,7 @@ const SaleForm = () => {
     discount: 0,
     tax: 0,
     totalAmount: 0,
+    date: "",
   });
   
   const [step, setStep] = useState(1);  // Controla los pasos (1: Ingreso, 2: Confirmación, 3: Método de pago)
@@ -73,6 +74,9 @@ const SaleForm = () => {
 
           <label>Impuestos aplicados (%) <span>*</span></label>
           <input type="number" name="tax" value={form.tax} onChange={handleChange} required />
+
+          <label>Fecha de Compra <span>*</span></label>
+          <input type="date" name="date" value={form.date} onChange={handleChange} required />
 
           <label>Total a pagar</label>
           <input type="number" name="totalAmount" value={form.totalAmount} readOnly />
