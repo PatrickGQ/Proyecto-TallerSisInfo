@@ -57,7 +57,7 @@ const NavBar = ({closeNavBar}) => {
                 </li>
                 <li>
                     <Link
-                    to="/products"
+                    to="/productos/menu"
                     className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors"
                     onClick={closeNavBar}>
                     <span>Ver Productos</span>

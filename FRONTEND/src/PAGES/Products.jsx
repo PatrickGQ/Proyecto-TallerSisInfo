@@ -62,7 +62,7 @@ const Products = () => {
             <p className="text-gray-600">Descripción: {product.description}</p>
             {product.image && (
               <img 
-              src={`http://localhost:3000/uploads/${product.image}`} // Cambia 'localhost:puerto' por tu dominio y puerto
+              src={`http://localhost:3000/uploads/${product.image}`}
               alt={product.name} 
               style={{ width: '100px', height: '100px', objectFit: 'cover' }} 
             />
