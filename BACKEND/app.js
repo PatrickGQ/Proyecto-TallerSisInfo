@@ -3,6 +3,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import connectToMongoDB from './db.js';
 import productsRouter from './routes/product.routes.js';
+import salesRouter from './routes/sale.routes.js';
 
 const app = express();
 
@@ -24,6 +25,8 @@ connectToMongoDB();
 const PORT = 3000;
 
 app.use('/api/products', productsRouter);
+
+app.use('/api/sales', salesRouter);
 
 app.listen(PORT, () => {
     console.log("Backend listen on port", PORT);
