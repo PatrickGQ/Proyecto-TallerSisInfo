@@ -56,6 +56,12 @@ const SaleForm = () => {
     alert("¡Gracias por comprar en Los Pollos Hermanos!");
   };
 
+   // Función para formatear la fecha en DD/MM/YYYY
+   const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("es-ES"); // Formato español (DD/MM/YYYY)
+  };
+  
   return (
     <div>
       {step === 1 && (
