@@ -11,6 +11,7 @@ const SaleForm = () => {
   });
   
   const [step, setStep] = useState(1);  // Controla los pasos (1: Ingreso, 2: Confirmación)
+  const [paymentMethod, setPaymentMethod] = useState("");  // Almacena el método de pago seleccionado
 
   // Cálculo del total
   useEffect(() => {
@@ -39,15 +40,14 @@ const SaleForm = () => {
     setStep(2);  // Cambiamos al paso de confirmación
   };
 
-  // Confirmar la venta (enviar al backend)
+  // Confirmar la venta y mostrar opciones de pago
   const handleConfirm = () => {
-    console.log(form);  // Aquí iría la lógica para enviar el formulario al backend
-    alert("Venta confirmada y registrada.");
+    setStep(3);  // Cambiamos al paso de selección de método de pago
   };
 
-  // Volver al formulario para hacer cambios
-  const handleBack = () => {
-    setStep(1);  // Volvemos al paso del formulario
+  // Manejar el cambio del método de pago
+  const handlePaymentMethodChange = (e) => {
+    setPaymentMethod(e.target.value);
   };
 
   return (
@@ -86,8 +86,40 @@ const SaleForm = () => {
           <p><strong>Impuestos:</strong> {form.tax}%</p>
           <p><strong>Total a pagar:</strong> {form.totalAmount}</p>
 
-          <button onClick={handleBack}>Volver a editar</button>
           <button onClick={handleConfirm}>Confirmar Venta</button>
+        </div>
+      )}
+
+      {step === 3 && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <h2>Selecciona el método de pago</h2>
+          <select onChange={handlePaymentMethodChange} value={paymentMethod}>
+            <option value="">Seleccione un método de pago</option>
+            <option value="cash">Pago en efectivo</option>
+            <option value="qr">Pago por QR</option>
+            <option value="card">Pago con tarjeta</option>
+          </select>
+
+          {/* Mostrar comportamiento basado en el método de pago seleccionado */}
+          {paymentMethod === "cash" && (
+            <div>
+              <p>Gracias por su compra</p>
+              <button>Finalizar</button>
+            </div>
+          )}
+
+          {paymentMethod === "qr" && (
+            <div>
+              <p>Por favor, escanee el código QR para completar el pago:</p>
+              <img src="https://prodbgwebportal.blob.core.windows.net/assets/pdf-webinar-cobros-qr.pdf" alt="Código QR" width="200" />
+            </div>
+          )}
+
+          {paymentMethod === "card" && (
+            <div>
+              <p>Por favor, registre su tarjeta (esta función se implementará en el futuro).</p>
+            </div>
+          )}
         </div>
       )}
     </div>
