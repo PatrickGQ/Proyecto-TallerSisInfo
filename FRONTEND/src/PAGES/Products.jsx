@@ -21,12 +21,33 @@ const Products = () => {
     fetchProducts();
   }, []);
 
+  // Función para manejar la búsqueda
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+  };
 
+  // Filtrar productos según el término de búsqueda
+  const filteredProducts = products.filter((product) => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    const isNumber = !isNaN(lowerCaseSearchTerm);
+
+    if (isNumber) {
+      return product.price.toString().includes(lowerCaseSearchTerm);
+    } else {
+      return product.name.toLowerCase().includes(lowerCaseSearchTerm);
+    }
+  });
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Productos</h1>
-     
+      <input
+        type="text"
+        placeholder="Buscar productos por nombre o precio..."
+        value={searchTerm}
+        onChange={handleSearch}
+        className="w-full p-3 mb-6 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
+      />
       <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {filteredProducts.map((product, index) => (
           <div
