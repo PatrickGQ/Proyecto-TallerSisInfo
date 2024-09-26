@@ -2,7 +2,8 @@ import { useState } from "react";
 
 const SaleForm = () => {
   const [form, setForm] = useState({
-    productName: "", // Estado inicial con el nombre del producto
+    productName: "",  // Estado inicial con el nombre del producto
+    quantity: 1,      // Estado inicial para la cantidad del producto
   });
 
   const handleChange = (e) => {
@@ -15,7 +16,7 @@ const SaleForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(form); // Mostrar los detalles del producto en la consola al enviar
+    console.log(form);  // Mostrar los detalles del producto y la cantidad en la consola al enviar
   };
 
   return (
@@ -31,6 +32,18 @@ const SaleForm = () => {
           onChange={handleChange}
           required
         />
+
+        <label>
+          Cantidad <span>*</span>
+        </label>
+        <input
+          type="number"
+          name="quantity"
+          value={form.quantity}
+          onChange={handleChange}
+          required
+        />
+
         <button type="submit">Registrar Venta</button>
       </form>
     </div>
