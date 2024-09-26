@@ -28,7 +28,7 @@ const NavBar = ({closeNavBar}) => {
             <ul className="pl-8 space-y-2">
               <li>
                 <Link
-                  to="/sales/newSale"
+                  to="/ventas/registrar/venta"
                   className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors"
                   onClick={closeNavBar}>
                   <span>Registrar Venta</span>

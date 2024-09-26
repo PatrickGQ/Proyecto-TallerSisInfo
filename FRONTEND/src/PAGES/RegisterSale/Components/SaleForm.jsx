@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 
 const SaleForm = () => {
   const [form, setForm] = useState({
-    productName: "",  // Estado inicial con el nombre del producto
-    quantity: 1,      // Estado inicial para la cantidad del producto
-    price: 0,         // Estado inicial para el precio del producto
-    discount: 0,      // Estado inicial para el descuento aplicado
-    tax: 0,           // Estado inicial para los impuestos
-    totalAmount: 0,   // Estado inicial para el total a pagar
+    productName: "",  
+    quantity: 1,     
+    price: 0,        
+    discount: 0,     
+    tax: 0,          
+    totalAmount: 0,  
   });
 
   // Cálculo del total
@@ -19,7 +19,7 @@ const SaleForm = () => {
     const total = subtotalWithDiscount + taxAmount;
     setForm((prevForm) => ({
       ...prevForm,
-      totalAmount: total.toFixed(2),  // Fijamos el total a 2 decimales
+      totalAmount: total.toFixed(2),  
     }));
   }, [form.price, form.quantity, form.discount, form.tax]);
 
@@ -33,12 +33,12 @@ const SaleForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(form);  // Mostrar todos los detalles del formulario, incluyendo el total
+    console.log(form);  
   };
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
         <label>
           Nombre del Producto <span>*</span>
         </label>
