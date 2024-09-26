@@ -12,6 +12,7 @@ const SaleForm = () => {
     time: "",  
   });
 
+  const [cart, setCart] = useState([]);  // Estado para el carrito
   const [step, setStep] = useState(1);  // Controla los pasos (1: Ingreso, 2: Confirmación, 3: Método de pago)
   const [paymentMethod, setPaymentMethod] = useState("");  // Almacena el método de pago seleccionado
   const [cardDetails, setCardDetails] = useState({
