@@ -61,7 +61,7 @@ const SaleForm = () => {
     const date = new Date(dateString);
     return date.toLocaleDateString("es-ES"); // Formato español (DD/MM/YYYY)
   };
-  
+
   return (
     <div>
       {step === 1 && (
@@ -98,7 +98,8 @@ const SaleForm = () => {
           <p><strong>Cantidad:</strong> {form.quantity}</p>
           <p><strong>Precio:</strong> {form.price}</p>
           <p><strong>Descuento:</strong> {form.discount}%</p>
-          <p><strong>Impuestos:</strong> {form.tax}%</p>
+          <p><strong>Impuestos:</strong> {form.tax}%</p> {/* Impuesto fijo */}
+          <p><strong>Fecha de Compra:</strong> {form.date}</p>  {/* Mostrar la fecha seleccionada */}
           <p><strong>Total a pagar:</strong> {form.totalAmount}</p>
 
           <button onClick={handleConfirm}>Confirmar Venta</button>
