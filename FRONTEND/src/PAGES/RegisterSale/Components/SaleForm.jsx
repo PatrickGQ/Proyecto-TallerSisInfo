@@ -10,7 +10,7 @@ const SaleForm = () => {
     totalAmount: 0,
   });
   
-  const [step, setStep] = useState(1);  // Controla los pasos (1: Ingreso, 2: Confirmación)
+  const [step, setStep] = useState(1);  // Controla los pasos (1: Ingreso, 2: Confirmación, 3: Método de pago)
   const [paymentMethod, setPaymentMethod] = useState("");  // Almacena el método de pago seleccionado
 
   // Cálculo del total
@@ -48,6 +48,11 @@ const SaleForm = () => {
   // Manejar el cambio del método de pago
   const handlePaymentMethodChange = (e) => {
     setPaymentMethod(e.target.value);
+  };
+
+  // Finalizar la compra y mostrar el mensaje de agradecimiento
+  const handleFinish = () => {
+    alert("¡Gracias por comprar en Los Pollos Hermanos!");
   };
 
   return (
@@ -104,7 +109,7 @@ const SaleForm = () => {
           {paymentMethod === "cash" && (
             <div>
               <p>Gracias por su compra</p>
-              <button>Finalizar</button>
+              <button onClick={handleFinish}>Finalizar</button>
             </div>
           )}
 
@@ -112,12 +117,14 @@ const SaleForm = () => {
             <div>
               <p>Por favor, escanee el código QR para completar el pago:</p>
               <img src="https://prodbgwebportal.blob.core.windows.net/assets/pdf-webinar-cobros-qr.pdf" alt="Código QR" width="200" />
+              <button onClick={handleFinish}>Finalizar</button>
             </div>
           )}
 
           {paymentMethod === "card" && (
             <div>
               <p>Por favor, registre su tarjeta (esta función se implementará en el futuro).</p>
+              <button onClick={handleFinish}>Finalizar</button>
             </div>
           )}
         </div>
