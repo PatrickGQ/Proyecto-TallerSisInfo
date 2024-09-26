@@ -8,31 +8,42 @@ const SaleForm = () => {
     discount: 0,
     tax: 15,  // Impuesto fijo del 15%
     totalAmount: 0,
-    date: "",  // Nueva propiedad para almacenar la fecha seleccionada
-    time: "",  // Nueva propiedad para almacenar la hora automáticamente
+    date: "",  
+    time: "",  
   });
-  
+
   const [step, setStep] = useState(1);  // Controla los pasos (1: Ingreso, 2: Confirmación, 3: Método de pago)
   const [paymentMethod, setPaymentMethod] = useState("");  // Almacena el método de pago seleccionado
-  
-  // Estado para los datos de la tarjeta
   const [cardDetails, setCardDetails] = useState({
     cardNumber: "",
     cardHolder: "",
     expirationDate: "",
     cvv: "",
   });
+  const [discountMessage, setDiscountMessage] = useState(""); // Estado para el mensaje de descuento
 
   // Cálculo del total
   useEffect(() => {
     const subtotal = form.price * form.quantity;
-    const discountAmount = (form.discount / 100) * subtotal;
+    let discountAmount = (form.discount / 100) * subtotal;
+
+    // Comprobar si hoy es jueves y aplicar un descuento adicional del 2%
+    const today = new Date();
+    const isThursday = today.getDay() === 4; 
+    if (isThursday) {
+      discountAmount += (2 / 100) * subtotal; 
+      setDiscountMessage("¡Hoy es jueves! Aprovecha nuestro descuento del 2% en tu compra.");
+    } else {
+      setDiscountMessage(""); 
+    }
+
     const subtotalWithDiscount = subtotal - discountAmount;
-    const taxAmount = (form.tax / 100) * subtotalWithDiscount;  // Impuesto fijo
+    const taxAmount = (form.tax / 100) * subtotalWithDiscount;  
     const total = subtotalWithDiscount + taxAmount;
     setForm((prevForm) => ({
       ...prevForm,
       totalAmount: total.toFixed(2),
+      discount: isThursday ? 2 : prevForm.discount, 
     }));
   }, [form.price, form.quantity, form.discount]);
 
@@ -44,7 +55,6 @@ const SaleForm = () => {
     });
   };
 
-  // Manejo de cambios en los datos de la tarjeta
   const handleCardChange = (e) => {
     const { name, value } = e.target;
     setCardDetails({
@@ -53,26 +63,22 @@ const SaleForm = () => {
     });
   };
 
-  // Pasar al paso de confirmación
   const handleReview = (e) => {
     e.preventDefault();
-    const currentTime = new Date().toLocaleTimeString(); // Obtener la hora actual en formato local
+    const currentTime = new Date().toLocaleTimeString();
     setForm((prevForm) => ({
       ...prevForm,
-      time: currentTime, // Asignar la hora al formulario
+      time: currentTime,
     }));
-    setStep(2);  // Cambiamos al paso de confirmación
+    setStep(2);
   };
 
-  // Confirmar la venta y mostrar opciones de pago
   const handleConfirm = () => {
-    setStep(3);  // Cambiamos al paso de selección de método de pago
+    setStep(3);
   };
 
-  // Manejar el cambio del método de pago
   const handlePaymentMethodChange = (e) => {
     setPaymentMethod(e.target.value);
-    // Reiniciar los detalles de la tarjeta al cambiar el método de pago
     if (e.target.value !== "card") {
       setCardDetails({
         cardNumber: "",
@@ -83,15 +89,12 @@ const SaleForm = () => {
     }
   };
 
-  // Finalizar la compra y mostrar el mensaje de agradecimiento
   const handleFinish = () => {
     alert("¡Gracias por comprar en Los Pollos Hermanos!");
   };
 
-  // Confirmar pago con tarjeta
   const handleCardConfirm = (e) => {
     e.preventDefault();
-    // Aquí podrías agregar lógica adicional para validar los datos de la tarjeta.
     alert("Pago con tarjeta confirmado. ¡Gracias por su compra!");
     handleFinish();
   };
@@ -112,12 +115,13 @@ const SaleForm = () => {
           <label>Descuento aplicado (%) <span>*</span></label>
           <input type="number" name="discount" value={form.discount} onChange={handleChange} required />
 
-          {/* Nuevo campo para seleccionar la fecha */}
           <label>Fecha de Compra <span>*</span></label>
           <input type="date" name="date" value={form.date} onChange={handleChange} required />
 
           <label>Total a pagar</label>
           <input type="number" name="totalAmount" value={form.totalAmount} readOnly />
+
+          {discountMessage && <p style={{ color: 'green' }}>{discountMessage}</p>} {/* Mostrar mensaje de descuento */}
 
           <button type="submit">Revisar Pedido</button>
         </form>
@@ -130,9 +134,9 @@ const SaleForm = () => {
           <p><strong>Cantidad:</strong> {form.quantity}</p>
           <p><strong>Precio:</strong> {form.price}</p>
           <p><strong>Descuento:</strong> {form.discount}%</p>
-          <p><strong>Impuestos:</strong> {form.tax}%</p> {/* Impuesto fijo */}
-          <p><strong>Fecha de Compra:</strong> {form.date}</p>  {/* Mostrar la fecha seleccionada */}
-          <p><strong>Hora de Compra:</strong> {form.time}</p>  {/* Mostrar la hora seleccionada */}
+          <p><strong>Impuestos:</strong> {form.tax}%</p>
+          <p><strong>Fecha de Compra:</strong> {form.date}</p>
+          <p><strong>Hora de Compra:</strong> {form.time}</p>
           <p><strong>Total a pagar:</strong> {form.totalAmount}</p>
 
           <button onClick={handleConfirm}>Confirmar Venta</button>
