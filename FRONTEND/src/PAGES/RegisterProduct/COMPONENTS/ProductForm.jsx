@@ -12,7 +12,7 @@ const ProductForm = () => {
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
-  
+
     setForm((prevForm) => ({
       ...prevForm,
       [name]: type === "file" ? files[0] : value,
@@ -21,7 +21,7 @@ const ProductForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+
     console.log("Formulario actual:", form);
 
     try {
@@ -46,7 +46,7 @@ const ProductForm = () => {
     <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Agregar Nuevo Producto</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        
+
         <div>
           <label className="block text-gray-700 font-medium">Nombre del Producto <span className="text-red-500">*</span></label>
           <input
@@ -67,6 +67,7 @@ const ProductForm = () => {
             value={form.price}
             onChange={handleChange}
             required
+            min="0"
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
           />
         </div>

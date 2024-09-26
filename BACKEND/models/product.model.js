@@ -8,6 +8,7 @@ const productModel = new Schema({
   price: {
     type: Number,
     required: true,
+    min: [0, 'El precio debe ser mayor que 0']
   },
   id: {
     type: String,
@@ -19,7 +20,7 @@ const productModel = new Schema({
     required: false,
   },
   description: {
-    type: String,  
+    type: String,
     required: true,
   }
 });
