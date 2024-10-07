@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Asegúrate de tener instalado react-icons
 
 const EmployeeForm = ({ onFormChange }) => {
   const [form, setForm] = useState({
@@ -6,12 +7,14 @@ const EmployeeForm = ({ onFormChange }) => {
     ci: "",
     phone: "",
     email: "",
+    password: "",
     contractStart: "",
     contractEnd: "",
     salary: "",
     role: "",
     photo: null,
   });
+  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar la contraseña
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -28,6 +31,7 @@ const EmployeeForm = ({ onFormChange }) => {
       ci: "",
       phone: "",
       email: "",
+      password: "",
       contractStart: "",
       contractEnd: "",
       salary: "",
@@ -94,7 +98,25 @@ const EmployeeForm = ({ onFormChange }) => {
           />
         </div>
 
-        {/* Fecha de inicio y fin de contrato */}
+        {/* Password */}
+        <div>
+          <label className="block text-gray-700 font-medium">Password <span className="text-red-500">*</span></label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              required
+              className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+            />
+            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-2 top-1/2 transform -translate-y-1/2">
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+        </div>
+
+        {/* Fecha de Inicio del Contrato */}
         <div>
           <label className="block text-gray-700 font-medium">Fecha de Inicio del Contrato <span className="text-red-500">*</span></label>
           <input
@@ -107,6 +129,7 @@ const EmployeeForm = ({ onFormChange }) => {
           />
         </div>
 
+        {/* Fecha de Fin del Contrato */}
         <div>
           <label className="block text-gray-700 font-medium">Fecha de Fin del Contrato <span className="text-red-500">*</span></label>
           <input
@@ -129,43 +152,40 @@ const EmployeeForm = ({ onFormChange }) => {
             onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
-            min="0"
           />
         </div>
 
         {/* Rol */}
         <div>
           <label className="block text-gray-700 font-medium">Rol <span className="text-red-500">*</span></label>
-          <input
-            type="text"
+          <select
             name="role"
             value={form.role}
             onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
-          />
+          >
+            <option value="">Seleccionar Rol</option>
+            <option value="Cajero">Cajero</option>
+            <option value="Cocinero">Cocinero</option>
+            <option value="Mesero">Mesero</option>
+          </select>
         </div>
 
-        {/* Subir foto */}
+        {/* Foto */}
         <div>
-          <label className="block text-gray-700 font-medium">Subir foto</label>
+          <label className="block text-gray-700 font-medium">Foto</label>
           <input
             type="file"
             name="photo"
+            accept="image/*"
             onChange={handleChange}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer mt-1"
+            className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
           />
         </div>
 
-        {/* Botones */}
-        <div className="flex justify-between">
-          <button
-            type="button"
-            onClick={handleClear}
-            className="bg-gray-600 text-white p-2 rounded-md font-semibold hover:bg-gray-700 transition duration-300"
-          >
-            Borrar Todo
-          </button>
+        <div className="flex justify-between mt-6">
+          <button type="button" onClick={handleClear} className="p-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition duration-300">Limpiar</button>
         </div>
       </form>
     </div>
