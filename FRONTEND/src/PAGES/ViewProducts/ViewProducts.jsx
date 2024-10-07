@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProductsRequest } from '../api/product.js';
+import { getProductsRequest } from '../../api/product';
 
-const Products = () => {
+const ViewProducts = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
@@ -74,4 +74,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default ViewProducts;

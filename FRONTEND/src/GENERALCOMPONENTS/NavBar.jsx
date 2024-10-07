@@ -5,6 +5,7 @@ import { FaBox, FaUsers, FaReceipt } from 'react-icons/fa';
 const NavBar = ({closeNavBar}) => {
   const [ventasOpen, setVentasOpen] = useState(false);
   const [productosOpen, setProductosOpen] = useState(false);
+  const [empleadosOpen, setEmpleadosOpen] = useState(false);
 
   const toggleVentas = () => {
     setVentasOpen(!ventasOpen);
@@ -12,6 +13,10 @@ const NavBar = ({closeNavBar}) => {
 
   const toggleProductos = () => {
     setProductosOpen(!productosOpen);
+  };
+
+  const toggleEmpleados = () => {
+    setEmpleadosOpen(!empleadosOpen);
   };
 
   return (
@@ -67,12 +72,32 @@ const NavBar = ({closeNavBar}) => {
           )}
         </li>
         <li>
-          <Link
-            to="/empleados"
-            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors">
+          <button
+            onClick={toggleEmpleados}
+            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors w-full text-left">
             <FaUsers className="text-xl" />
             <span className="font-medium">Empleados</span>
-          </Link>
+          </button>
+          {empleadosOpen && (
+            <ul className="pl-8 space-y-2">
+                <li>
+                    <Link
+                        to="/empleados/registrar/empleado"
+                        className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors"
+                        onClick={closeNavBar}>
+                        <span>Registrar Empleado</span>
+                    </Link>
+                </li>
+                <li>
+                    <Link
+                    to="/empleados/ver/empleados"
+                    className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors"
+                    onClick={closeNavBar}>
+                    <span>Ver Empleados</span>
+                    </Link>
+                </li>
+            </ul>
+          )}
         </li>
       </ul>
     </nav>
