@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { registerEmployee } from "../../../../../BACKEND/controllers/employees.controller";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; 
 import { registerEmployeeRequest } from "../../../api/employee";
 
@@ -36,7 +35,7 @@ const EmployeePreview = ({ form }) => {
       formData.append("salary", form.salary);
       formData.append("role", form.role);
 
-      if (form.photo) formData.append("image", form.photo);
+      if (form.photo) formData.append("photo", form.photo);
 
       console.log(form)
       const response = await registerEmployeeRequest(form); 

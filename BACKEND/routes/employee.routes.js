@@ -4,7 +4,7 @@ import { registerEmployee } from "../controllers/employees.controller.js";
 
 const employeesRouter = Router();
 
-employeesRouter.post('/', upload.single('image') , registerEmployee);
-
+// Asegúrate de que el campo sea 'photo' y no 'image' ya que en el formulario es 'photo'
+employeesRouter.post('/', upload.single('photo'), registerEmployee);
 
 export default employeesRouter;

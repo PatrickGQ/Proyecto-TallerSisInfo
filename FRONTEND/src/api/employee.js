@@ -1,6 +1,11 @@
-import axios from "axios";
+import axios from "./axios";
 import { API } from "./conf/routeApi";
 
-
-
-export const registerEmployeeRequest = (employee) => axios.post(`${API}/employees`, employee);
+// Registrar un empleado
+export const registerEmployeeRequest = (formData) => {
+  return axios.post(`${API}/employees`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
