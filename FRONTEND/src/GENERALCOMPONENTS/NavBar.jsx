@@ -39,6 +39,14 @@ const NavBar = ({closeNavBar}) => {
                   <span>Registrar Venta</span>
                 </Link>
               </li>
+              <li>
+                <Link
+                  to="/sales/seeSales"
+                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors"
+                  onClick={closeNavBar}>
+                  <span>Ver Ventas</span>
+                </Link>
+              </li>
 
             </ul>
           )}
