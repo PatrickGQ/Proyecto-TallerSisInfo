@@ -31,24 +31,24 @@ const ViewEmployeesForm = ({ activeFilters }) => {
       employee.ci.toLowerCase().includes(searchTerm.toLowerCase()) ||
       employee.email.toLowerCase().includes(searchTerm.toLowerCase())
     ) : true;
-  
+
     // Filtro por rango de salario
     const matchesSalary = activeFilters.salaryRange.min && activeFilters.salaryRange.max ? (
       employee.salary >= Number(activeFilters.salaryRange.min) &&
       employee.salary <= Number(activeFilters.salaryRange.max)
     ) : true;
-  
+
     // Filtro por estado del contrato
     const today = new Date();
     const contractEnd = new Date(employee.contractEnd);
     const isContractActive = contractEnd >= today;
     const matchesContract = activeFilters.contractStatus === 'all' ? true :
       activeFilters.contractStatus === 'active' ? isContractActive : !isContractActive;
-  
+
     // Filtro por rol
     const matchesRole = activeFilters.role === 'all' ? true :
       employee.role === activeFilters.role;
-  
+
     return matchesSearch && matchesSalary && matchesContract && matchesRole;
   });
 
@@ -81,8 +81,8 @@ const ViewEmployeesForm = ({ activeFilters }) => {
                 <div className="w-1/3">
                   {employee.photo ? (
                     <img
-                      src={`http://localhost:3000/uploads/${employee.photo}}
-                      alt={employee.name}`}
+                      src={`http://localhost:3000/uploads/${employee.photo}`}
+                      alt={employee.name}
                       className="w-full h-32 object-cover rounded-lg"
                     />
                   ) : (
@@ -91,7 +91,7 @@ const ViewEmployeesForm = ({ activeFilters }) => {
                     </div>
                   )}
                 </div>
-                
+
                 <div className="w-2/3">
                   <div className="space-y-2">
                     <div>
