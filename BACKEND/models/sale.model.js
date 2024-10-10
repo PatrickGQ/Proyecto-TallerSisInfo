@@ -1,21 +1,25 @@
 import mongoose, { Schema } from "mongoose";
 
-// Modelo de ventas
 const saleModel = new Schema({
     ticket: {
-        type: Number,
-        required: true
-    },
-    client: {
+        type: String,
+        required: true,
+        unique: true,
+        default: function() {
+            // Generar número de ticket basado en timestamp y número aleatorio
+            return `TK-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        }
+    },    
+    clientName: {
         type: String,
         required: true
     },
-    ci: {
+    clientCI: {
         type: String,
         required: true
     },
     products: [{
-        _id: {
+        productId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Product',
             required: true
@@ -26,18 +30,32 @@ const saleModel = new Schema({
         },
         price: {
             type: Number,
-            required: true
+            required: true,
+            min: 0
         },
         quantity: {
             type: Number,
-            required: true
+            required: true,
+            min: 1
         }
     }],
+    discount: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100
+    },
     totalAmount: {
         type: Number,
-        required: true
+        required: true,
+        min: 0
     },
-    date: {
+    paymentMethod: {
+        type: String,
+        required: true,
+        enum: ['efectivo', 'qr', 'tarjeta']
+    },
+    saleDate: {
         type: Date,
         default: Date.now
     }
