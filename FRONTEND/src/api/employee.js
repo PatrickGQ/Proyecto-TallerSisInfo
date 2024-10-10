@@ -9,3 +9,5 @@ export const registerEmployeeRequest = (formData) => {
     },
   });
 };
+
+export const getEmployeesRequest = () => axios.get(`${API}/employees`);

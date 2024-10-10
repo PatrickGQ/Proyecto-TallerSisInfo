@@ -58,3 +58,21 @@ export const getEmployees = async function(req, res) {
         res.status(500).json({ error: 'Error al obtener empleados', details: error });
     }
 };
+
+// Obtener un empleado por CI
+export const getEmployeeByCi = async (req, res) => {
+    const { ci } = req.params;
+
+    try {
+        const employeeFound = await Employee.findByCi(ci);
+
+        if (!employeeFound) {
+            return res.status(404).json({ message: "Empleado no encontrado" });
+        }
+
+        res.json(employeeFound);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener empleado', details: error });
+    }
+};
+
