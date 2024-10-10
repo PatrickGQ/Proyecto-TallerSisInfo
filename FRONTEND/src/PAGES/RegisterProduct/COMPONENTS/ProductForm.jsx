@@ -37,6 +37,7 @@ const ProductForm = () => {
       console.log(res);
 
       setForm({ name: "", price: "", image: null, id: "", description: "" });
+      window.location.reload();
     } catch (error) {
       console.log(error);
     }

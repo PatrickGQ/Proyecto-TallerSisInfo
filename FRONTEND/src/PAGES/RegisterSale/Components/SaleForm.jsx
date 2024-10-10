@@ -27,18 +27,16 @@ const SaleForm = () => {
     fetchProducts();
   }, []);
 
-  // Nuevo useEffect para manejar descuentos
   useEffect(() => {
-    // Comprobar si es jueves para aplicar descuento
     const today = new Date();
-    const isThursday = today.getDay() === 2;
+    const isThursday = today.getDay() === 4;
     
     if (isThursday) {
       setForm(prev => ({
         ...prev,
-        discount: 2
+        discount: 4
       }));
-      setDiscountMessage("¡Hoy es jueves! Tienes un descuento del 2% en tu compra.");
+      setDiscountMessage("¡Hoy es jueves! Tienes un descuento del 4% en tu compra.");
     } else {
       setDiscountMessage("");
     }
@@ -65,16 +63,13 @@ const SaleForm = () => {
             paymentMethod: form.paymentMethod,
             discount: form.discount,
             saleDate: form.saleDate,
-            products: productsData,  // Ya no necesitamos JSON.stringify aquí
+            products: productsData,
             total: calculateCartTotal()
         };
-
-        console.log(saleData)
 
         const res = await registerSaleRequest(saleData);
         console.log("Venta registrada:", res);
 
-        // Reset form and cart after successful submission
         setForm({
             clientName: "",
             clientCI: "",
@@ -141,10 +136,10 @@ const SaleForm = () => {
   };
 
   return (
-    <div className="container mx-auto px-4">
-      <div className="grid grid-cols-3 gap-8">
+    <div className="container mx-auto px-4 py-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Formulario de Venta */}
-        <div className="col-span-1 p-4 bg-white shadow-md rounded-lg">
+        <div className="p-4 bg-white shadow-md rounded-lg">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">Formulario de Venta</h2>
           
           <form className="flex flex-col space-y-4">
@@ -185,11 +180,11 @@ const SaleForm = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700">Seleccionar Producto</label>
-              <div className="flex space-x-4 overflow-x-auto py-2">
+              <div className="flex flex-wrap gap-2 py-2">
                 {filterProducts(products, searchTerm).map((product) => (
                   <div
                     key={product._id}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
+                    className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-700 cursor-pointer text-sm"
                     onClick={() => handleAddToCart(product)}
                   >
                     <p>{product.name}</p>
@@ -202,46 +197,48 @@ const SaleForm = () => {
         </div>
 
         {/* Carrito */}
-        <div className="col-span-1 p-4 bg-white shadow-md rounded-lg">
+        <div className="p-4 bg-white shadow-md rounded-lg">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">Carrito</h2>
           {cart.length === 0 ? (
             <p className="text-gray-500">El carrito está vacío.</p>
           ) : (
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Borrar</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {cart.map((item, index) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.price.toFixed(2)} Bs.</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <input
-                        type="number"
-                        min="1"
-                        value={item.quantity}
-                        onChange={(e) => handleQuantityChange(index, e.target.value)}
-                        className="border rounded-md p-1 w-12"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => handleRemoveFromCart(index)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        🗑️
-                      </button>
-                    </td>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Borrar</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {cart.map((item, index) => (
+                    <tr key={index}>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{item.name}</td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{item.price.toFixed(2)} Bs.</td>
+                      <td className="px-4 py-2 whitespace-nowrap">
+                        <input
+                          type="number"
+                          min="1"
+                          value={item.quantity}
+                          onChange={(e) => handleQuantityChange(index, e.target.value)}
+                          className="border rounded-md p-1 w-16"
+                        />
+                      </td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm">
+                        <button
+                          onClick={() => handleRemoveFromCart(index)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          🗑️
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
 
           <hr className="my-4" />
@@ -268,15 +265,17 @@ const SaleForm = () => {
         </div>
 
         {/* Factura */}
-        <div className="col-span-1 p-4 bg-white shadow-md rounded-lg">
+        <div className="p-4 bg-white shadow-md rounded-lg">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">Factura</h2>
-          {cart.map((item, index) => (
-            <div key={index} className="flex justify-between items-center mb-2">
-              <p>{item.name}</p>
-              <p>{item.quantity} x {item.price.toFixed(2)} Bs.</p>
-              <p>{(item.quantity * item.price).toFixed(2)} Bs.</p>
-            </div>
-          ))}
+          <div className="space-y-2">
+            {cart.map((item, index) => (
+              <div key={index} className="flex flex-wrap justify-between items-center gap-2 text-sm">
+                <p className="font-medium">{item.name}</p>
+                <p>{item.quantity} x {item.price.toFixed(2)} Bs.</p>
+                <p className="font-semibold">{(item.quantity * item.price).toFixed(2)} Bs.</p>
+              </div>
+            ))}
+          </div>
 
           <hr className="my-4" />
           <div className="flex flex-col space-y-2">
