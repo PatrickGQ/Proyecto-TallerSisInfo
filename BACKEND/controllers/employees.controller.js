@@ -4,12 +4,11 @@ import bcrypt from 'bcrypt';
 // Registrar un nuevo empleado
 export const registerEmployee = async (req, res) => {
     const { name, ci, phone, email, password, contractStart, contractEnd, salary, role } = req.body;
-    const photo = req.file ? req.file.path : null; // Si se subió una foto, se almacena la ruta
+    const photo = req.file ? req.file.path : null;
 
-    console.log('Archivo subido:', req.file); // Muestra detalles del archivo si fue subido correctamente
+    console.log('Archivo subido:', req.file);
     console.log('Datos del cuerpo:', req.body);
 
-    // Encriptar la contraseña antes de guardarla
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newEmployee = new Employee({
@@ -33,12 +32,12 @@ export const registerEmployee = async (req, res) => {
     }
 };
 
-// Obtener un empleado por ID
-export const getEmployeeById = async (req, res) => {
-    const { id } = req.params;
+// Obtener un empleado por CI
+export const getEmployeeByCi = async (req, res) => {
+    const { ci } = req.params;
 
     try {
-        const employeeFound = await Employee.findById(id);
+        const employeeFound = await Employee.findByCi(ci);
 
         if (!employeeFound) {
             return res.status(404).json({ message: "Empleado no encontrado" });

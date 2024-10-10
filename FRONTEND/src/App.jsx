@@ -8,7 +8,7 @@ import ViewProducts from './PAGES/ViewProducts/ViewProducts';
 import RegisterSale from "./PAGES/RegisterSale/RegisterSale";
 
 import RegisterEmployee from './PAGES/RegisterEmployee/RegisterEmployee';
-import ViewEmployees from './PAGES/ViewEmployees/components/ViewEmployees';
+import ViewEmployees from './PAGES/ViewEmployees/ViewEmployees';
 
 function App() {
   return (
