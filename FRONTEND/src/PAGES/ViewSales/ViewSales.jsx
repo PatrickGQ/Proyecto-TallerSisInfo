@@ -3,66 +3,70 @@ import SeeSalesMenuOption from './Components/SeeSalesMenuOption.jsx';
 import ErrorModal from '../../GENERALCOMPONENTS/ErrorModal.jsx';
 import TodaysSales from './Components/TodaysSales.jsx';
 import AllSales from './Components/AllSales.jsx';
-import { getAllSalesRequest, getSaleRequest, getTodaySalesRequest } from '../../api/sale.js'
+import SalesByDate from './Components/SalesByDate.jsx'; // Importa el nuevo componente
+import { getAllSalesRequest, getSaleRequest, getTodaySalesRequest } from '../../api/sale.js';
+import SaleView from './Components/SaleView.jsx'; // Asegúrate de que también importes SaleView si lo necesitas
 
 const SeeSales = () => {
   const [selectedOption, setSelectedOption] = useState('');
   const [error, setError] = useState('');
-  const [ viewSale, setViewSale ] = useState(null);
+  const [viewSale, setViewSale] = useState(null);
 
-  const getTodaysSales = async() =>{
+  const getTodaysSales = async () => {
     try {
-        const res = await getTodaySalesRequest();
-        console.log(res)
-        return res;
+      const res = await getTodaySalesRequest();
+      console.log(res);
+      return res;
     } catch (error) {
-        return error;
+      setError("Error al obtener las ventas del día."); // Maneja el error adecuadamente
+      console.error(error);
     }
-  }
+  };
 
   const getAllSales = async () => {
     try {
       const res = await getAllSalesRequest();
       return res;
     } catch (error) {
-      return error;
+      setError("Error al obtener todas las ventas."); // Maneja el error adecuadamente
+      console.error(error);
     }
-  }
+  };
 
-  const getSale = async(saleID) => {
+  const getSale = async (saleID) => {
     try {
-        const res = await getSaleRequest(saleID);
-        setViewSale(res.data)
-        return res;
+      const res = await getSaleRequest(saleID);
+      setViewSale(res.data);
+      return res;
     } catch (error) {
-        return error;
+      setError("Error al obtener la venta."); // Maneja el error adecuadamente
+      console.error(error);
     }
-  }
+  };
 
   return (
     <div className="p-4">
-      {viewSale && ( <SaleView sale={viewSale} onClose={() => setViewSale(null)}/> )}
-      <h1 className="text-2xl font-semib+old mb-4">Vista de Ventas</h1>
+      {viewSale && <SaleView sale={viewSale} onClose={() => setViewSale(null)} />}
+      <h1 className="text-2xl font-semibold mb-4">Vista de Ventas</h1>
       <SeeSalesMenuOption setSelectedOption={setSelectedOption} />
-      {selectedOption === 'todaysSales' && 
+      {selectedOption === 'todaysSales' && (
         <TodaysSales 
-            setError={setError} 
-            getTodaysSales={getTodaysSales}
-            setViewSale={getSale}
-        >
-        </TodaysSales>
-      }
-      {selectedOption === 'allSales' && 
-        <AllSales 
-            setError={setError} 
-            getAllSales={getAllSales}
-            setViewSale={getSale}
-        >
-        </AllSales>
-      }
-      {error && (
-        <ErrorModal error={error}></ErrorModal>
+          setError={setError} 
+          getTodaysSales={getTodaysSales}
+          setViewSale={getSale}
+        />
       )}
+      {selectedOption === 'allSales' && (
+        <AllSales 
+          setError={setError} 
+          getAllSales={getAllSales}
+          setViewSale={getSale}
+        />
+      )}
+      {selectedOption === 'date' && (
+        <SalesByDate setError={setError} setViewSale={setViewSale} />
+      )}
+      {error && <ErrorModal error={error} />}
     </div>
   );
 };

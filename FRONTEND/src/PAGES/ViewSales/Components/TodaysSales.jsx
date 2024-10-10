@@ -30,11 +30,11 @@ const TodaysSales = ({ setError, getTodaysSales, setViewSale }) => {
   const handleSearch = (query) => {
     const filtered = sales.filter((sale) => {
       const lowerCaseQuery = query.toLowerCase();
-      const matchesClient = sale.client.toLowerCase().includes(lowerCaseQuery);
-      const matchesCI = sale.ci.toLowerCase().includes(lowerCaseQuery);
+      const matchesClientName = sale.clientName.toLowerCase().includes(lowerCaseQuery);  // Cambiado client por clientName
+      const matchesCI = sale.clientCI.toLowerCase().includes(lowerCaseQuery);  // Cambiado clientCI por ci
       const matchesTotalAmount = sale.totalAmount.toString().includes(lowerCaseQuery);
   
-      return matchesClient || matchesCI || matchesTotalAmount;
+      return matchesClientName || matchesCI || matchesTotalAmount;
     });
   
     setFilteredSales(filtered);

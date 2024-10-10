@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import LoadingMessage from "../../LoandingMessage";
-import { getSaleRequest, deleteSaleRequest } from "../../../api/sales.js";
+import LoadingMessage from "../../../GENERALCOMPONENTS/LoandingMessage.jsx";
+import { getSaleRequest } from "../../../api/sale.js";
 import { FaPrint, FaEdit, FaTrashAlt } from "react-icons/fa";
-import AuthenticationPassComponent from "./AuthenticationPassComponent";
-import ConfirmationModal from "../../ConfirmationModal";
 
 const SaleView = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -40,22 +38,7 @@ const SaleView = () => {
     }
   };
 
-  const handleConfirmDelete = async () => {
-    try {
-      setIsLoading(true);
-      const res = await deleteSaleRequest(id);
-      console.log(res);
-      setShowConfirmModal(false); // Cierra el modal de confirmación
-      navigate('/404', {
-        replace: true
-      }); // Redirige a la página 404 después de eliminar
-    } catch (error) {
-      console.log(error);
-      // Manejo de errores
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  
 
   const handleEdit = () => {
     setAuthAction('edit');
@@ -121,15 +104,10 @@ const SaleView = () => {
         </div>
       </div>
       {showAuthModal && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <AuthenticationPassComponent setIsAuthenticated={handleAuthSuccess} onClose={() => setShowAuthModal(false)} />
+      
       </div>}
       {showConfirmModal && <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-        <ConfirmationModal
-          message="¿Estás seguro que deseas eliminar esta venta?"
-          info="Atención: si presionas 'Sí', la venta será eliminada de forma permanente. Los datos borrados no se pueden recuperar."
-          onConfirm={handleConfirmDelete}
-          onCancel={() => setShowConfirmModal(false)}
-        />
+       
       </div>}
     </>
   );
