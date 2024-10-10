@@ -12,3 +12,7 @@ export const getSaleRequest = id => axios.get(`${API}/sales/${id}`);
 export const getSalesByDateRequest = (date) => {
     return axios.get(`${API}/sales/date/${date}`);
   };
+export const getSalesByHourRequest =  (startTime, endTime) => {
+    return axios.get(`${API}/sales/hour/${startTime}/${endTime}`);
+  
+  };

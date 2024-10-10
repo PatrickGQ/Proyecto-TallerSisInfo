@@ -158,3 +158,32 @@ export const getSalesByDateDB = async (req, res) => {
         res.status(500).json({ error: "Error al obtener las ventas por fecha." });
     }
 };
+export const getSalesByHourDB = async (req, res) => {
+    const { startHour, endHour } = req.params; // Obtiene las horas en formato HH:mm
+
+    // Convierte las horas a objetos Date
+    const startDate = new Date();
+    const endDate = new Date();
+    
+    // Establece la hora de inicio
+    const [startHourValue, startMinuteValue] = startHour.split(':').map(Number);
+    startDate.setHours(startHourValue, startMinuteValue, 0, 0);
+    
+    // Establece la hora de fin
+    const [endHourValue, endMinuteValue] = endHour.split(':').map(Number);
+    endDate.setHours(endHourValue, endMinuteValue, 59, 999); // Hasta el final del último minuto
+
+    try {
+        const sales = await Sale.find({
+            saleDate: {
+                $gte: startDate,
+                $lt: endDate,
+            },
+        });
+
+        res.json(sales);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error al obtener las ventas por hora." });
+    }
+};

@@ -6,6 +6,7 @@ import AllSales from './Components/AllSales.jsx';
 import SalesByDate from './Components/SalesByDate.jsx'; // Importa el nuevo componente
 import { getAllSalesRequest, getSaleRequest, getTodaySalesRequest } from '../../api/sale.js';
 import SaleView from './Components/SaleView.jsx'; // Asegúrate de que también importes SaleView si lo necesitas
+import SalesByHour from './Components/SalesByHour.jsx';
 
 const SeeSales = () => {
   const [selectedOption, setSelectedOption] = useState('');
@@ -65,6 +66,9 @@ const SeeSales = () => {
       )}
       {selectedOption === 'date' && (
         <SalesByDate setError={setError} setViewSale={setViewSale} />
+      )}
+      {selectedOption === 'time' && (
+        <SalesByHour setError={setError} setViewSale={setViewSale} />
       )}
       {error && <ErrorModal error={error} />}
     </div>
