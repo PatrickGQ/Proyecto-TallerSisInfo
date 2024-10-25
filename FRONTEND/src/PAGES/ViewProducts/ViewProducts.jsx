@@ -1,32 +1,34 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getProductsRequest } from '../../api/product'; // Asegúrate de que esta ruta sea correcta
+import { useBranch } from '../../CONTEXTS/BranchContext';
+import { getProductsByBranchRequest } from '../../api/branch';
+
 
 const ViewProducts = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+  const { selectedBranch } = useBranch();
 
   useEffect(() => {
-    // Función para obtener los productos del backend
+    console.log("Prouctosssssssss", selectedBranch);
     const fetchProducts = async () => {
       try {
-        const response = await getProductsRequest();
-        setProducts(response.data);
+        const response = await getProductsByBranchRequest(selectedBranch);
+        await console.log(response)
+        setProducts(response.data.products);
       } catch (error) {
         console.error('Error al obtener los productos:', error);
       }
     };
 
     fetchProducts();
-  }, []);
+  }, [selectedBranch]);
 
-  // Función para manejar la búsqueda
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  // Filtrar productos según el término de búsqueda
   const filteredProducts = products.filter((product) => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     const isNumber = !isNaN(lowerCaseSearchTerm);
@@ -34,7 +36,7 @@ const ViewProducts = () => {
     if (isNumber) {
       return product.price.toString().includes(lowerCaseSearchTerm);
     } else {
-      return product.name.toLowerCase().includes(lowerCaseSearchTerm);
+      return product.nameProduct.toLowerCase().includes(lowerCaseSearchTerm);
     }
   });
 
@@ -58,13 +60,13 @@ const ViewProducts = () => {
             {product.image && (
               <img 
               src={`http://localhost:3000/uploads/${product.image}`}
-                alt={product.name} 
+                alt={product.nameProduct} 
                 className="w-full h-48 object-cover rounded-t-lg"
               />
             )}
             <hr className="border-t-2 border-gray-200" />
             <div className="p-4">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">{product.name}</h2>
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">{product.nameProduct}</h2>
               <p className="text-gray-600 mb-1"><strong>ID:</strong> {product.id}</p>
               <p className="text-gray-600 mb-1"><strong>Precio:</strong> {product.price} BS</p>
               <p className="text-gray-600"><strong>Descripción:</strong> {product.description}</p>

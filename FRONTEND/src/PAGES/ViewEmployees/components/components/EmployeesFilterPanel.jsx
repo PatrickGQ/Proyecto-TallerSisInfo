@@ -28,7 +28,7 @@ const EmployeesFilterPanel = ({ onFilterChange, activeFilters }) => {
   };
 
   return (
-    <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-50">
+    <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-10">
       <button
         onClick={() => setIsOpen(true)}
         className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-lg transition duration-300"

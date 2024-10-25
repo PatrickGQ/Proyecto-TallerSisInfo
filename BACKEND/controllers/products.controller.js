@@ -22,6 +22,8 @@ export const registerProduct = async (req, res) => {
         res.json(error);
     }
 };
+
+
 export const getProductDB = async (req, res) => {
     const idProduct = req.params.id; 
     try{

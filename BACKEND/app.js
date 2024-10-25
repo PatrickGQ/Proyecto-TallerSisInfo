@@ -5,6 +5,8 @@ import connectToMongoDB from './db.js';
 import productsRouter from './routes/product.routes.js';
 import salesRouter from './routes/sale.routes.js';
 import employeesRouter from './routes/employee.routes.js';
+import branchsRouter from './routes/branch.routes.js';
+import productsBranchRouter from './routes/product.branch.routes.js';
 
 const app = express();
 
@@ -25,11 +27,16 @@ connectToMongoDB();
 
 const PORT = 3000;
 
-app.use('/api/products', productsRouter);
+app.use('/api/branchs', branchsRouter);
+
+//app.use('/api/products', productsRouter);
+
+app.use('/api/branch/products', productsBranchRouter);
 
 app.use('/api/sales', salesRouter);
 
 app.use('/api/employees', employeesRouter);
+
 
 app.listen(PORT, () => {
     console.log("Backend listen on port", PORT);
