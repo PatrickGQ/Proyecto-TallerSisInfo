@@ -92,6 +92,7 @@ export const getSalesByBranch = async (req, res) => {
 export const getTodaySalesByBranch = async (req, res) => {
     try {
         const { nameBranch } = req.body;
+        console.log(nameBranch)
 
         // Buscar la sucursal por nombre
         const branch = await Branch.findOne({ nameBranch: nameBranch.toLowerCase() });

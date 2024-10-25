@@ -3,18 +3,21 @@ import { FaSync } from 'react-icons/fa';
 import SearchSaleBar from './SearchBarSale';
 import SalesList from './SalesList';
 import LoadingMessage from '../../../GENERALCOMPONENTS/LoandingMessage';
+import { getSalesByBranchRequest } from '../../../api/branch';
+import { useBranch } from '../../../CONTEXTS/BranchContext';
 
 const TodaysSales = ({ setError, getAllSales, setViewSale }) => {
   const [sales, setSales] = useState([]);
   const [filteredSales, setFilteredSales] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { selectedBranch } = useBranch();
 
   const fetchAllSales = async () => {
     try {
-      const res = await getAllSales();
+      const res = await getSalesByBranchRequest(selectedBranch);
       console.log(res);
-      setSales(res.data);
-      setFilteredSales(res.data);
+      setSales(res.data.sales);
+      setFilteredSales(res.data.sales);
     } catch (error) {
       console.log(error);
       setError(error);
