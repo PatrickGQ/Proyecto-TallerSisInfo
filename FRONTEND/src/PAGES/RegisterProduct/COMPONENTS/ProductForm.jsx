@@ -1,15 +1,21 @@
-import { useState } from "react";
-import { registerProductRequest } from "../../../api/product.js";
+import { useEffect, useState } from "react";
+import { addProductToBranchRequest } from "../../../api/branch.js";
+import { useBranch } from "../../../CONTEXTS/BranchContext.tsx";
 
 const ProductForm = () => {
+  const { selectedBranch } = useBranch();
+
+  useEffect(() => {
+  },[selectedBranch]);
+
   const [form, setForm] = useState({
-    name: "",
+    nameProduct: "",
     price: "",
     image: null,
     id: "",
     description: "",
-  });
-
+  }); 
+ 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
 
@@ -21,23 +27,21 @@ const ProductForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    console.log("Formulario actual:", form);
-
     try {
       const formData = new FormData();
-      formData.append("name", form.name);
+      formData.append("nameProduct", form.nameProduct);
       formData.append("price", form.price);
       formData.append("id", form.id);
       formData.append("description", form.description);
+      formData.append("nameBranch", selectedBranch)
 
       if (form.image) formData.append("image", form.image);
 
-      const res = await registerProductRequest(formData);
+      const res = await addProductToBranchRequest(formData);
       console.log(res);
 
-      setForm({ name: "", price: "", image: null, id: "", description: "" });
-      window.location.reload();
+      setForm({ nameProduct: "", price: "", image: null, id: "", description: "" });
+      //window.location.reload();
     } catch (error) {
       console.log(error);
     }
@@ -52,8 +56,8 @@ const ProductForm = () => {
           <label className="block text-gray-700 font-medium">Nombre del Producto <span className="text-red-500">*</span></label>
           <input
             type="text"
-            name="name"
-            value={form.name}
+            name="nameProduct"
+            value={form.nameProduct}
             onChange={handleChange}
             required
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
