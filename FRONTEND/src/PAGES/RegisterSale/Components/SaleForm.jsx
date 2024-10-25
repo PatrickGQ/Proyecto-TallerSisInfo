@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
-import { getProductsRequest } from '../../../api/product.js';
+//import { getProductsRequest } from '../../../api/product.js';
 import { registerSaleRequest } from "../../../api/sale.js";
+import { useBranch } from "../../../CONTEXTS/BranchContext.tsx";
+import { getProductsByBranchRequest } from "../../../api/branch.js";
 
 const SaleForm = () => {
+  const { selectedBranch } = useBranch();
+
   const [form, setForm] = useState({
     clientName: "",
     clientCI: "",
@@ -18,14 +22,16 @@ const SaleForm = () => {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await getProductsRequest();
-        setProducts(res.data);
+        await console.log(selectedBranch)
+        const res = await getProductsByBranchRequest(selectedBranch);
+        await console.log("res",res)
+        setProducts(res.data.products);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     }
     fetchProducts();
-  }, []);
+  }, [selectedBranch]);
 
   useEffect(() => {
     const today = new Date();
@@ -130,7 +136,7 @@ const SaleForm = () => {
         const priceStr = product.price.toString();
         return priceStr.includes(searchTerm);
       } else {
-        return product.name.toLowerCase().includes(searchTerm.toLowerCase());
+        return product.nameProduct.toLowerCase().includes(searchTerm.toLowerCase());
       }
     });
   };
@@ -187,7 +193,7 @@ const SaleForm = () => {
                     className="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-700 cursor-pointer text-sm"
                     onClick={() => handleAddToCart(product)}
                   >
-                    <p>{product.name}</p>
+                    <p>{product.nameProduct}</p>
                     <p>{product.price.toFixed(2)} Bs.</p>
                   </div>
                 ))}
