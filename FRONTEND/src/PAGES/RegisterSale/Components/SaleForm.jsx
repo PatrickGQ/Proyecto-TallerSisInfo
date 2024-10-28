@@ -111,6 +111,7 @@ const SaleForm = () => {
   };
 
   const handleAddToCart = (product) => {
+    console.log(product)
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.name === product.name);
       if (existingItem) {
@@ -221,7 +222,7 @@ const SaleForm = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {cart.map((item, index) => (
                     <tr key={index}>
-                      <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{item.name}</td>
+                      <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{item.nameProduct}</td>
                       <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-500">{item.price.toFixed(2)} Bs.</td>
                       <td className="px-4 py-2 whitespace-nowrap">
                         <input

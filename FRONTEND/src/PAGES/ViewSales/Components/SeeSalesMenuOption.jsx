@@ -17,7 +17,7 @@ const SeeSalesMenuOption = ( {setSelectedOption} ) => {
 
   return (
     <div className="p-4">
-      <div className="relative">
+      <div className="relative z-10">
         <button
           onClick={handleOptionsClick}
           className="flex items-center space-x-2 bg-blue-500 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-600 transition-colors"

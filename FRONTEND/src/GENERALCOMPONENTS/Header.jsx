@@ -61,7 +61,10 @@ const Header = () => {
                       <li 
                         key={branch._id} 
                         className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
-                        onClick={() => setSelectedBranch(branch.nameBranch)}
+                        onClick={() => {
+                          setSelectedBranch(branch.nameBranch);
+                          window.location.reload();
+                        }}
                       >
                         {branch.nameBranch}
                       </li>

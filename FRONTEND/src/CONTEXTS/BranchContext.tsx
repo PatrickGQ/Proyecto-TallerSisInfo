@@ -7,23 +7,37 @@ interface Branch {
 }
 
 interface BranchContextType {
-  selectedBranch: Branch | null; // Cambié a Branch | null para manejar un objeto de sucursal
+  selectedBranch: Branch | null;
   setSelectedBranch: React.Dispatch<React.SetStateAction<Branch | null>>;
-  branches: Branch[]; // Estado para almacenar las sucursales
+  branches: Branch[];
 }
 
 const BranchContext = createContext<BranchContextType | undefined>(undefined);
 
 export const BranchProvider = ({ children }) => {
   const [selectedBranch, setSelectedBranch] = useState<Branch | null>(null);
-  const [branches, setBranches] = useState<Branch[]>([]); // Estado para las sucursales
+  const [branches, setBranches] = useState<Branch[]>([]);
+
+  // Recuperar sucursal de `localStorage` al cargar
+  useEffect(() => {
+    const storedBranch = localStorage.getItem('selectedBranch');
+    if (storedBranch) {
+      setSelectedBranch(JSON.parse(storedBranch));
+    }
+  }, []);
+
+  // Guardar sucursal en `localStorage` al seleccionar
+  useEffect(() => {
+    if (selectedBranch) {
+      localStorage.setItem('selectedBranch', JSON.stringify(selectedBranch));
+    }
+  }, [selectedBranch]);
 
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const response = await getBranchsRequest(); 
-        await console.log(response)
-        setBranches(response.data); // Actualizamos el estado con las sucursales recibidas
+        const response = await getBranchsRequest();
+        setBranches(response.data);
       } catch (error) {
         console.error('Error al obtener las sucursales:', error);
       }
