@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 //import { getProductsRequest } from '../../../api/product.js';
-import { registerSaleRequest } from "../../../api/sale.js";
+// import { registerSaleRequest } from "../../../api/sale.js";
 import { useBranch } from "../../../CONTEXTS/BranchContext.tsx";
-import { getProductsByBranchRequest } from "../../../api/branch.js";
+import { getProductsByBranchRequest, addSaleToBranchRequest } from "../../../api/branch.js";
 
 const SaleForm = () => {
   const { selectedBranch } = useBranch();
@@ -24,7 +24,7 @@ const SaleForm = () => {
       try {
         await console.log(selectedBranch)
         const res = await getProductsByBranchRequest(selectedBranch);
-        await console.log("res",res)
+        await console.log("res",res.data.products)
         setProducts(res.data.products);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -64,6 +64,7 @@ const SaleForm = () => {
         }));
         
         const saleData = {
+            nameBranch: selectedBranch,
             clientName: form.clientName,
             clientCI: form.clientCI,
             paymentMethod: form.paymentMethod,
@@ -73,7 +74,7 @@ const SaleForm = () => {
             total: calculateCartTotal()
         };
 
-        const res = await registerSaleRequest(saleData);
+        const res = await addSaleToBranchRequest(saleData);
         console.log("Venta registrada:", res);
 
         setForm({

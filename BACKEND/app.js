@@ -8,6 +8,7 @@ import employeesRouter from './routes/employee.routes.js';
 import branchsRouter from './routes/branch.routes.js';
 import productsBranchRouter from './routes/product.branch.routes.js';
 import salesBranchRouter from './routes/sale.branch.routes.js';
+import employeeBranchRouter from './routes/employee.branch.routes.js';
 
 const app = express();
 
@@ -38,7 +39,9 @@ app.use('/api/branch/products', productsBranchRouter);
 
 app.use('/api/branch/sales', salesBranchRouter);
 
-app.use('/api/employees', employeesRouter);
+// app.use('/api/employees', employeesRouter);
+
+app.use('/api/branch/employees', employeeBranchRouter);
 
 
 app.listen(PORT, () => {

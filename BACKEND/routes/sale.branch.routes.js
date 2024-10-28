@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { addSaleToBranch, getSalesByBranch, getTodaySalesByBranch } from '../controllers/sales.branch.controller.js';
+import { addSaleToBranch, getSalesByBranch, getTodaySalesByBranch, getSalesByDateDB} from '../controllers/sales.branch.controller.js';
 
 const salesBranchRouter = Router();
 
@@ -10,6 +10,6 @@ salesBranchRouter.post('/getSales', getSalesByBranch);
 
 salesBranchRouter.post('/getTodaySales', getTodaySalesByBranch);
 
-
+salesBranchRouter.post('/getByDate/:date', getSalesByDateDB);
 
 export default salesBranchRouter;

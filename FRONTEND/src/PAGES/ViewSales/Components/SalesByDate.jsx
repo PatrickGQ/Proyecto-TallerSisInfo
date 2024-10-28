@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // Importa el estilo CSS del datepicker
-import { getSalesByDateRequest } from '../../../api/sale.js'; // Asegúrate de que esta función esté definida en tu API
+// import { getSalesByDateRequest } from '../../../api/sale.js'; // Asegúrate de que esta función esté definida en tu API
+import { useBranch } from "../../../CONTEXTS/BranchContext.tsx";
 import SalesList from './SalesList'; // Asegúrate de que la ruta sea correcta
+import { getSalesByDateRequest } from '../../../api/branch.js';
 
 const SalesByDate = ({ setError, setViewSale }) => {
   const [selectedDate, setSelectedDate] = useState(null);
+  const { selectedBranch } = useBranch();
   const [sales, setSales] = useState([]);
 
   const handleDateChange = async (saleDate) => {
@@ -13,7 +16,7 @@ const SalesByDate = ({ setError, setViewSale }) => {
     if (saleDate) {
       const formattedDate = `${saleDate.getFullYear()}-${(saleDate.getMonth() + 1).toString().padStart(2, '0')}-${saleDate.getDate().toString().padStart(2, '0')}`;
       try {
-        const response = await getSalesByDateRequest(formattedDate);
+        const response = await getSalesByDateRequest(formattedDate, selectedBranch);
         setSales(response.data);
       } catch (error) {
         setError("Error al obtener las ventas por fecha");
