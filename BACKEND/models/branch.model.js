@@ -28,6 +28,10 @@ const branchModel = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Sale', // Ventas registradas en esta sucursal
   }],
+  inventories: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'DailyInventory'
+  }],
   createdAt: {
     type: Date,
     default: Date.now,

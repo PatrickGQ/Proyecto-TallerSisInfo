@@ -29,3 +29,22 @@ export const getEmployeesWithFiltersRequest = (branchName, filters) => {
         params: { branchName, ...filters } 
     });
 };
+
+// Funciones de inventario relacionadas con sucursales
+export const addInventoryToBranchRequest = (data) => 
+    axios.post(`${API}/branch/inventory/addInventory`, data);
+  
+export const getDailyInventoryByBranchRequest = (nameBranch) => 
+    axios.get(`${API}/branch/inventory/branch/${nameBranch}`);
+  
+export const getCurrentDayInventoryByBranchRequest = (nameBranch) => 
+    axios.get(`${API}/branch/inventory/current/${nameBranch}`);
+  
+export const getInventoryByDateAndBranchRequest = (nameBranch, date) => 
+    axios.get(`${API}/branch/inventory/date/${nameBranch}/${date}`);
+  
+export const updateBranchInventoryRequest = (id, data) => 
+    axios.put(`${API}/branch/inventory/update/${id}`, data);
+  
+export const getInventoryStatsByBranchRequest = (nameBranch) => 
+    axios.get(`${API}/branch/inventory/stats/${nameBranch}`);

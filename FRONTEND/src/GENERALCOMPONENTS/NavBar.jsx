@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaBox, FaUsers, FaReceipt } from 'react-icons/fa';
+import { FaBox, FaUsers, FaReceipt, FaClipboardList } from 'react-icons/fa';
 
 const NavBar = ({closeNavBar}) => {
   const [ventasOpen, setVentasOpen] = useState(false);
   const [productosOpen, setProductosOpen] = useState(false);
   const [empleadosOpen, setEmpleadosOpen] = useState(false);
+  const [inventarioOpen, setInventarioOpen] = useState(false);
 
   const toggleVentas = () => {
     setVentasOpen(!ventasOpen);
@@ -17,6 +18,10 @@ const NavBar = ({closeNavBar}) => {
 
   const toggleEmpleados = () => {
     setEmpleadosOpen(!empleadosOpen);
+  };
+
+  const toggleInventario = () => {
+    setInventarioOpen(!inventarioOpen);
   };
 
   return (
@@ -47,7 +52,35 @@ const NavBar = ({closeNavBar}) => {
                   <span>Ver Ventas</span>
                 </Link>
               </li>
-
+            </ul>
+          )}
+        </li>
+        {/* Sección de Inventario */}
+        <li>
+          <button
+            onClick={toggleInventario}
+            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors w-full text-left">
+            <FaClipboardList className="text-xl" />
+            <span className="font-medium">Inventario</span>
+          </button>
+          {inventarioOpen && (
+            <ul className="pl-8 space-y-2">
+              <li>
+                <Link
+                  to="/inventario/registrar"
+                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors"
+                  onClick={closeNavBar}>
+                  <span>Registrar Inventario</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/inventario/ver"
+                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors"
+                  onClick={closeNavBar}>
+                  <span>Ver Inventarios</span>
+                </Link>
+              </li>
             </ul>
           )}
         </li>
