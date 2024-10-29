@@ -11,6 +11,7 @@ import RegisterEmployee from './PAGES/RegisterEmployee/RegisterEmployee';
 import ViewEmployees from './PAGES/ViewEmployees/components/ViewEmployees';
 import ViewSales from './PAGES/ViewSales/ViewSales';
 import { BranchProvider } from "./CONTEXTS/BranchContext";
+import BranchesPage from "./PAGES/Branches/BranchesPage";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/sales/seeSales" element={<ViewSales />} />
           <Route path="/empleados/registrar/empleado" element={<RegisterEmployee />} />
           <Route path="/empleados/ver/empleados" element={<ViewEmployees />} />
+          <Route path="/sucursales" element={<BranchesPage />} />
         </Routes>
       </BranchProvider>
     </Router>
