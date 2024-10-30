@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaBox, FaUsers, FaReceipt, FaClipboardList } from 'react-icons/fa';
+import { FaBox, FaUsers, FaReceipt, FaBuilding, FaClipboardList } from 'react-icons/fa';
 
 const NavBar = ({closeNavBar}) => {
   const [ventasOpen, setVentasOpen] = useState(false);
   const [productosOpen, setProductosOpen] = useState(false);
   const [empleadosOpen, setEmpleadosOpen] = useState(false);
+  const [sucursalesOpen, setSucursalesOpen] = useState(false);
   const [inventarioOpen, setInventarioOpen] = useState(false);
 
   const toggleVentas = () => {
@@ -19,6 +20,8 @@ const NavBar = ({closeNavBar}) => {
   const toggleEmpleados = () => {
     setEmpleadosOpen(!empleadosOpen);
   };
+  
+  const toggleSucursales = () => setSucursalesOpen(!sucursalesOpen);
 
   const toggleInventario = () => {
     setInventarioOpen(!inventarioOpen);
@@ -137,6 +140,22 @@ const NavBar = ({closeNavBar}) => {
                     <span>Ver Empleados</span>
                     </Link>
                 </li>
+            </ul>
+          )}
+        </li>
+        {/* Sucursales */}
+        <li>
+          <button onClick={toggleSucursales} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors w-full text-left">
+            <FaBuilding className="text-xl" />
+            <span className="font-medium">Sucursales</span>
+          </button>
+          {sucursalesOpen && (
+            <ul className="pl-8 space-y-2">
+              <li>
+                <Link to="/sucursales" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
+                  <span>Ver Sucursales</span>
+                </Link>
+              </li>
             </ul>
           )}
         </li>

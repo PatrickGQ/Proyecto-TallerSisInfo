@@ -11,6 +11,7 @@ import ViewSales from './PAGES/ViewSales/ViewSales';
 import RegisterInventory from './PAGES/RegisterInventory/RegisterInventory';
 import ViewInventory from './PAGES/ViewInventory/ViewInventory';
 import { BranchProvider } from "./CONTEXTS/BranchContext";
+import BranchesPage from "./PAGES/Branches/BranchesPage";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/sales/seeSales" element={<ViewSales />} />
           <Route path="/empleados/registrar/empleado" element={<RegisterEmployee />} />
           <Route path="/empleados/ver/empleados" element={<ViewEmployees />} />
+          <Route path="/sucursales" element={<BranchesPage />} />
           {/* Nuevas rutas de inventario */}
           <Route path="/inventario/registrar" element={<RegisterInventory />} />
           <Route path="/inventario/ver" element={<ViewInventory />} />

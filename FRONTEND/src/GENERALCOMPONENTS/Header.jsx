@@ -54,24 +54,24 @@ const Header = () => {
               <FaChevronDown className="text-2xl hover:text-yellow-300 transition-colors" />
             </button>
             {showBranches && (
-              <div className="absolute left-0 mt-1 bg-white text-black shadow-md rounded-md z-10">
+              <div className="absolute left-0 mt-2 w-48 bg-white text-gray-800 shadow-lg rounded-lg z-10">
                 {branches.length > 0 ? (
-                  <ul className="max-h-40 overflow-auto">
-                    {branches.map(branch => (
-                      <li 
-                        key={branch._id} 
-                        className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
-                        onClick={() => {
-                          setSelectedBranch(branch.nameBranch);
-                          window.location.reload();
-                        }}
-                      >
-                        {branch.nameBranch}
-                      </li>
-                    ))}
+                  <ul className="max-h-48 overflow-y-auto custom-scrollbar">
+                      {branches.map(branch => (
+                          <li 
+                              key={branch._id} 
+                              className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors"
+                              onClick={() => {
+                                setSelectedBranch(branch.nameBranch);
+                                window.location.reload();
+                              }}
+                          >
+                              {branch.nameBranch}
+                          </li>
+                      ))}
                   </ul>
-                ) : (
-                  <div className="px-4 py-2">No hay sucursales disponibles</div>
+                  ) : (
+                  <div className="px-4 py-2 text-gray-500">No hay sucursales disponibles</div>
                 )}
               </div>
             )}
