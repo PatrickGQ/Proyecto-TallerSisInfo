@@ -1,21 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBranch } from '../../CONTEXTS/BranchContext';
-import { getProductsByBranchRequest } from '../../api/branch';
-
+import { getProductsByBranchRequest, editProductRequest, deleteProductRequest } from '../../api/branch';
 
 const ViewProducts = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editProduct, setEditProduct] = useState(null);
   const navigate = useNavigate();
   const { selectedBranch } = useBranch();
 
   useEffect(() => {
-    console.log("Prouctosssssssss", selectedBranch);
     const fetchProducts = async () => {
       try {
         const response = await getProductsByBranchRequest(selectedBranch);
-        await console.log(response)
         setProducts(response.data.products);
       } catch (error) {
         console.error('Error al obtener los productos:', error);
@@ -29,10 +28,37 @@ const ViewProducts = () => {
     setSearchTerm(event.target.value);
   };
 
+  const handleEditClick = (product) => {
+    setIsEditing(true);
+    setEditProduct({ ...product });
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditProduct({ ...editProduct, [name]: value });
+  };
+
+  const handleEditSave = () => {
+    editProductRequest(editProduct._id, editProduct)
+      .then(response => {
+        setProducts(products.map(p => p._id === editProduct._id ? response.data.product : p));
+        setIsEditing(false);
+        setEditProduct(null);
+      })
+      .catch(error => console.error('Error al editar el producto:', error));
+  };
+
+  const handleDelete = (id) => {
+    deleteProductRequest(id)
+      .then(() => {
+        setProducts(products.filter(product => product._id !== id));
+      })
+      .catch(error => console.error('Error al eliminar el producto:', error));
+  };
+
   const filteredProducts = products.filter((product) => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     const isNumber = !isNaN(lowerCaseSearchTerm);
-
     if (isNumber) {
       return product.price.toString().includes(lowerCaseSearchTerm);
     } else {
@@ -54,12 +80,11 @@ const ViewProducts = () => {
         {filteredProducts.map((product) => (
           <div
             key={product._id}
-            className="flex flex-col border rounded-lg shadow hover:shadow-lg cursor-pointer transition-shadow duration-300"
-            onClick={() => navigate(`/viewProduct/${product._id}`)}
+            className="flex flex-col border rounded-lg shadow hover:shadow-lg transition-shadow duration-300"
           >
             {product.image && (
               <img 
-              src={`http://localhost:3000/uploads/${product.image}`}
+                src={`http://localhost:3000/uploads/${product.image}`}
                 alt={product.nameProduct} 
                 className="w-full h-48 object-cover rounded-t-lg"
               />
@@ -71,9 +96,74 @@ const ViewProducts = () => {
               <p className="text-gray-600 mb-1"><strong>Precio:</strong> {product.price} BS</p>
               <p className="text-gray-600"><strong>Descripción:</strong> {product.description}</p>
             </div>
+            <div className="flex justify-between p-4">
+              <button
+                onClick={() => handleEditClick(product)}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Editar
+              </button>
+              <button
+                onClick={() => handleDelete(product._id)}
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
+              >
+                Eliminar
+              </button>
+            </div>
           </div>
         ))}
       </div>
+      
+      {isEditing && editProduct && (
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-2xl font-bold mb-4">Editar Producto</h2>
+            <label className="block mb-2">ID:</label>
+            <input
+              type="text"
+              name="id"
+              value={editProduct.id}
+              onChange={handleEditChange}
+              className="w-full p-2 mb-4 border border-gray-300 rounded"
+            />
+            <label className="block mb-2">Nombre:</label>
+            <input
+              type="text"
+              name="nameProduct"
+              value={editProduct.nameProduct}
+              onChange={handleEditChange}
+              className="w-full p-2 mb-4 border border-gray-300 rounded"
+            />
+            <label className="block mb-2">Precio:</label>
+            <input
+              type="number"
+              name="price"
+              value={editProduct.price}
+              onChange={handleEditChange}
+              className="w-full p-2 mb-4 border border-gray-300 rounded"
+            />
+            <label className="block mb-2">Descripción:</label>
+            <textarea
+              name="description"
+              value={editProduct.description}
+              onChange={handleEditChange}
+              className="w-full p-2 mb-4 border border-gray-300 rounded"
+            />
+            <button
+              onClick={handleEditSave}
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 mr-2"
+            >
+              Guardar
+            </button>
+            <button
+              onClick={() => setIsEditing(false)}
+              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
