@@ -6,9 +6,21 @@ import RegisterSale from "./PAGES/RegisterSale/RegisterSale";
 import RegisterEmployee from './PAGES/RegisterEmployee/RegisterEmployee';
 import ViewEmployees from './PAGES/ViewEmployees/components/ViewEmployees';
 import ViewSales from './PAGES/ViewSales/ViewSales';
+import RegisterInventory from './PAGES/RegisterInventory/RegisterInventory';
+import ViewInventory from './PAGES/ViewInventory/ViewInventory';
 import { BranchProvider } from "./CONTEXTS/BranchContext";
 import Login from "./PAGES/Login";
-import { AuthProvider } from "./GENERALCOMPONENTS/AuthContext";
+import { AuthProvider, useAuth } from "./GENERALCOMPONENTS/AuthContext"; // Asegúrate de importar useAuth
+import BranchesPage from "./PAGES/Branches/BranchesPage";
+
+// Componente que verifica si el usuario está autenticado
+const PrivateRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth(); // Obteniendo el estado de autenticación
+
+  if (loading) return <div>Cargando...</div>; // Muestra un loader mientras se verifica la autenticación
+
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
 
 function App() {
   return (
@@ -24,19 +36,31 @@ function App() {
 
 function Main() {
   const location = useLocation();
+  const { isAuthenticated, loading } = useAuth(); // Aquí también puedes obtener el estado de autenticación
+
+  if (loading) return <div>Cargando...</div>; // Muestra un loader mientras se verifica la autenticación
+
+  // Si el usuario no está autenticado y está accediendo a una página diferente de /login, redirige a /login
+  if (!isAuthenticated && location.pathname !== '/login') {
+    return <Navigate to="/login" />;
+  }
+
   return (
     <>
       {location.pathname !== '/login' && <Header />}
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/productos/registrar/producto" element={<RegisterProduct />} />
-        <Route path="/productos/menu" element={<ViewProducts />} />
-        <Route path="/sales/newSale" element={<RegisterSale />} />
-        <Route path="/sales/seeSales" element={<ViewSales />} />
-        <Route path="/empleados/registrar/empleado" element={<RegisterEmployee />} />
-        <Route path="/empleados/ver/empleados" element={<ViewEmployees />} />
-        {/* Redirigir a la página de login si la ruta no coincide */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* Rutas protegidas */}
+        <Route path="/productos/registrar/producto" element={<PrivateRoute><RegisterProduct /></PrivateRoute>} />
+        <Route path="/productos/menu" element={<PrivateRoute><ViewProducts /></PrivateRoute>} />
+        <Route path="/sales/newSale" element={<PrivateRoute><RegisterSale /></PrivateRoute>} />
+        <Route path="/sales/seeSales" element={<PrivateRoute><ViewSales /></PrivateRoute>} />
+        <Route path="/empleados/registrar/empleado" element={<PrivateRoute><RegisterEmployee /></PrivateRoute>} />
+        <Route path="/empleados/ver/empleados" element={<PrivateRoute><ViewEmployees /></PrivateRoute>} />
+        <Route path="/sucursales" element={<PrivateRoute><BranchesPage /></PrivateRoute>} />
+        {/* Nuevas rutas de inventario */}
+        <Route path="/inventario/registrar" element={<PrivateRoute><RegisterInventory /></PrivateRoute>} />
+        <Route path="/inventario/ver" element={<PrivateRoute><ViewInventory /></PrivateRoute>} />
       </Routes>
     </>
   );

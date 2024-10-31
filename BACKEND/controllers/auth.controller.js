@@ -3,7 +3,7 @@ import User from '../models/user.model.js';
 import bcrypt from 'bcrypt';
 
 export const register = async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body; // Asegúrate de que el rol se pase en el cuerpo de la solicitud
 
     try {
         const userFound = await User.findOne({ email: email });
@@ -12,11 +12,12 @@ export const register = async (req, res) => {
 
         const hashPassword = await bcrypt.hash(password, 10);
 
+        // Cambia el rol para que use el rol proporcionado o default a 'user'
         const newUser = new User({
             name,
             email,
             password: hashPassword,
-            role: 'admin'
+            role: role || 'client' // Asigna 'user' como rol por defecto si no se proporciona
         });
 
         const userSaved = await newUser.save();

@@ -23,9 +23,9 @@ const Login = () => {
 
         if(res.isError) return setError(res.error.response.data.message);
         
-        setUser({name: res.data.foundUser.name, email: res.data.foundUser.email});
+        setUser({name: res.data.foundUser.name, email: res.data.foundUser.email, role: res.data.foundUser.role});
 
-        navigate('/productos/menu');
+        navigate('/');
     }
 
     const togglePasswordVisibility = () => {
