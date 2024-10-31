@@ -50,3 +50,20 @@ export const updateBranchInventoryRequest = (id, data) =>
   
 export const getInventoryStatsByBranchRequest = (nameBranch) => 
     axios.get(`${API}/branch/inventory/stats/${nameBranch}`);
+
+// Ingredientes en sucursales
+export const registerIngredientToBranchRequest = (data) => 
+    axios.post(`${API}/branch/ingredients/register`, data);
+
+export const getIngredientsByBranchRequest = (nameBranch) => 
+    axios.get(`${API}/branch/ingredients/getIngredientsByBranch/${nameBranch}`);
+
+export const updateIngredientInBranchRequest = (id, data) => 
+    axios.put(`${API}/branch/ingredients/updateIngredient/${id}`, data);
+
+export const removeIngredientFromBranchRequest = (data) => 
+    axios.delete(`${API}/branch/ingredients/removeIngredient`, { data });
+
+// Recetas de productos
+export const updateProductRecipeRequest = (productId, data) => 
+    axios.put(`${API}/branch/products/updateRecipe/${productId}`, data);

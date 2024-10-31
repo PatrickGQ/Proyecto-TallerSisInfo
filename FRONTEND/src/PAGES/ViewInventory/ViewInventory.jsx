@@ -7,7 +7,7 @@ import InventoryByDate from './Components/InventoryByDate.jsx';
 import InventoryView from './Components/InventoryView.jsx';
 
 const ViewInventory = () => {
-  const [selectedOption, setSelectedOption] = useState('');
+  const [selectedOption, setSelectedOption] = useState('allInventories');
   const [error, setError] = useState('');
   const [viewInventory, setViewInventory] = useState(null);
 
@@ -20,7 +20,10 @@ const ViewInventory = () => {
         />
       )}
       <h1 className="text-2xl font-semibold mb-4">Vista de Inventarios</h1>
-      <SeeInventoryMenuOption setSelectedOption={setSelectedOption} />
+      <SeeInventoryMenuOption 
+        setSelectedOption={setSelectedOption}
+        initialOption="allInventories" // Añadido para mantener sincronizado el menú
+      />
       {selectedOption === 'todaysInventory' && (
         <TodaysInventory setError={setError} />
       )}

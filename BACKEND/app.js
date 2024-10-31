@@ -6,11 +6,13 @@ import productsRouter from './routes/product.routes.js';
 import salesRouter from './routes/sale.routes.js';
 import employeesRouter from './routes/employee.routes.js';
 import inventoryRouter from './routes/inventory.routes.js';
+import ingredientRouter from './routes/ingredient.routes.js';
 import branchsRouter from './routes/branch.routes.js';
 import productsBranchRouter from './routes/product.branch.routes.js';
 import salesBranchRouter from './routes/sale.branch.routes.js';
 import employeeBranchRouter from './routes/employee.branch.routes.js';
 import inventoryBranchRouter from './routes/inventory.branch.routes.js';
+import ingredientBranchRouter from './routes/ingredient.branch.routes.js';
 
 const app = express();
 
@@ -48,6 +50,8 @@ app.use('/api/branch/employees', employeeBranchRouter);
 // app.use('/api/inventory', inventoryRouter);
 
 app.use('/api/branch/inventory', inventoryBranchRouter);
+
+app.use('/api/branch/ingredients', ingredientBranchRouter);
 
 app.listen(PORT, () => {
     console.log("Backend listen on port", PORT);

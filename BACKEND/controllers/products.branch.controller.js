@@ -70,3 +70,28 @@ export const getProductsByBranch = async (req, res) => {
         });
     }
 };
+
+export const updateProductRecipe = async (req, res) => {
+    try {
+        const { productId } = req.params;
+        const { recipe } = req.body;
+        
+        const updatedProduct = await Product.findByIdAndUpdate(
+            productId,
+            { recipe },
+            { new: true }
+        );
+
+        res.json({
+            success: true,
+            message: 'Receta actualizada exitosamente',
+            product: updatedProduct
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error al actualizar la receta',
+            error: error.message
+        });
+    }
+};

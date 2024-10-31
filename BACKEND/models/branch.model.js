@@ -32,6 +32,10 @@ const branchModel = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'DailyInventory'
   }],
+  ingredients: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Ingredient'
+  }],
   createdAt: {
     type: Date,
     default: Date.now,

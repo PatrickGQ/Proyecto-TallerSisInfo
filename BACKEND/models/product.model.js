@@ -22,7 +22,20 @@ const productModel = new Schema({
   description: {
     type: String,
     required: true,
-  }
+  },
+  // Ingredientes que tiene cada producto
+  recipe: [{
+    ingredientId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Ingredient',
+    },
+    name: String, // Para reducir lookups
+    amount: {
+      type: Number,
+      min: 0
+    },
+    unit: String // Para mantener consistencia con el ingrediente
+  }]
 });
 
 export default mongoose.model('Product', productModel);

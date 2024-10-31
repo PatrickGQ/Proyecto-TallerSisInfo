@@ -27,22 +27,22 @@ const SeeInventoryMenuOption = ({ setSelectedOption }) => {
         {showOptionsMenu && (
           <div className="absolute top-full left-0 mt-2 w-48 p-2 border rounded-lg bg-gray-50 shadow-md">
             <button
-              onClick={() => handleOptionSelect('todaysInventory')}
-              className="w-full py-2 px-4 rounded-lg bg-white hover:bg-gray-100 text-left"
+              onClick={() => handleOptionSelect('allInventories')}
+              className="w-full py-2 px-4 rounded-lg bg-white hover:bg-gray-100 text-left mt-1"
             >
-              Hoy
+              Lista de inventarios
             </button>
             <button
               onClick={() => handleOptionSelect('date')}
               className="w-full py-2 px-4 rounded-lg bg-white hover:bg-gray-100 text-left mt-1"
             >
-              Obtener inventario por fecha
+              Inventario por fecha
             </button>
             <button
-              onClick={() => handleOptionSelect('allInventories')}
-              className="w-full py-2 px-4 rounded-lg bg-white hover:bg-gray-100 text-left mt-1"
+              onClick={() => handleOptionSelect('todaysInventory')}
+              className="w-full py-2 px-4 rounded-lg bg-white hover:bg-gray-100 text-left"
             >
-              Obtener todos los inventarios
+              Inventario de Hoy
             </button>
           </div>
         )}

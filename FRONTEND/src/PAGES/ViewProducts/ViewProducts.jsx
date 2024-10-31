@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBranch } from '../../CONTEXTS/BranchContext';
 import { getProductsByBranchRequest } from '../../api/branch';
-
+import { FaEdit } from 'react-icons/fa';
 
 const ViewProducts = () => {
   const [products, setProducts] = useState([]);
@@ -11,11 +11,9 @@ const ViewProducts = () => {
   const { selectedBranch } = useBranch();
 
   useEffect(() => {
-    console.log("Prouctosssssssss", selectedBranch);
     const fetchProducts = async () => {
       try {
         const response = await getProductsByBranchRequest(selectedBranch);
-        await console.log(response)
         setProducts(response.data.products);
       } catch (error) {
         console.error('Error al obtener los productos:', error);
@@ -27,6 +25,11 @@ const ViewProducts = () => {
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleEditRecipe = (e, product) => {
+    e.stopPropagation(); // Evitar que el click se propague al contenedor
+    navigate('/productos/editar-receta', { state: { product } });
   };
 
   const filteredProducts = products.filter((product) => {
@@ -54,22 +57,35 @@ const ViewProducts = () => {
         {filteredProducts.map((product) => (
           <div
             key={product._id}
-            className="flex flex-col border rounded-lg shadow hover:shadow-lg cursor-pointer transition-shadow duration-300"
-            onClick={() => navigate(`/viewProduct/${product._id}`)}
+            className="flex flex-col border rounded-lg shadow hover:shadow-lg transition-shadow duration-300"
           >
-            {product.image && (
-              <img 
-              src={`http://localhost:3000/uploads/${product.image}`}
-                alt={product.nameProduct} 
-                className="w-full h-48 object-cover rounded-t-lg"
-              />
-            )}
-            <hr className="border-t-2 border-gray-200" />
-            <div className="p-4">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">{product.nameProduct}</h2>
-              <p className="text-gray-600 mb-1"><strong>ID:</strong> {product.id}</p>
-              <p className="text-gray-600 mb-1"><strong>Precio:</strong> {product.price} BS</p>
-              <p className="text-gray-600"><strong>Descripción:</strong> {product.description}</p>
+            <div 
+              className="cursor-pointer"
+              onClick={() => navigate(`/viewProduct/${product._id}`)}
+            >
+              {product.image && (
+                <img 
+                  src={`http://localhost:3000/uploads/${product.image}`}
+                  alt={product.nameProduct} 
+                  className="w-full h-48 object-cover rounded-t-lg"
+                />
+              )}
+              <hr className="border-t-2 border-gray-200" />
+              <div className="p-4">
+                <h2 className="text-xl font-semibold text-gray-800 mb-2">{product.nameProduct}</h2>
+                <p className="text-gray-600 mb-1"><strong>ID:</strong> {product.id}</p>
+                <p className="text-gray-600 mb-1"><strong>Precio:</strong> {product.price} BS</p>
+                <p className="text-gray-600"><strong>Descripción:</strong> {product.description}</p>
+              </div>
+            </div>
+            {/* Botón de Editar Receta */}
+            <div className="px-4 pb-4">
+              <button
+                onClick={(e) => handleEditRecipe(e, product)}
+                className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2"
+              >
+                <FaEdit /> Editar Receta
+              </button>
             </div>
           </div>
         ))}
