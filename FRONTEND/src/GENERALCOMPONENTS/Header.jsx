@@ -6,28 +6,37 @@ import { useAuth } from '../GENERALCOMPONENTS/AuthContext';
 
 const Header = () => {
   const { selectedBranch, setSelectedBranch, branches } = useBranch();
-  const { user } = useAuth(); // Accede al contexto de autenticación para obtener el usuario
+  const { user } = useAuth(); 
   const [showNavBar, setShowNavBar] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showBranches, setShowBranches] = useState(false);
   
   const navBarRef = useRef(null);
   const branchesRef = useRef(null);
+  const toggleButtonRef = useRef(null); // Ref para el botón de hamburguesa
   const userRole = user ? user.role : null;
-  const toggleNavBar = () => setShowNavBar(!showNavBar);
-  const toggleUserMenu = () => setShowUserMenu(!showUserMenu);
-  const toggleBranchesMenu = () => setShowBranches(!showBranches);
+
+  const toggleNavBar = () => setShowNavBar((prev) => !prev);
+  const toggleUserMenu = () => setShowUserMenu((prev) => !prev);
+  const toggleBranchesMenu = () => setShowBranches((prev) => !prev);
 
   const closeNavBar = () => setShowNavBar(false);
 
-  console.log('Rol del usuario:', userRole);
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (navBarRef.current && !navBarRef.current.contains(event.target)) {
+      if (
+        navBarRef.current && 
+        !navBarRef.current.contains(event.target) &&
+        toggleButtonRef.current && 
+        !toggleButtonRef.current.contains(event.target)
+      ) {
         setShowNavBar(false);
       }
       if (branchesRef.current && !branchesRef.current.contains(event.target)) {
         setShowBranches(false);
+      }
+      if (!event.target.closest(".user-menu")) { // Ajuste para el menú de usuario si es necesario
+        setShowUserMenu(false);
       }
     };
 
@@ -43,6 +52,7 @@ const Header = () => {
       <header className="flex items-center justify-between p-4 bg-red-600 text-white shadow-lg">
         <div className="flex items-center space-x-4">
           <button 
+            ref={toggleButtonRef} // Añadir ref aquí para detectar clics en el botón
             onClick={toggleNavBar} 
             className="text-3xl hover:text-yellow-300 transition-colors">
             <FaBars />
@@ -82,15 +92,19 @@ const Header = () => {
         <div className="relative flex items-center space-x-4">
           <button 
             onClick={toggleUserMenu} 
-            className="flex items-center space-x-2 bg-white text-red-600 py-1 px-3 mr-2 rounded-full shadow-md hover:bg-gray-100 transition-colors">
+            className="flex items-center space-x-2 bg-white text-red-600 py-1 px-3 mr-2 rounded-full shadow-md hover:bg-gray-100 transition-colors user-menu">
             <span className="text-lg font-medium">{user ? user.name : 'Usuario'}</span>
             <FaUser className="text-2xl" />
           </button>
+          {showUserMenu && (
+            <div className="absolute right-0 mt-2 w-48 bg-white text-gray-800 shadow-lg rounded-lg z-10">
+              {/* Opciones de menú de usuario */}
+            </div>
+          )}
         </div>
       </header>
       {showNavBar && (
         <div ref={navBarRef}>
-          {/* Pasa el role a NavBar */}
           <NavBar closeNavBar={closeNavBar} userRole={user ? user.role : null} />
         </div>
       )}
