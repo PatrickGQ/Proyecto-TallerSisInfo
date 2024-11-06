@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBranch } from '../../CONTEXTS/BranchContext';
 import { getProductsByBranchRequest, editProductRequest, deleteProductRequest } from '../../api/branch';
+import { FaEdit, FaTrash } from 'react-icons/fa';
+import QuestionMessage from '../../GENERALCOMPONENTS/QuestionMessage';
 
 const ViewProducts = () => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
+  const [productToDelete, setProductToDelete] = useState(null); // Nuevo estado para almacenar el producto a eliminar
   const navigate = useNavigate();
   const { selectedBranch } = useBranch();
 
@@ -48,12 +51,23 @@ const ViewProducts = () => {
       .catch(error => console.error('Error al editar el producto:', error));
   };
 
-  const handleDelete = (id) => {
-    deleteProductRequest(id)
-      .then(() => {
-        setProducts(products.filter(product => product._id !== id));
-      })
-      .catch(error => console.error('Error al eliminar el producto:', error));
+  const requestDeleteProduct = (product) => {
+    setProductToDelete(product); // Muestra el mensaje de confirmación con el producto a eliminar
+  };
+
+  const handleConfirmDelete = () => {
+    if (productToDelete) {
+      deleteProductRequest(productToDelete._id)
+        .then(() => {
+          setProducts(products.filter(product => product._id !== productToDelete._id));
+          setProductToDelete(null); // Oculta el mensaje de confirmación después de eliminar
+        })
+        .catch(error => console.error('Error al eliminar el producto:', error));
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setProductToDelete(null); // Oculta el mensaje de confirmación si se cancela
   };
 
   const filteredProducts = products.filter((product) => {
@@ -96,24 +110,34 @@ const ViewProducts = () => {
               <p className="text-gray-600 mb-1"><strong>Precio:</strong> {product.price} BS</p>
               <p className="text-gray-600"><strong>Descripción:</strong> {product.description}</p>
             </div>
-            <div className="flex justify-between p-4">
+            <div className="flex justify-center p-4 gap-8">
               <button
+                title='Editar producto'
                 onClick={() => handleEditClick(product)}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="text-blue-500 hover:text-blue-700"
               >
-                Editar
+                <FaEdit size={20} />
               </button>
               <button
-                onClick={() => handleDelete(product._id)}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
+                title='Eliminar producto'
+                onClick={() => requestDeleteProduct(product)}
+                className="text-red-500 hover:text-red-700"
               >
-                Eliminar
+                <FaTrash size={20} />
               </button>
             </div>
           </div>
         ))}
       </div>
-      
+
+      {productToDelete && (
+        <QuestionMessage
+          message={`¿Estás seguro que deseas borrar este producto de la sucursal ${selectedBranch}? Recuerda que esta acción es irreversible.`}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
+
       {isEditing && editProduct && (
         <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
