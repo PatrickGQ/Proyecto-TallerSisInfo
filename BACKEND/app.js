@@ -5,7 +5,6 @@ import connectToMongoDB from './db.js';
 import productsRouter from './routes/product.routes.js';
 import salesRouter from './routes/sale.routes.js';
 import employeesRouter from './routes/employee.routes.js';
-import inventoryRouter from './routes/inventory.routes.js';
 import ingredientRouter from './routes/ingredient.routes.js';
 import branchsRouter from './routes/branch.routes.js';
 import productsBranchRouter from './routes/product.branch.routes.js';

@@ -1,16 +1,16 @@
 import Branch from '../models/branch.model.js';
-import DailyInventory from '../models/inventory.model.js';
+import { DailyInventory } from '../models/inventory.model.js';
 
 // Agregar inventario a una sucursal
 export const addInventoryToBranch = async (req, res) => {
     try {
-        const { nameBranch, employees, inventoryItems, observations } = req.body;
+        const { nameBranch, employees, ingredients, observations } = req.body;
 
         // Validaciones básicas
-        if (!nameBranch || !employees || !inventoryItems) {
+        if (!nameBranch || !employees || !ingredients) {
             return res.status(400).json({
                 success: false,
-                message: 'Faltan datos requeridos (nameBranch, employees, inventoryItems)'
+                message: 'Faltan datos requeridos (nameBranch, employees, ingredients)'
             });
         }
 
@@ -45,7 +45,7 @@ export const addInventoryToBranch = async (req, res) => {
         // Crear nuevo inventario
         const newInventory = new DailyInventory({
             employees,
-            inventoryItems,
+            ingredients,
             observations
         });
 
@@ -97,7 +97,7 @@ export const getDailyInventoryByBranch = async (req, res) => {
     }
 };
 
-// Obtener inventario actual por sucursal
+
 export const getCurrentDayInventoryByBranch = async (req, res) => {
     try {
         const { nameBranch } = req.params;
@@ -293,6 +293,36 @@ export const getInventoryStatsByBranch = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error al obtener las estadísticas',
+            error: error.message
+        });
+    }
+};
+
+export const closeInventory = async (req, res) => {
+    try {
+        const { inventory } = req;
+
+        // El middleware ya validó la existencia del inventario
+        inventory.status = 'closed';
+        
+        // Calculamos el stock final para cada ingrediente
+        inventory.ingredients.forEach(ingredient => {
+            ingredient.finalStock = ingredient.initialStock + 
+                ingredient.movements.reduce((sum, mov) => sum + mov.quantity, 0);
+        });
+
+        const updatedInventory = await inventory.save();
+
+        res.json({
+            success: true,
+            message: 'Inventario cerrado exitosamente',
+            inventory: updatedInventory
+        });
+    } catch (error) {
+        console.error("Error al cerrar el inventario:", error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al cerrar el inventario',
             error: error.message
         });
     }

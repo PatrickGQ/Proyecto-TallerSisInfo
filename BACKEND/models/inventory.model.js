@@ -1,48 +1,79 @@
 import mongoose, { Schema } from 'mongoose';
 
-const dailyInventoryModel = new Schema({
-  date: {
-    type: Date,
-    default: Date.now
-  },
-  employees: [{
-    employeeCi: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Employee',
-      required: true
+const inventoryMovementSchema = new Schema({
+    date: {
+        type: Date,
+        default: Date.now,
+        required: true
     },
-    name: {
-      type: String,
-      required: true
-    }
-  }],
-  inventoryItems: [{
-    category: {
-      type: String,
-      enum: ['Pollo(kg)', 'Papas(kg)'],
-      required: true
+    type: {
+        type: String,
+        enum: ['sale', 'purchase', 'adjustment'],
+        required: true
     },
-    details: {
-      initialStock: {
+    ingredientId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Ingredient',
+        required: true
+    },
+    ingredientName: {
+        type: String,
+        required: true
+    },
+    quantity: {
         type: Number,
-        required: true,
-        min: 0
-      },
-      sales: {
-        type: Number,
-        default: 0,
-        min: 0
-      },
-      finalStock: {
-        type: Number,
-        required: true,
-        min: 0
-      }
+        required: true
+    },
+    unit: {
+        type: String,
+        required: true
+    },
+    reference: {
+        type: String,
+        required: true
     }
-  }],
-  observations: {
-    type: String
-  }
 });
 
-export default mongoose.model('DailyInventory', dailyInventoryModel);
+const dailyInventorySchema = new Schema({
+    date: {
+        type: Date,
+        default: Date.now,
+        required: true
+    },
+    ingredients: [{
+        ingredientId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Ingredient',
+            required: true
+        },
+        name: String,
+        initialStock: {
+            type: Number,
+            required: true,
+            min: 0
+        },
+        movements: [inventoryMovementSchema],
+        finalStock: {
+            type: Number,
+            required: true,
+            min: 0
+        }
+    }],
+    employees: [{
+        employeeCi: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Employee',
+            required: true
+        },
+        name: String
+    }],
+    observations: String,
+    status: {
+        type: String,
+        enum: ['open', 'closed'],
+        default: 'open'
+    }
+});
+
+export const DailyInventory = mongoose.model('DailyInventory', dailyInventorySchema);
+export const InventoryMovement = mongoose.model('InventoryMovement', inventoryMovementSchema);
