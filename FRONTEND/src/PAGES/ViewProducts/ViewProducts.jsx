@@ -14,7 +14,7 @@ const ViewProducts = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
-  const [productToDelete, setProductToDelete] = useState(null); // Nuevo estado para almacenar el producto a eliminar
+  const [productToDelete, setProductToDelete] = useState(null);
   const navigate = useNavigate();
   const { selectedBranch } = useBranch();
 
@@ -45,22 +45,33 @@ const ViewProducts = () => {
     setEditProduct({ ...editProduct, [name]: value });
   };
 
-  const handleEditSave = () => {
-    editProductRequest(editProduct._id, editProduct)
-      .then((response) => {
-        setProducts(
-          products.map((p) =>
-            p._id === editProduct._id ? response.data.product : p
-          )
-        );
-        setIsEditing(false);
-        setEditProduct(null);
-      })
-      .catch((error) => console.error("Error al editar el producto:", error));
+  const handleEditSave = async () => {
+    const formData = new FormData();
+    formData.append("id", editProduct.id);
+    formData.append("nameProduct", editProduct.nameProduct);
+    formData.append("price", editProduct.price);
+    formData.append("description", editProduct.description);
+
+    if (editProduct.image instanceof File) {
+      formData.append("image", editProduct.image);
+    }
+
+    try {
+      const response = await editProductRequest(editProduct._id, formData);
+      setProducts(
+        products.map((p) =>
+          p._id === editProduct._id ? response.data.product : p
+        )
+      );
+      setIsEditing(false);
+      setEditProduct(null);
+    } catch (error) {
+      console.error("Error al editar el producto:", error);
+    }
   };
 
   const requestDeleteProduct = (product) => {
-    setProductToDelete(product); // Muestra el mensaje de confirmación con el producto a eliminar
+    setProductToDelete(product);
   };
 
   const handleConfirmDelete = () => {
@@ -70,7 +81,7 @@ const ViewProducts = () => {
           setProducts(
             products.filter((product) => product._id !== productToDelete._id)
           );
-          setProductToDelete(null); // Oculta el mensaje de confirmación después de eliminar
+          setProductToDelete(null);
         })
         .catch((error) =>
           console.error("Error al eliminar el producto:", error)
@@ -79,7 +90,7 @@ const ViewProducts = () => {
   };
 
   const handleCancelDelete = () => {
-    setProductToDelete(null); // Oculta el mensaje de confirmación si se cancela
+    setProductToDelete(null);
   };
 
   const filteredProducts = products.filter((product) => {
@@ -165,7 +176,6 @@ const ViewProducts = () => {
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-2xl font-bold mb-4">Editar Producto</h2>
 
-            {/* Campo para subir la imagen */}
             <label className="block mb-2">Imagen:</label>
             <input
               type="file"
@@ -176,7 +186,6 @@ const ViewProducts = () => {
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
-            {/* Campo de ID */}
             <label className="block mb-2">ID:</label>
             <input
               type="text"
@@ -186,7 +195,6 @@ const ViewProducts = () => {
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
-            {/* Campos restantes */}
             <label className="block mb-2">Nombre:</label>
             <input
               type="text"
@@ -211,7 +219,6 @@ const ViewProducts = () => {
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
-            {/* Botones de guardar y cancelar */}
             <button
               onClick={handleEditSave}
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 mr-2"
