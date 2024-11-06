@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import NavBar from './navBar';
 import { useBranch } from '../CONTEXTS/BranchContext';
 import { useAuth } from '../GENERALCOMPONENTS/AuthContext';
+import { Link } from 'react-router-dom';
 
 const Header = () => {
   const { selectedBranch, setSelectedBranch, branches } = useBranch();
@@ -49,18 +50,18 @@ const Header = () => {
 
   return (
     <>
-      <header className="flex items-center justify-between p-4 bg-red-600 text-white shadow-lg">
+      <header className="w-full flex items-center justify-between p-4 bg-red-600 text-white shadow-lg z-50">
         <div className="flex items-center space-x-4">
           <button 
-            ref={toggleButtonRef} // Añadir ref aquí para detectar clics en el botón
+            ref={toggleButtonRef} 
             onClick={toggleNavBar} 
             className="text-3xl hover:text-yellow-300 transition-colors">
             <FaBars />
           </button>
-          <div className="flex flex-col">
+          <Link to="/inicio" className="flex flex-col hover:text-yellow-300 transition-colors">
             <span>Sistema de Administración</span>
             <span>{selectedBranch ? selectedBranch : 'Seleccione una sucursal'}</span>
-          </div>
+          </Link>
           <div className="relative" ref={branchesRef}>
             <button onClick={toggleBranchesMenu} className="ml-4">
               <FaChevronDown className="text-2xl hover:text-yellow-300 transition-colors" />

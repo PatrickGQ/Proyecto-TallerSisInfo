@@ -16,7 +16,7 @@ const NavBar = ({ closeNavBar, userRole }) => {
   const toggleInventario = () => setInventarioOpen(!inventarioOpen);
 
   return (
-    <nav className="absolute z-40 left-0 w-64 bg-red-700 text-white shadow-lg overflow-y-auto">
+    <nav className="absolute z-10 left-0 w-64 bg-red-700 text-white shadow-lg overflow-y-auto">
       <ul className="space-y-4 p-4">
 
         {/* Ventas visible solo para admin y worker */}
@@ -29,12 +29,12 @@ const NavBar = ({ closeNavBar, userRole }) => {
             {ventasOpen && (
               <ul className="pl-8 space-y-2">
                 <li>
-                  <Link to="/sales/newSale" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
+                  <Link to="/ventas/nuevaVenta" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
                     <span>Registrar Venta</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/sales/seeSales" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
+                  <Link to="/ventas/verVentas" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
                     <span>Ver Ventas</span>
                   </Link>
                 </li>
@@ -53,12 +53,12 @@ const NavBar = ({ closeNavBar, userRole }) => {
             {inventarioOpen && (
               <ul className="pl-8 space-y-2">
                 <li>
-                  <Link to="/inventario/registrar" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
+                  <Link to="/inventarios/registrarInventario" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
                     <span>Registrar Inventario</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/inventario/ver" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
+                  <Link to="/inventarios/verInventarios" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
                     <span>Ver Inventarios</span>
                   </Link>
                 </li>
@@ -78,7 +78,7 @@ const NavBar = ({ closeNavBar, userRole }) => {
               {userRole === 'admin' || userRole === 'worker' ? ( // Mostrar opciones de registrar solo para admin y worker
                 <>
                   <li>
-                    <Link to="/productos/registrar/producto" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
+                    <Link to="/productos/registrarProducto" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
                       <span>Registrar Producto</span>
                     </Link>
                   </li>
@@ -103,12 +103,12 @@ const NavBar = ({ closeNavBar, userRole }) => {
             {empleadosOpen && (
               <ul className="pl-8 space-y-2">
                 <li>
-                  <Link to="/empleados/registrar/empleado" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
+                  <Link to="/empleados/registrarEmpleado" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
                     <span>Registrar Empleado</span>
                   </Link>
                 </li>
                 <li>
-                  <Link to="/empleados/ver/empleados" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
+                  <Link to="/empleados/verEmpleados" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
                     <span>Ver Empleados</span>
                   </Link>
                 </li>

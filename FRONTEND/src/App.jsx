@@ -12,6 +12,7 @@ import { BranchProvider } from "./CONTEXTS/BranchContext";
 import Login from "./PAGES/Login";
 import { AuthProvider, useAuth } from "./GENERALCOMPONENTS/AuthContext"; // Asegúrate de importar useAuth
 import BranchesPage from "./PAGES/Branches/BranchesPage";
+import Home from "./PAGES/HomePage/Home";
 
 // Componente que verifica si el usuario está autenticado
 const PrivateRoute = ({ children }) => {
@@ -49,18 +50,19 @@ function Main() {
     <>
       {location.pathname !== '/login' && <Header />}
       <Routes>
-        <Route path="/login" element={<Login />} />
-        {/* Rutas protegidas */}
-        <Route path="/productos/registrar/producto" element={<PrivateRoute><RegisterProduct /></PrivateRoute>} />
-        <Route path="/productos/menu" element={<PrivateRoute><ViewProducts /></PrivateRoute>} />
-        <Route path="/sales/newSale" element={<PrivateRoute><RegisterSale /></PrivateRoute>} />
-        <Route path="/sales/seeSales" element={<PrivateRoute><ViewSales /></PrivateRoute>} />
-        <Route path="/empleados/registrar/empleado" element={<PrivateRoute><RegisterEmployee /></PrivateRoute>} />
-        <Route path="/empleados/ver/empleados" element={<PrivateRoute><ViewEmployees /></PrivateRoute>} />
-        <Route path="/sucursales" element={<PrivateRoute><BranchesPage /></PrivateRoute>} />
-        {/* Nuevas rutas de inventario */}
-        <Route path="/inventario/registrar" element={<PrivateRoute><RegisterInventory /></PrivateRoute>} />
-        <Route path="/inventario/ver" element={<PrivateRoute><ViewInventory /></PrivateRoute>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/inicio" element= {<Home/>}/>
+          {/* Rutas protegidas */}
+          <Route path="/productos/registrarProducto" element={<PrivateRoute><RegisterProduct /></PrivateRoute>} />
+          <Route path="/productos/menu" element={<PrivateRoute><ViewProducts /></PrivateRoute>} />
+          <Route path="/ventas/nuevaVenta" element={<PrivateRoute><RegisterSale /></PrivateRoute>} />
+          <Route path="/ventas/verVentas" element={<PrivateRoute><ViewSales /></PrivateRoute>} />
+          <Route path="/empleados/registrarEmpleado" element={<PrivateRoute><RegisterEmployee /></PrivateRoute>} />
+          <Route path="/empleados/verEmpleados" element={<PrivateRoute><ViewEmployees /></PrivateRoute>} />
+          <Route path="/sucursales" element={<PrivateRoute><BranchesPage /></PrivateRoute>} />
+          {/* Nuevas rutas de inventario */}
+          <Route path="/inventarios/registrarInventario" element={<PrivateRoute><RegisterInventory /></PrivateRoute>} />
+          <Route path="/inventarios/verInventarios" element={<PrivateRoute><ViewInventory /></PrivateRoute>} />
       </Routes>
     </>
   );
