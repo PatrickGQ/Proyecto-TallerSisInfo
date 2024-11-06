@@ -1,7 +1,7 @@
 // RegisterBranch.jsx
 import axios from 'axios';
-import React, { useState } from 'react';
 import { API } from '../../../api/conf/routeApi';
+import { useState } from 'react';
 
 
 const RegisterBranch = () => {

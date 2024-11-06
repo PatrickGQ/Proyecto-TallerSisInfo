@@ -70,18 +70,15 @@ const Home = () => {
         </Link>
 
         <Link
-          to="/branches"
+          to="/sucursales"
           className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow flex items-center space-x-4"
         >
           <FaMapMarkerAlt className="text-4xl text-purple-500" />{" "}
-          {/* Cambia el icono */}
           <div>
             <h2 className="text-xl font-semibold text-gray-800">Sucursales</h2>{" "}
-            {/* Cambia el título */}
             <p className="text-gray-600">
               Administra las distintas sucursales y supervisa sus operaciones.
             </p>{" "}
-            {/* Cambia el mensaje */}
           </div>
         </Link>
       </div>
