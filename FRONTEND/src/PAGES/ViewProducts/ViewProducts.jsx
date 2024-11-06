@@ -1,13 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useBranch } from '../../CONTEXTS/BranchContext';
-import { getProductsByBranchRequest, editProductRequest, deleteProductRequest } from '../../api/branch';
-import { FaEdit, FaTrash } from 'react-icons/fa';
-import QuestionMessage from '../../GENERALCOMPONENTS/QuestionMessage';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useBranch } from "../../CONTEXTS/BranchContext";
+import {
+  getProductsByBranchRequest,
+  editProductRequest,
+  deleteProductRequest,
+} from "../../api/branch";
+import { FaEdit, FaTrash } from "react-icons/fa";
+import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
 
 const ViewProducts = () => {
   const [products, setProducts] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
   const [productToDelete, setProductToDelete] = useState(null); // Nuevo estado para almacenar el producto a eliminar
@@ -20,7 +24,7 @@ const ViewProducts = () => {
         const response = await getProductsByBranchRequest(selectedBranch);
         setProducts(response.data.products);
       } catch (error) {
-        console.error('Error al obtener los productos:', error);
+        console.error("Error al obtener los productos:", error);
       }
     };
 
@@ -43,12 +47,16 @@ const ViewProducts = () => {
 
   const handleEditSave = () => {
     editProductRequest(editProduct._id, editProduct)
-      .then(response => {
-        setProducts(products.map(p => p._id === editProduct._id ? response.data.product : p));
+      .then((response) => {
+        setProducts(
+          products.map((p) =>
+            p._id === editProduct._id ? response.data.product : p
+          )
+        );
         setIsEditing(false);
         setEditProduct(null);
       })
-      .catch(error => console.error('Error al editar el producto:', error));
+      .catch((error) => console.error("Error al editar el producto:", error));
   };
 
   const requestDeleteProduct = (product) => {
@@ -59,10 +67,14 @@ const ViewProducts = () => {
     if (productToDelete) {
       deleteProductRequest(productToDelete._id)
         .then(() => {
-          setProducts(products.filter(product => product._id !== productToDelete._id));
+          setProducts(
+            products.filter((product) => product._id !== productToDelete._id)
+          );
           setProductToDelete(null); // Oculta el mensaje de confirmación después de eliminar
         })
-        .catch(error => console.error('Error al eliminar el producto:', error));
+        .catch((error) =>
+          console.error("Error al eliminar el producto:", error)
+        );
     }
   };
 
@@ -82,7 +94,9 @@ const ViewProducts = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Productos</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
+        Productos
+      </h1>
       <input
         type="text"
         placeholder="Buscar productos por nombre o precio..."
@@ -97,29 +111,37 @@ const ViewProducts = () => {
             className="flex flex-col border rounded-lg shadow hover:shadow-lg transition-shadow duration-300"
           >
             {product.image && (
-              <img 
+              <img
                 src={`http://localhost:3000/uploads/${product.image}`}
-                alt={product.nameProduct} 
+                alt={product.nameProduct}
                 className="w-full h-48 object-cover rounded-t-lg"
               />
             )}
             <hr className="border-t-2 border-gray-200" />
             <div className="p-4">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">{product.nameProduct}</h2>
-              <p className="text-gray-600 mb-1"><strong>ID:</strong> {product.id}</p>
-              <p className="text-gray-600 mb-1"><strong>Precio:</strong> {product.price} BS</p>
-              <p className="text-gray-600"><strong>Descripción:</strong> {product.description}</p>
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                {product.nameProduct}
+              </h2>
+              <p className="text-gray-600 mb-1">
+                <strong>ID:</strong> {product.id}
+              </p>
+              <p className="text-gray-600 mb-1">
+                <strong>Precio:</strong> {product.price} BS
+              </p>
+              <p className="text-gray-600">
+                <strong>Descripción:</strong> {product.description}
+              </p>
             </div>
             <div className="flex justify-center p-4 gap-8">
               <button
-                title='Editar producto'
+                title="Editar producto"
                 onClick={() => handleEditClick(product)}
                 className="text-blue-500 hover:text-blue-700"
               >
                 <FaEdit size={20} />
               </button>
               <button
-                title='Eliminar producto'
+                title="Eliminar producto"
                 onClick={() => requestDeleteProduct(product)}
                 className="text-red-500 hover:text-red-700"
               >
@@ -142,6 +164,19 @@ const ViewProducts = () => {
         <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-2xl font-bold mb-4">Editar Producto</h2>
+
+            {/* Campo para subir la imagen */}
+            <label className="block mb-2">Imagen:</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, image: e.target.files[0] })
+              }
+              className="w-full p-2 mb-4 border border-gray-300 rounded"
+            />
+
+            {/* Campo de ID */}
             <label className="block mb-2">ID:</label>
             <input
               type="text"
@@ -150,6 +185,8 @@ const ViewProducts = () => {
               onChange={handleEditChange}
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
+
+            {/* Campos restantes */}
             <label className="block mb-2">Nombre:</label>
             <input
               type="text"
@@ -173,6 +210,8 @@ const ViewProducts = () => {
               onChange={handleEditChange}
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
+
+            {/* Botones de guardar y cancelar */}
             <button
               onClick={handleEditSave}
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 mr-2"
