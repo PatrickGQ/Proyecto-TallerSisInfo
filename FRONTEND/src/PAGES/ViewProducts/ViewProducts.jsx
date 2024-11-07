@@ -192,7 +192,10 @@ const ViewProducts = () => {
               </button>
               <button
                 title="Eliminar producto"
-                onClick={(event) => handleAddToCart(event, product)}
+                onClick={(e) => {
+                  e.stopPropagation(); // Evita la navegación a los detalles del producto
+                  requestDeleteProduct(e, product); // Llama a la función correcta para mostrar el mensaje de confirmación
+                }}
                 className="text-red-500 hover:text-red-700"
               >
                 <FaTrash size={20} />

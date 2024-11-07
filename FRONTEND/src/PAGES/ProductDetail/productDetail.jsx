@@ -2,14 +2,19 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useBranch } from '../../CONTEXTS/BranchContext';
-import { deleteProductRequest, getProductsByBranchRequest } from '../../api/branch';
+import { deleteProductRequest, getProductsByBranchRequest, editProductRequest } from '../../api/branch';
 import { CartContext } from '../cart/cartContext';
+import { FaEdit, FaTrash, FaShoppingCart } from 'react-icons/fa';
+import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editProduct, setEditProduct] = useState(null);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const navigate = useNavigate();
-  const { selectedBranch, role } = useBranch();
+  const { selectedBranch } = useBranch();
   const { updateCartCount } = useContext(CartContext);
 
   useEffect(() => {
@@ -39,17 +44,52 @@ const ProductDetails = () => {
     updateCartCount(); // Llama a la función para actualizar el contador
   };
 
-  const handleEdit = () => {
-    navigate(`/edit-product/${id}`);
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setEditProduct({ ...product });
+  };
+
+  const handleEditSave = async () => {
+    const formData = new FormData();
+    formData.append("id", editProduct.id);
+    formData.append("nameProduct", editProduct.nameProduct);
+    formData.append("price", editProduct.price);
+    formData.append("description", editProduct.description);
+
+    if (editProduct.image instanceof File) {
+      formData.append("image", editProduct.image);
+    }
+
+    try {
+      const response = await editProductRequest(editProduct._id, formData);
+      setProduct(response.data.product);
+      setIsEditing(false);
+      setEditProduct(null);
+    } catch (error) {
+      console.error("Error al guardar la edición del producto:", error);
+    }
   };
 
   const handleDelete = async () => {
     try {
       await deleteProductRequest(id);
-      navigate('/products');
+      navigate('/productos/menu'); // Redirigir a la lista de productos después de borrar
     } catch (error) {
       console.error('Error al eliminar el producto:', error);
     }
+  };
+
+  const requestDeleteConfirmation = () => {
+    setShowDeleteConfirmation(true); // Mostrar mensaje de confirmación antes de eliminar
+  };
+
+  const handleConfirmDelete = () => {
+    handleDelete(); // Llamar a la función de eliminación real
+    setShowDeleteConfirmation(false); // Ocultar mensaje de confirmación
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirmation(false); // Cancelar eliminación y ocultar el mensaje de confirmación
   };
 
   if (!product) return <p>Cargando...</p>;
@@ -73,23 +113,93 @@ const ProductDetails = () => {
         onClick={handleAddToCart}
         className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition duration-200 mb-4"
       >
-        Añadir al Carrito
+        <FaShoppingCart className="inline mr-2" /> Añadir al Carrito
       </button>
 
-      {role === 'admin' && (
-        <div className="flex space-x-4">
-          <button
-            onClick={handleEdit}
-            className="flex-1 bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition duration-200"
-          >
-            Editar
-          </button>
-          <button
-            onClick={handleDelete}
-            className="flex-1 bg-red-500 text-white py-3 rounded-lg font-medium hover:bg-red-600 transition duration-200"
-          >
-            Eliminar
-          </button>
+      <div className="flex space-x-4">
+        <button
+          onClick={handleEditClick}
+          className="flex-1 bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition duration-200 flex items-center justify-center"
+        >
+          <FaEdit className="mr-2" /> Editar
+        </button>
+        <button
+          onClick={requestDeleteConfirmation} // Solicita confirmación de eliminación
+          className="flex-1 bg-red-500 text-white py-3 rounded-lg font-medium hover:bg-red-600 transition duration-200 flex items-center justify-center"
+        >
+          <FaTrash className="mr-2" /> Eliminar
+        </button>
+      </div>
+
+      {showDeleteConfirmation && (
+        <QuestionMessage
+          message="¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer."
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
+
+      {isEditing && (
+        <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-2xl font-bold mb-4">Editar Producto</h2>
+            
+            <label className="block mb-2">Imagen:</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setEditProduct({ ...editProduct, image: e.target.files[0] })}
+              className="w-full p-2 mb-4 border border-gray-300 rounded"
+            />
+
+            <label className="block mb-2">ID:</label>
+            <input
+              type="text"
+              name="id"
+              value={editProduct.id}
+              onChange={(e) => setEditProduct({ ...editProduct, id: e.target.value })}
+              className="w-full p-2 mb-4 border border-gray-300 rounded"
+            />
+
+            <label className="block mb-2">Nombre:</label>
+            <input
+              type="text"
+              name="nameProduct"
+              value={editProduct.nameProduct}
+              onChange={(e) => setEditProduct({ ...editProduct, nameProduct: e.target.value })}
+              className="w-full p-2 mb-4 border border-gray-300 rounded"
+            />
+
+            <label className="block mb-2">Precio:</label>
+            <input
+              type="number"
+              name="price"
+              value={editProduct.price}
+              onChange={(e) => setEditProduct({ ...editProduct, price: e.target.value })}
+              className="w-full p-2 mb-4 border border-gray-300 rounded"
+            />
+
+            <label className="block mb-2">Descripción:</label>
+            <textarea
+              name="description"
+              value={editProduct.description}
+              onChange={(e) => setEditProduct({ ...editProduct, description: e.target.value })}
+              className="w-full p-2 mb-4 border border-gray-300 rounded"
+            />
+
+            <button
+              onClick={handleEditSave}
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 mr-2"
+            >
+              Guardar
+            </button>
+            <button
+              onClick={() => setIsEditing(false)}
+              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
+            >
+              Cancelar
+            </button>
+          </div>
         </div>
       )}
     </div>
