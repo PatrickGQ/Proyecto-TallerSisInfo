@@ -82,7 +82,7 @@ const UserProfile = () => {
   };
 
   // Lista de roles
-  const roleList = ['Admin', 'Worker', 'Client']; // Los roles permitidos
+  const roleList = ['admin', 'worker', 'client']; // Los roles permitidos, todos en minúsculas
 
   if (!user) {
     return <div>No estás autenticado</div>;
@@ -156,26 +156,30 @@ const UserProfile = () => {
           <button className="text-blue-600 hover:underline text-sm">Contact info</button>
           <p className="text-gray-600 text-lg mt-4">{editedPhone}</p>
 
-          {/* Edit and Save buttons */}
+          {/* Edit and Save buttons - Solo visibles si el rol es admin */}
           <div className="flex space-x-4 mt-6">
-            {isEditing ? (
-              <button onClick={handleSubmit} className="border border-black py-2 px-4 rounded hover:bg-gray-200">
-                Save Changes
-              </button>
-            ) : (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="border border-black py-2 px-4 rounded hover:bg-gray-200"
-              >
-                Edit
-              </button>
+            {user.role === 'admin' && (
+              <>
+                {isEditing ? (
+                  <button onClick={handleSubmit} className="border border-black py-2 px-4 rounded hover:bg-gray-200">
+                    Save Changes
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="border border-black py-2 px-4 rounded hover:bg-gray-200"
+                  >
+                    Edit
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowRoleDropdown(!showRoleDropdown)}
+                  className="border border-black py-2 px-4 rounded hover:bg-gray-200"
+                >
+                  Change Role
+                </button>
+              </>
             )}
-            <button
-              onClick={() => setShowRoleDropdown(!showRoleDropdown)}
-              className="border border-black py-2 px-4 rounded hover:bg-gray-200"
-            >
-              Change Role
-            </button>
           </div>
         </div>
 
@@ -183,15 +187,19 @@ const UserProfile = () => {
         <div className="w-1/2 p-6">
           <div className="flex items-center mb-4">
             <FaBuilding className="text-xl text-black" />
-            <button
-              type="button"
-              onClick={() => setShowBranches(!showBranches)}
-              className="ml-2 p-2 border border-gray-300 rounded w-full flex justify-between"
-            >
-              {selectedBranch || 'Seleccionar Sucursal'}
-              <FaChevronDown className="text-gray-500" />
-            </button>
-            {showBranches && (
+            {user.role === 'admin' ? (
+              <button
+                type="button"
+                onClick={() => setShowBranches(!showBranches)}
+                className="ml-2 p-2 border border-gray-300 rounded w-full flex justify-between"
+              >
+                {selectedBranch || 'Seleccionar Sucursal'}
+                <FaChevronDown className="text-gray-500" />
+              </button>
+            ) : (
+              <p className="ml-2 text-gray-600">{selectedBranch || 'No branch assigned'}</p>
+            )}
+            {showBranches && user.role === 'admin' && (
               <div
                 ref={branchesRef}
                 className="absolute w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg max-h-40 overflow-auto z-10"
@@ -207,7 +215,7 @@ const UserProfile = () => {
                     </div>
                   ))
                 ) : (
-                  <div className="px-4 py-2 text-gray-500">No branches available</div>
+                  <p className="px-4 py-2 text-gray-500">No branches available</p>
                 )}
               </div>
             )}
