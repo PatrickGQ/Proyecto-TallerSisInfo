@@ -2,33 +2,32 @@ import generateJWT from '../libs/generateJwt.libs.js';
 import User from '../models/user.model.js';
 import bcrypt from 'bcrypt';
 
+// Ruta para registrar un usuario
 export const register = async (req, res) => {
-    const { name, email, password, role } = req.body; // Asegúrate de que el rol se pase en el cuerpo de la solicitud
-
-    try {
-        const userFound = await User.findOne({ email: email });
-
-        if (userFound) return res.status(400).json({ message: `User ${email} already exists` });
-
-        const hashPassword = await bcrypt.hash(password, 10);
-
-        // Cambia el rol para que use el rol proporcionado o default a 'user'
-        const newUser = new User({
-            name,
-            email,
-            password: hashPassword,
-            role: role || 'client' // Asigna 'user' como rol por defecto si no se proporciona
-        });
-
-        const userSaved = await newUser.save();
-
-        const token = await generateJWT({ id: userSaved._id });
-        res.cookie('token', token); // Guarda el token en las cookies
-        res.status(201).json({ message: "User registered successfully", userSaved });
-
-    } catch (error) {
-        res.status(500).json({ message: "Error registering user", error: error.message });
+  const { name, email, password, role, university, phone, position } = req.body;
+  
+  try {
+    // Verificar si el usuario ya existe
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "El usuario ya existe." });
     }
+
+    const newUser = new User({
+      name,
+      email,
+      password, // La contraseña se cifrará automáticamente antes de guardarse
+      role,
+      university,
+      phone,
+      position
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: "Usuario registrado exitosamente", user: newUser });
+  } catch (error) {
+    res.status(500).json({ message: "Error al registrar el usuario", error });
+  }
 };
 
 export const login = async (req, res) => {
@@ -83,4 +82,34 @@ export const verifyPassword = async (req, res) => {
 export const verifyToken = (req, res) => {
     // Esta función se puede eliminar si no planeas usarla en ninguna parte
     return res.status(200).json({ message: "Token verification not required" });
+};
+
+// Función para actualizar la información del usuario, incluyendo el rol
+export const updateUser = async (req, res) => {
+  const { userId, name, email, phone, university, position, role } = req.body;
+
+  try {
+    // Buscar al usuario en la base de datos
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    // Actualizar los datos del usuario
+    user.name = name || user.name;
+    user.email = email || user.email;
+    user.phone = phone || user.phone;
+    user.university = university || user.university;
+    user.position = position || user.position;
+    user.role = role || user.role;  // Actualizar el rol
+
+    // Guardar los cambios
+    await user.save();
+
+    res.status(200).json({ message: 'Usuario actualizado con éxito', user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al actualizar el usuario' });
+  }
 };

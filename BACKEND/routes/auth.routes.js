@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { login, register, logout, verifyPassword, verifyToken } from "../controllers/auth.controller.js";
+import { login, register, logout, verifyPassword, verifyToken, updateUser } from "../controllers/auth.controller.js";
 
 const authRouter = Router();
 
 authRouter.post('/register', register);
+authRouter.put('/update', updateUser);
 authRouter.post('/login', login);
 authRouter.post('/logout', logout);
 authRouter.post('/verifyPassword', verifyPassword); // Si aún necesitas verificar contraseñas

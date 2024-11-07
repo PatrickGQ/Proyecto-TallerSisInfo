@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBranch } from '../../CONTEXTS/BranchContext';
+import { useAuth } from '../../GENERALCOMPONENTS/AuthContext'; // Importa el contexto de autenticación
 import { getProductsByBranchRequest, editProductRequest, deleteProductRequest } from '../../api/branch';
 
 const ViewProducts = () => {
@@ -10,6 +11,9 @@ const ViewProducts = () => {
   const [editProduct, setEditProduct] = useState(null);
   const navigate = useNavigate();
   const { selectedBranch } = useBranch();
+  const { user } = useAuth(); // Obtén la información del usuario
+
+  const userRole = user ? user.role : null; // Obtén el rol del usuario
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -97,18 +101,23 @@ const ViewProducts = () => {
               <p className="text-gray-600"><strong>Descripción:</strong> {product.description}</p>
             </div>
             <div className="flex justify-between p-4">
-              <button
-                onClick={() => handleEditClick(product)}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
-              >
-                Editar
-              </button>
-              <button
-                onClick={() => handleDelete(product._id)}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
-              >
-                Eliminar
-              </button>
+              {/* Mostrar los botones de editar y eliminar solo si el usuario no es un cliente */}
+              {userRole !== 'client' && (
+                <>
+                  <button
+                    onClick={() => handleEditClick(product)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDelete(product._id)}
+                    className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
+                  >
+                    Eliminar
+                  </button>
+                </>
+              )}
             </div>
           </div>
         ))}

@@ -16,3 +16,13 @@ export const validateTokenRequest = async () => {
   
 
 export const validatePasswordRequest = user => axios.post(`${API}/verifyPassword`, user);
+
+export const updateUserRequest = async (updatedUser) => {
+  console.log(updatedUser); // Verifica que el _id esté presente
+  try {
+    const response = await axios.put(`/api/users/${updatedUser._id}`, updatedUser);
+    return response.data;
+  } catch (error) {
+    throw new Error("Error al actualizar el usuario");
+  }
+};

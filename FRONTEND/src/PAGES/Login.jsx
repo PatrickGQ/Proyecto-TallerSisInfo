@@ -4,33 +4,33 @@ import { useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
-    const [error, setError] = useState(null);
-    const { signIn } = useAuth();
-    const navigate = useNavigate();
-    const { setUser } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(null);
 
-    const handleSubmitForm = async (event) => {
-        event.preventDefault();
-        const data = {
-          email,
-          password
-        }
+  const { signIn } = useAuth(); // Usamos el contexto
+  const navigate = useNavigate();
 
-        const res = await signIn(data);
+  const handleSubmitForm = async (event) => {
+    event.preventDefault();
+    const data = {
+      email,
+      password,
+    };
 
-        if(res.isError) return setError(res.error.response.data.message);
-        
-        setUser({name: res.data.foundUser.name, email: res.data.foundUser.email, role: res.data.foundUser.role});
+    const res = await signIn(data);
 
-        navigate('/inicio');
+    if (res.isError) {
+      return setError(res.error.response.data.message);
     }
 
-    const togglePasswordVisibility = () => {
-        setShowPassword(!showPassword);
-    }
+    navigate("/inicio"); // Redirige a la página de inicio después de un inicio de sesión exitoso
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 m-2">
