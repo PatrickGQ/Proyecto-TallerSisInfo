@@ -166,18 +166,18 @@ export const getSalesByHourDB = async (req, res) => {
         res.status(500).json({ success: false, message: "Error al obtener las ventas por hora.", error });
     }
 };
-
-// Obtener ventas por fecha
 export const getSalesByDateDB = async (req, res) => {
-    const { date, nameBranch } = req.params; // Obtiene la fecha en formato YYYY-MM-DD
-    
-    // Convierte la fecha a un objeto Date
+    const { date } = req.params; 
+    const { nameBranch } = req.body; 
+
+    console.log("Fecha recibida:", date);
+    console.log("Sucursal recibida:", nameBranch);
+
     const startDate = new Date(date);
     const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 1); // Para incluir todas las ventas del día
+    endDate.setDate(startDate.getDate() + 1);
 
     try {
-        // Buscar la sucursal por nombre
         const branch = await Branch.findOne({ nameBranch: nameBranch.toLowerCase() });
         if (!branch) {
             return res.status(404).json({ success: false, message: 'Sucursal no encontrada' });
@@ -188,7 +188,7 @@ export const getSalesByDateDB = async (req, res) => {
                 $gte: startDate,
                 $lt: endDate,
             },
-            _id: { $in: branch.sales } // Filtramos las ventas de la sucursal
+            _id: { $in: branch.sales }
         });
 
         res.status(200).json({
@@ -197,7 +197,7 @@ export const getSalesByDateDB = async (req, res) => {
             sales
         });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: "Error al obtener las ventas por fecha.", error });
+        console.error("Error en getSalesByDateDB:", error);
+        res.status(500).json({ success: false, message: "Error al obtener las ventas por fecha.", error: error.message });
     }
 };

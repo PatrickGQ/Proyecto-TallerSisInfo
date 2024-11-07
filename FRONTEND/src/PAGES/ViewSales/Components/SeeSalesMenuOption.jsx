@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaEllipsisV } from "react-icons/fa";
 
-const SeeSalesMenuOption = ( {setSelectedOption} ) => {
+const SeeSalesMenuOption = ({ setSelectedOption }) => {
   const [showOptionsMenu, setShowOptionsMenu] = useState(false);
 
   const handleOptionsClick = () => {
@@ -33,6 +33,8 @@ const SeeSalesMenuOption = ( {setSelectedOption} ) => {
             >
               Hoy
             </button>
+            
+            {/* 
             <button
               onClick={() => handleOptionSelect('date')}
               className="w-full py-2 px-4 rounded-lg bg-white hover:bg-gray-100 text-left mt-1"
@@ -45,6 +47,7 @@ const SeeSalesMenuOption = ( {setSelectedOption} ) => {
             >
               Obtener ventas por hora
             </button>
+            */}
             <button
               onClick={() => handleOptionSelect('allSales')}
               className="w-full py-2 px-4 rounded-lg bg-white hover:bg-gray-100 text-left mt-1"

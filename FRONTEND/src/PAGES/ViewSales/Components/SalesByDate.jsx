@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css'; // Importa el estilo CSS del datepicker
-// import { getSalesByDateRequest } from '../../../api/sale.js'; // Asegúrate de que esta función esté definida en tu API
+import 'react-datepicker/dist/react-datepicker.css';
 import { useBranch } from "../../../CONTEXTS/BranchContext.tsx";
-import SalesList from './SalesList'; // Asegúrate de que la ruta sea correcta
+import SalesList from './SalesList'; 
 import { getSalesByDateRequest } from '../../../api/branch.js';
 
 const SalesByDate = ({ setError, setViewSale }) => {
@@ -15,6 +14,16 @@ const SalesByDate = ({ setError, setViewSale }) => {
     setSelectedDate(saleDate);
     if (saleDate) {
       const formattedDate = `${saleDate.getFullYear()}-${(saleDate.getMonth() + 1).toString().padStart(2, '0')}-${saleDate.getDate().toString().padStart(2, '0')}`;
+      
+      console.log("Sale Date:", saleDate);
+      console.log("Formatted Date:", formattedDate);
+      console.log("Selected Branch:", selectedBranch);
+
+      if (!selectedBranch) {
+        setError("Por favor, selecciona una sucursal.");
+        return;
+      }
+
       try {
         const response = await getSalesByDateRequest(formattedDate, selectedBranch);
         setSales(response.data);

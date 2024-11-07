@@ -1,6 +1,13 @@
-import { FaPrint, FaEdit, FaTrashAlt } from "react-icons/fa";
+import { useState } from "react";
+import { FaPrint, FaEdit, FaSave } from "react-icons/fa";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
-const InventoryView = ({ inventory, onClose }) => {
+const InventoryView = ({ inventory, onClose, onSaveChanges }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedItems, setEditedItems] = useState(inventory?.inventoryItems || []);
+  const [errorMessages, setErrorMessages] = useState([]);
+
   if (!inventory) return null;
 
   const calculateMovementsSummary = (ingredients) => {
@@ -103,7 +110,7 @@ const InventoryView = ({ inventory, onClose }) => {
             onClick={() => window.print()}
           >
             <FaPrint />
-            <span>Imprimir</span>
+            <span>Descargar PDF</span>
           </button>
           {inventory.status === 'open' && (
             <>

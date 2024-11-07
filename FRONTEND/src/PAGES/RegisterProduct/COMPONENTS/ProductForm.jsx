@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
 import { addProductToBranchRequest } from "../../../api/branch.js";
 import { useBranch } from "../../../CONTEXTS/BranchContext.tsx";
+import QuestionMessage from "../../../GENERALCOMPONENTS/QuestionMessage.jsx";
+import AcceptMessage from "../../../GENERALCOMPONENTS/AcceptMessage.tsx";
 
 const ProductForm = () => {
   const { selectedBranch } = useBranch();
+  // Estados para manejo de mensajes
+  const [showQuestion, setShowQuestion] = useState(false);
+  const [showAccept, setShowAccept] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
   },[selectedBranch]);
@@ -25,7 +31,15 @@ const ProductForm = () => {
     }));
   };
 
+  const handleConfirmProduct = (event) => {
+    event.preventDefault();
+    // Muestra el mensaje de confirmación antes de enviar
+    setMessage(`¿Estás seguro que deseas agregar el producto ${form.nameProduct} a la sucursal ${selectedBranch}?`);
+    setShowQuestion(true);
+  };
+
   const handleSubmit = async (event) => {
+    setShowQuestion(false); // Cierra el mensaje de confirmación
     event.preventDefault();
     try {
       const formData = new FormData();
@@ -41,16 +55,21 @@ const ProductForm = () => {
       console.log(res);
 
       setForm({ nameProduct: "", price: "", image: null, id: "", description: "" });
-      //window.location.reload();
+      // Muestra mensaje de éxito
+      setMessage(`Producto agregado exitosamente en la sucursal ${selectedBranch}. Vaya a la vista de productos para verlo.`);
+      setShowAccept(true);
     } catch (error) {
-      console.log(error);
+      console.log(error.response.data.message);
+      // Muestra mensaje de error
+      setMessage(`Error al agregar producto (Error:${error.response.data.message})`);
+      setShowAccept(true);
     }
   };
 
   return (
     <div className="max-w-lg mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Agregar Nuevo Producto</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleConfirmProduct} className="space-y-4">
 
         <div>
           <label className="block text-gray-700 font-medium">Nombre del Producto <span className="text-red-500">*</span></label>
@@ -118,6 +137,20 @@ const ProductForm = () => {
         >
           Agregar Producto
         </button>
+        {/* Mensajes de confirmación y éxito/error */}
+        {showQuestion && (
+          <QuestionMessage
+            message={message}
+            onConfirm={handleSubmit}
+            onCancel={() => setShowQuestion(false)}
+          />
+        )}
+        {showAccept && (
+          <AcceptMessage
+            message={message}
+            onAccept={() => setShowAccept(false)}
+          />
+        )}
       </form>
     </div>
   );

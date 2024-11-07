@@ -10,12 +10,14 @@ import branchsRouter from './routes/branch.routes.js';
 import productsBranchRouter from './routes/product.branch.routes.js';
 import salesBranchRouter from './routes/sale.branch.routes.js';
 import employeeBranchRouter from './routes/employee.branch.routes.js';
+import cookieParser from 'cookie-parser';
+import authRouter from './routes/auth.routes.js';
 import inventoryBranchRouter from './routes/inventory.branch.routes.js';
 import ingredientBranchRouter from './routes/ingredient.branch.routes.js';
 
+
 const app = express();
 
-app.use('/uploads', express.static('uploads'));
 app.use(express.json());
 
 app.use(cors({/*
@@ -30,7 +32,11 @@ app.use(morgan('dev'));
 
 connectToMongoDB();
 
+app.use(cookieParser());
+app.use('/uploads', express.static('uploads'));
+
 const PORT = 3000;
+app.use('/api', authRouter);
 
 app.use('/api/branches', branchsRouter);
 

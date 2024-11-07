@@ -1,32 +1,57 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBranch } from '../../../../CONTEXTS/BranchContext';
-import { getEmployeesWithFiltersRequest } from '../../../../api/branch'; // Asegúrate de tener esta función en tu API
+import { getEmployeesWithFiltersRequest, editEmployeeRequest, deleteEmployeeRequest } from '../../../../api/branch';
 
 const ViewEmployeesForm = ({ activeFilters }) => {
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [editEmployee, setEditEmployee] = useState(null); // Estado para el empleado que se está editando
   const navigate = useNavigate();
-  const { selectedBranch } = useBranch(); // Extrae la sucursal seleccionada del contexto
+  const { selectedBranch } = useBranch();
 
   useEffect(() => {
     const fetchFilteredEmployees = async () => {
-        try {
-          console.log(selectedBranch);
-          console.log(activeFilters);
-          const response = await getEmployeesWithFiltersRequest(selectedBranch, activeFilters);
-          console.log(response);
-          setEmployees(response.data.employees);
-        } catch (error) {
-          console.error('Error al obtener los empleados con filtros:', error);
-        }
-      };
+      try {
+        const response = await getEmployeesWithFiltersRequest(selectedBranch, activeFilters);
+        setEmployees(response.data.employees);
+      } catch (error) {
+        console.error('Error al obtener los empleados con filtros:', error);
+      }
+    };
 
-        fetchFilteredEmployees();
-    }, [selectedBranch, activeFilters]);
+    fetchFilteredEmployees();
+  }, [selectedBranch, activeFilters]);
 
+  const handleEdit = (employee) => {
+    setEditEmployee(employee);
+    setIsEditing(true);
+  };
 
-  // Filtrar empleados en base a la búsqueda y los filtros
+  const handleEditSave = () => {
+    editEmployeeRequest(editEmployee._id, {
+      name: editEmployee.name,
+      salary: editEmployee.salary,
+      email: editEmployee.email,
+      role: editEmployee.role,
+    })
+    .then(response => {
+      setEmployees(employees.map(emp => emp._id === editEmployee._id ? response.data.employee : emp));
+      setIsEditing(false);
+      setEditEmployee(null);
+    })
+    .catch(error => console.error('Error al editar el empleado:', error));
+  };
+
+  const handleDelete = (id) => {
+    deleteEmployeeRequest(id)
+      .then(() => {
+        setEmployees(employees.filter(employee => employee._id !== id));
+      })
+      .catch(error => console.error('Error al eliminar el empleado:', error));
+  };
+
   const filteredEmployees = employees.filter(employee => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
     return (
@@ -46,15 +71,65 @@ const ViewEmployeesForm = ({ activeFilters }) => {
         onChange={(e) => setSearchTerm(e.target.value)}
         className="w-full p-3 mb-6 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
       />
+
+      {/* Tarjeta de edición de empleado */}
+      {isEditing && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
+            <h2 className="text-2xl font-bold mb-4">Editar Empleado</h2>
+            <input
+              type="text"
+              placeholder="Nombre"
+              value={editEmployee.name}
+              onChange={(e) => setEditEmployee({ ...editEmployee, name: e.target.value })}
+              className="w-full p-3 mb-4 border border-gray-300 rounded"
+            />
+            <input
+              type="number"
+              placeholder="Salario"
+              value={editEmployee.salary}
+              onChange={(e) => setEditEmployee({ ...editEmployee, salary: e.target.value })}
+              className="w-full p-3 mb-4 border border-gray-300 rounded"
+            />
+            <input
+              type="email"
+              placeholder="Correo"
+              value={editEmployee.email}
+              onChange={(e) => setEditEmployee({ ...editEmployee, email: e.target.value })}
+              className="w-full p-3 mb-4 border border-gray-300 rounded"
+            />
+            <input
+              type="text"
+              placeholder="Rol"
+              value={editEmployee.role}
+              onChange={(e) => setEditEmployee({ ...editEmployee, role: e.target.value })}
+              className="w-full p-3 mb-4 border border-gray-300 rounded"
+            />
+            <div className="flex justify-end">
+              <button
+                onClick={() => setIsEditing(false)}
+                className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleEditSave}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                Guardar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredEmployees.map((employee) => (
           <div
             key={employee._id}
-            className="flex flex-col border rounded-lg shadow hover:shadow-lg cursor-pointer transition-shadow duration-300"
-            onClick={() => navigate(`/viewEmployee/${employee._id}`)}
+            className="flex flex-col border rounded-lg shadow hover:shadow-lg transition-shadow duration-300"
           >
             <div className="p-4 flex flex-col items-center">
-              {/* Foto del empleado */}
               <div className="w-24 h-24 mb-4">
                 {employee.photo ? (
                   <img
@@ -69,12 +144,25 @@ const ViewEmployeesForm = ({ activeFilters }) => {
                 )}
               </div>
               
-              {/* Información del empleado */}
               <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">{employee.name}</h2>
               <p className="text-gray-600"><strong>CI:</strong> {employee.ci}</p>
               <p className="text-gray-600"><strong>Correo:</strong> {employee.email}</p>
               <p className="text-gray-600"><strong>Rol:</strong> {employee.role}</p>
               <p className="text-gray-600"><strong>Salario:</strong> {employee.salary} BS</p>
+            </div>
+            <div className="flex justify-between p-4">
+              <button
+                onClick={() => handleEdit(employee)}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Editar
+              </button>
+              <button
+                onClick={() => handleDelete(employee._id)}
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
+              >
+                Eliminar
+              </button>
             </div>
           </div>
         ))}

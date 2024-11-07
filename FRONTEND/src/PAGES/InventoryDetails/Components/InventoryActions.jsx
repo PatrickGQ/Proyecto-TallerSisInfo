@@ -7,7 +7,7 @@ const InventoryActions = ({ inventory, mode, setMode }) => {
   return (
     <div className="mb-6 flex items-center justify-between">
       <button 
-        onClick={() => navigate('/inventario/ver')}
+        onClick={() => navigate('/inventarios/verInventarios')}
         className="text-blue-500 hover:text-blue-700 flex items-center gap-2"
       >
         <FaArrowLeft /> Volver

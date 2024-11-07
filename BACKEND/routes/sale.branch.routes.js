@@ -13,4 +13,5 @@ salesBranchRouter.post('/getTodaySales', getTodaySalesByBranch);
 
 salesBranchRouter.post('/getByDate/:date', getSalesByDateDB);
 
+
 export default salesBranchRouter;
