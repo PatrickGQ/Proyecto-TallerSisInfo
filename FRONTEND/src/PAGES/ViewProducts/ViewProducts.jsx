@@ -1,13 +1,14 @@
-// ViewProducts.js
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useBranch } from "../../CONTEXTS/BranchContext";
+// src/components/ViewProducts.jsx
+import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useBranch } from '../../CONTEXTS/BranchContext';
+import { FaEdit, FaShoppingCart, FaTrash } from 'react-icons/fa';
+import { CartContext } from '../cart/cartContext';
 import {
   getProductsByBranchRequest,
   editProductRequest,
   deleteProductRequest,
 } from "../../api/branch";
-import { FaEdit, FaTrash } from "react-icons/fa";
 import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
 import AcceptMessage from "../../GENERALCOMPONENTS/AcceptMessage";
 
@@ -19,12 +20,14 @@ const ViewProducts = () => {
   const [productToDelete, setProductToDelete] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
+  const { updateCartCount } = useContext(CartContext);
   const { selectedBranch } = useBranch();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await getProductsByBranchRequest(selectedBranch);
+        console.log("HOLA");
         setProducts(response.data.products);
       } catch (error) {
         console.error("Error al obtener los productos:", error);
@@ -38,9 +41,24 @@ const ViewProducts = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleEditClick = (product) => {
+  const handleEditClick = (event, product) => {
+    event.stopPropagation(); // Evita que el clic se propague al contenedor principal
     setIsEditing(true);
     setEditProduct({ ...product });
+  };
+
+  const handleAddToCart = (product) => {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existingProduct = cart.find((item) => item._id === product._id);
+
+    if (existingProduct) {
+      existingProduct.quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartCount(); // Actualiza el contador del carrito
   };
 
   const handleEditChange = (e) => {
@@ -74,7 +92,8 @@ const ViewProducts = () => {
     }
   };
 
-  const requestDeleteProduct = (product) => {
+  const requestDeleteProduct = (event, product) => {
+    event.stopPropagation(); // Evita que el clic se propague al contenedor principal
     setProductToDelete(product);
   };
 
@@ -128,7 +147,8 @@ const ViewProducts = () => {
         {filteredProducts.map((product) => (
           <div
             key={product._id}
-            className="flex flex-col border rounded-lg shadow hover:shadow-lg transition-shadow duration-300"
+            onClick={() => navigate(`/product/${product._id}`)}
+            className="flex flex-col border rounded-lg shadow hover:shadow-lg transition-shadow duration-300 cursor-pointer"
           >
             {product.image && (
               <img
@@ -155,14 +175,24 @@ const ViewProducts = () => {
             <div className="flex justify-center p-4 gap-8">
               <button
                 title="Editar producto"
-                onClick={() => handleEditClick(product)}
+                onClick={(event) => handleEditClick(event, product)}
                 className="text-blue-500 hover:text-blue-700"
               >
                 <FaEdit size={20} />
               </button>
               <button
+                title="Añadir al Carrito"
+                onClick={(e) => {
+                  e.stopPropagation(); // Evita que el clic se propague al contenedor principal
+                  handleAddToCart(product);
+                }}
+                className="text-green-500 hover:text-green-700"
+              >
+                <FaShoppingCart size={20} />
+              </button>
+              <button
                 title="Eliminar producto"
-                onClick={() => requestDeleteProduct(product)}
+                onClick={(event) => handleAddToCart(event, product)}
                 className="text-red-500 hover:text-red-700"
               >
                 <FaTrash size={20} />

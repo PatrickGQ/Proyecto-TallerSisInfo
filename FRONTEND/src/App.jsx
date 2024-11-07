@@ -13,6 +13,9 @@ import Login from "./PAGES/Login";
 import { AuthProvider, useAuth } from "./GENERALCOMPONENTS/AuthContext"; // Asegúrate de importar useAuth
 import BranchesPage from "./PAGES/Branches/BranchesPage";
 import Home from "./PAGES/HomePage/Home";
+import ProductDetails from "./PAGES/ProductDetail/productDetail";
+import Cart from "./PAGES/cart/cart";
+import { CartProvider } from "./PAGES/cart/cartContext";
 
 // Componente que verifica si el usuario está autenticado
 const PrivateRoute = ({ children }) => {
@@ -28,7 +31,9 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <BranchProvider>
-          <Main />
+          <CartProvider> {/* Envuelve Main en CartProvider */}
+            <Main />
+          </CartProvider>
         </BranchProvider>
       </AuthProvider>
     </BrowserRouter>
@@ -63,6 +68,8 @@ function Main() {
           {/* Nuevas rutas de inventario */}
           <Route path="/inventarios/registrarInventario" element={<PrivateRoute><RegisterInventory /></PrivateRoute>} />
           <Route path="/inventarios/verInventarios" element={<PrivateRoute><ViewInventory /></PrivateRoute>} />
+          <Route path="/product/:id" element={<ProductDetails />} /> {/* Ruta para detalles */}
+          <Route path="/cart" element={<Cart />} /> {/* Ruta para carrito */}
       </Routes>
     </>
   );

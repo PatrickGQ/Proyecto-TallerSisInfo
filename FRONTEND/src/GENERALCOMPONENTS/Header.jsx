@@ -1,27 +1,30 @@
-import { FaBars, FaUser, FaChevronDown } from 'react-icons/fa'; 
-import { useState, useRef, useEffect } from 'react';
+// src/pages/Header.jsx
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { FaBars, FaUser, FaChevronDown, FaShoppingCart } from 'react-icons/fa';
 import NavBar from './navBar';
 import { useBranch } from '../CONTEXTS/BranchContext';
 import { useAuth } from '../GENERALCOMPONENTS/AuthContext';
 import { Link } from 'react-router-dom';
+import { CartContext } from '../PAGES/cart/cartContext';
 
 const Header = () => {
   const { selectedBranch, setSelectedBranch, branches } = useBranch();
-  const { user } = useAuth(); 
+  const { user } = useAuth();
   const [showNavBar, setShowNavBar] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showBranches, setShowBranches] = useState(false);
-  
   const navBarRef = useRef(null);
   const branchesRef = useRef(null);
-  const toggleButtonRef = useRef(null); // Ref para el botón de hamburguesa
+  const toggleButtonRef = useRef(null);
   const userRole = user ? user.role : null;
 
   const toggleNavBar = () => setShowNavBar((prev) => !prev);
   const toggleUserMenu = () => setShowUserMenu((prev) => !prev);
   const toggleBranchesMenu = () => setShowBranches((prev) => !prev);
-
   const closeNavBar = () => setShowNavBar(false);
+
+  // Usa el contexto del carrito para el contador en tiempo real
+  const { cartCount } = useContext(CartContext);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -36,7 +39,7 @@ const Header = () => {
       if (branchesRef.current && !branchesRef.current.contains(event.target)) {
         setShowBranches(false);
       }
-      if (!event.target.closest(".user-menu")) { // Ajuste para el menú de usuario si es necesario
+      if (!event.target.closest(".user-menu")) {
         setShowUserMenu(false);
       }
     };
@@ -71,16 +74,16 @@ const Header = () => {
                 {branches.length > 0 ? (
                   <ul className="max-h-48 overflow-y-auto custom-scrollbar">
                     {branches.map(branch => (
-                        <li 
-                            key={branch._id} 
-                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors"
-                            onClick={() => {
-                              setSelectedBranch(branch.nameBranch);
-                              window.location.reload();
-                            }}
-                        >
-                            {branch.nameBranch}
-                        </li>
+                      <li 
+                        key={branch._id} 
+                        className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors"
+                        onClick={() => {
+                          setSelectedBranch(branch.nameBranch);
+                          window.location.reload();
+                        }}
+                      >
+                        {branch.nameBranch}
+                      </li>
                     ))}
                   </ul>
                 ) : (
@@ -90,7 +93,18 @@ const Header = () => {
             )}
           </div>
         </div>
+        
         <div className="relative flex items-center space-x-4">
+          {/* Ícono de carrito con enlace a la página del carrito */}
+          <Link to="/cart" className="relative text-white hover:text-yellow-300 transition-colors">
+            <FaShoppingCart className="text-2xl" />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+
           <button 
             onClick={toggleUserMenu} 
             className="flex items-center space-x-2 bg-white text-red-600 py-1 px-3 mr-2 rounded-full shadow-md hover:bg-gray-100 transition-colors user-menu">
@@ -104,9 +118,10 @@ const Header = () => {
           )}
         </div>
       </header>
+
       {showNavBar && (
         <div ref={navBarRef}>
-          <NavBar closeNavBar={closeNavBar} userRole={user ? user.role : null} />
+          <NavBar closeNavBar={closeNavBar} userRole={userRole} />
         </div>
       )}
     </>
