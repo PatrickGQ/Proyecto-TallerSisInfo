@@ -1,3 +1,4 @@
+// ViewProducts.js
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useBranch } from "../../CONTEXTS/BranchContext";
@@ -8,6 +9,7 @@ import {
 } from "../../api/branch";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
+import AcceptMessage from "../../GENERALCOMPONENTS/AcceptMessage";
 
 const ViewProducts = () => {
   const [products, setProducts] = useState([]);
@@ -15,6 +17,7 @@ const ViewProducts = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editProduct, setEditProduct] = useState(null);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
   const { selectedBranch } = useBranch();
 
@@ -67,6 +70,7 @@ const ViewProducts = () => {
       setEditProduct(null);
     } catch (error) {
       console.error("Error al editar el producto:", error);
+      setErrorMessage("Error al guardar la edición del producto. Intente de nuevo más tarde.");
     }
   };
 
@@ -83,14 +87,19 @@ const ViewProducts = () => {
           );
           setProductToDelete(null);
         })
-        .catch((error) =>
-          console.error("Error al eliminar el producto:", error)
-        );
+        .catch((error) => {
+          console.error("Error al eliminar el producto:", error);
+          setErrorMessage("Error eliminando el producto. Intente de nuevo más tarde.");
+        });
     }
   };
 
   const handleCancelDelete = () => {
     setProductToDelete(null);
+  };
+
+  const handleAcceptError = () => {
+    setErrorMessage("");
   };
 
   const filteredProducts = products.filter((product) => {
@@ -168,6 +177,13 @@ const ViewProducts = () => {
           message={`¿Estás seguro que deseas borrar este producto de la sucursal ${selectedBranch}? Recuerda que esta acción es irreversible.`}
           onConfirm={handleConfirmDelete}
           onCancel={handleCancelDelete}
+        />
+      )}
+
+      {errorMessage && (
+        <AcceptMessage
+          message={errorMessage}
+          onAccept={handleAcceptError}
         />
       )}
 
