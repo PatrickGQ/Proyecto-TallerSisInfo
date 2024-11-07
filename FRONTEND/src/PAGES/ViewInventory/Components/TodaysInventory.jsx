@@ -7,8 +7,8 @@ import { useBranch } from '../../../CONTEXTS/BranchContext';
 import { getCurrentDayInventoryByBranchRequest } from '../../../api/branch';
 
 const TodaysInventory = ({ setError, setViewInventory }) => {
-  const [inventory, setInventory] = useState(null);
-  const [filteredInventory, setFilteredInventory] = useState(null);
+  const [inventories, setInventories] = useState(null);
+  const [filteredInventories, setFilteredInventories] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { selectedBranch } = useBranch();
 
@@ -18,9 +18,14 @@ const TodaysInventory = ({ setError, setViewInventory }) => {
         setError('Por favor seleccione una sucursal');
         return;
       }
-      const res = await getCurrentDayInventoryByBranchRequest(selectedBranch);
-      setInventory(res.data.inventory ? [res.data.inventory] : []);
-      setFilteredInventory(res.data.inventory ? [res.data.inventory] : []);
+      const branchName = typeof selectedBranch === 'string' 
+        ? selectedBranch 
+        : selectedBranch.nameBranch;
+
+      const res = await getCurrentDayInventoryByBranchRequest(branchName);
+      const inventoryData = res.data.inventory ? [res.data.inventory] : [];
+      setInventories(inventoryData);
+      setFilteredInventories(inventoryData);
     } catch (error) {
       console.error(error);
       setError('Error al cargar el inventario del día');
@@ -34,26 +39,28 @@ const TodaysInventory = ({ setError, setViewInventory }) => {
   }, [selectedBranch]);
 
   const handleSearch = (query) => {
-    if (!inventory) return;
+    if (!inventories) return;
     
     const searchLower = query.toLowerCase();
     if (!query) {
-      setFilteredInventory(inventory);
+      setFilteredInventories(inventories);
       return;
     }
 
-    const filtered = inventory.filter(inv => {
+    const filtered = inventories.filter(inv => {
       const employeeMatch = inv.employees.some(emp => 
         emp.name.toLowerCase().includes(searchLower)
       );
       const dateMatch = new Date(inv.date)
         .toLocaleDateString()
+        .toLowerCase()
         .includes(searchLower);
+      const statusMatch = inv.status.toLowerCase().includes(searchLower);
       
-      return employeeMatch || dateMatch;
+      return employeeMatch || dateMatch || statusMatch;
     });
 
-    setFilteredInventory(filtered);
+    setFilteredInventories(filtered);
   };
 
   const handleRefresh = () => {
@@ -84,14 +91,10 @@ const TodaysInventory = ({ setError, setViewInventory }) => {
         </button>
       </div>
       <SearchBarInventory onSearch={handleSearch} />
-      {filteredInventory && filteredInventory.length > 0 ? (
-        <InventoryList 
-          inventories={filteredInventory} 
-          setViewInventory={setViewInventory}
-        />
-      ) : (
-        <p className="text-center text-gray-500">No hay inventario registrado para hoy</p>
-      )}
+      <InventoryList 
+        inventories={filteredInventories}
+        setViewInventory={setViewInventory}
+      />
     </div>
   );
 };

@@ -2,45 +2,29 @@ import { useState, useEffect } from "react";
 import { useBranch } from "../../../CONTEXTS/BranchContext.tsx";
 import { 
   addInventoryToBranchRequest,
-  getEmployeesByBranchRequest 
+  getEmployeesByBranchRequest,
+  getIngredientsByBranchRequest 
 } from "../../../api/branch.js";
 
 const InventoryForm = () => {
   const { selectedBranch } = useBranch();
   const [employees, setEmployees] = useState([]);
+  const [ingredients, setIngredients] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState({
     employees: [],
-    inventoryItems: [
-      {
-        category: "Pollo(kg)",
-        details: {
-          initialStock: 0,
-          sales: 0,
-          finalStock: 0
-        }
-      },
-      {
-        category: "Papas(kg)",
-        details: {
-          initialStock: 0,
-          sales: 0,
-          finalStock: 0
-        }
-      }
-    ],
+    ingredients: [],
     observations: ""
   });
 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchData  = async () => {
       // Verificar que selectedBranch tenga un valor y sea el correcto
       if (!selectedBranch) {
         console.log("No hay sucursal seleccionada");
         return;
       }
 
-      // Obtener el nombre de la sucursal correctamente
       const branchName = typeof selectedBranch === 'string' 
         ? selectedBranch 
         : selectedBranch.nameBranch;
@@ -52,23 +36,39 @@ const InventoryForm = () => {
 
       setIsLoading(true);
       try {
-        const response = await getEmployeesByBranchRequest(branchName);
-        if (response.data && response.data.employees) {
-          setEmployees(response.data.employees);
-        } else {
-          console.log("No se encontraron empleados");
-          setEmployees([]);
+        // Fetch both employees and ingredients in parallel
+        const [employeesResponse, ingredientsResponse] = await Promise.all([
+          getEmployeesByBranchRequest(branchName),
+          getIngredientsByBranchRequest(branchName)
+        ]);
+
+        if (employeesResponse.data && employeesResponse.data.employees) {
+          setEmployees(employeesResponse.data.employees);
+        }
+
+        if (ingredientsResponse.data && ingredientsResponse.data.ingredients) {
+          setIngredients(ingredientsResponse.data.ingredients);
+          // Initialize form with ingredients
+          setForm(prev => ({
+            ...prev,
+            ingredients: ingredientsResponse.data.ingredients.map(ingredient => ({
+              ingredientId: ingredient._id,
+              name: ingredient.name,
+              initialStock: 0,
+              finalStock: 0,
+              movements: []
+            }))
+          }));
         }
       } catch (error) {
-        console.error("Error al obtener empleados:", error);
-        setEmployees([]);
-        alert("Error al cargar los empleados. Por favor, intente nuevamente.");
+        console.error("Error al cargar datos:", error);
+        alert("Error al cargar los datos. Por favor, intente nuevamente.");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchEmployees();
+    fetchData();
   }, [selectedBranch]);
 
   const handleEmployeeSelection = (employee) => {
@@ -92,66 +92,51 @@ const InventoryForm = () => {
     });
   };
 
-  const handleInventoryChange = (category, field, value) => {
+  const handleInventoryChange = (ingredientId, field, value) => {
     setForm(prevForm => ({
       ...prevForm,
-      inventoryItems: prevForm.inventoryItems.map(item =>
-        item.category === category
-          ? {
-              ...item,
-              details: {
-                ...item.details,
-                [field]: Number(value)
-              }
-            }
-          : item
+      ingredients: prevForm.ingredients.map(item =>
+        item.ingredientId === ingredientId
+        ? { ...item, [field]: Number(value) }
+        : item
       )
     }));
   };
 
   const validateInventory = () => {
-    for (const item of form.inventoryItems) {
-      const { initialStock, sales, finalStock } = item.details;
-      
-      if (initialStock < 0 || sales < 0 || finalStock < 0) {
+    for (const item of form.ingredients) {
+      if (item.initialStock < 0 || item.finalStock < 0) {
         return "Los valores no pueden ser negativos";
       }
       
-      if (finalStock > initialStock) {
+      if (item.finalStock > item.initialStock) {
         return "El stock final no puede ser mayor que el stock inicial";
-      }
-      
-      if (sales > initialStock) {
-        return "Las ventas no pueden ser mayores que el stock inicial";
       }
     }
     return null;
   };
 
-  const resetForm = () => {
-    setForm({
-      employees: [],
-      inventoryItems: [
-        {
-          category: "Pollo(kg)",
-          details: {
-            initialStock: 0,
-            sales: 0,
-            finalStock: 0
-          }
-        },
-        {
-          category: "Papas(kg)",
-          details: {
-            initialStock: 0,
-            sales: 0,
-            finalStock: 0
-          }
-        }
-      ],
-      observations: ""
-    });
+  const calculateMovements = (ingredient) => {
+    const difference = ingredient.initialStock - ingredient.finalStock;
+    if (difference > 0) {
+      return [{
+        type: 'sale',
+        ingredientId: ingredient.ingredientId,
+        ingredientName: ingredient.name,
+        quantity: difference,
+        unit: 'kg',
+        reference: 'Venta diaria',
+        date: new Date()
+      }];
+    }
+    return [];
   };
+
+  const validationError = validateInventory();
+    if (validationError) {
+      alert(validationError);
+      return;
+    }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -176,34 +161,44 @@ const InventoryForm = () => {
       return;
     }
 
-    const invalidInventory = form.inventoryItems.some(
-      item => 
-        item.details.finalStock > item.details.initialStock || 
-        item.details.sales > item.details.initialStock ||
-        item.details.initialStock < 0 ||
-        item.details.sales < 0 ||
-        item.details.finalStock < 0
-    );
-
-    if (invalidInventory) {
-      alert("Hay errores en los valores del inventario. Verifique que:\n- No haya valores negativos\n- El stock final no sea mayor al inicial\n- Las ventas no sean mayores al stock inicial");
-      return;
-    }
-
     try {
       setIsLoading(true);
+      
+      // Prepare inventory data according to the model
       const inventoryData = {
-        nameBranch: branchName,
+        date: new Date(),
+        ingredients: form.ingredients.map(ingredient => ({
+          ingredientId: ingredient.ingredientId,
+          name: ingredient.name,
+          initialStock: ingredient.initialStock,
+          finalStock: ingredient.finalStock,
+          movements: calculateMovements(ingredient)
+        })),
         employees: form.employees,
-        inventoryItems: form.inventoryItems,
-        observations: form.observations
+        observations: form.observations,
+        status: 'open'
       };
 
-      const response = await addInventoryToBranchRequest(inventoryData);
+      const response = await addInventoryToBranchRequest({
+        nameBranch: branchName,
+        ...inventoryData
+      });
       
       if (response.data && response.data.success) {
-        resetForm();
         alert("Inventario registrado exitosamente");
+        // Reset form but keep employees and ingredients list
+        setForm(prev => ({
+          ...prev,
+          employees: [],
+          ingredients: ingredients.map(ingredient => ({
+            ingredientId: ingredient._id,
+            name: ingredient.name,
+            initialStock: 0,
+            finalStock: 0,
+            movements: []
+          })),
+          observations: ""
+        }));
       } else {
         throw new Error(response.data?.message || "Error al registrar el inventario");
       }
@@ -254,13 +249,13 @@ const InventoryForm = () => {
             {/* Inventario */}
             <div>
               <h3 className="text-lg font-semibold mb-3 text-gray-700">
-                Items de Inventario
+                Inventario de Ingredientes
               </h3>
               <div className="space-y-4">
-                {form.inventoryItems.map((item) => (
-                  <div key={item.category} className="p-4 bg-gray-50 rounded-lg">
-                    <h4 className="font-medium mb-3">{item.category}</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {form.ingredients.map((ingredient) => (
+                  <div key={ingredient.ingredientId} className="p-4 bg-gray-50 rounded-lg">
+                    <h4 className="font-medium mb-3">{ingredient.name}</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-600 mb-1">
                           Stock Inicial (kg)
@@ -269,24 +264,9 @@ const InventoryForm = () => {
                           type="number"
                           min="0"
                           step="0.1"
-                          value={item.details.initialStock}
+                          value={ingredient.initialStock}
                           onChange={(e) =>
-                            handleInventoryChange(item.category, "initialStock", e.target.value)
-                          }
-                          className="w-full p-2 border rounded-md"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-600 mb-1">
-                          Ventas (kg)
-                        </label>
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.1"
-                          value={item.details.sales}
-                          onChange={(e) =>
-                            handleInventoryChange(item.category, "sales", e.target.value)
+                            handleInventoryChange(ingredient.ingredientId, "initialStock", e.target.value)
                           }
                           className="w-full p-2 border rounded-md"
                         />
@@ -299,9 +279,9 @@ const InventoryForm = () => {
                           type="number"
                           min="0"
                           step="0.1"
-                          value={item.details.finalStock}
+                          value={ingredient.finalStock}
                           onChange={(e) =>
-                            handleInventoryChange(item.category, "finalStock", e.target.value)
+                            handleInventoryChange(ingredient.ingredientId, "finalStock", e.target.value)
                           }
                           className="w-full p-2 border rounded-md"
                         />

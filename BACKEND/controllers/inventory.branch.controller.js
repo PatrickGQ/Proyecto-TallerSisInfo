@@ -1,6 +1,6 @@
 import Branch from '../models/branch.model.js';
 import { DailyInventory } from '../models/inventory.model.js';
-
+import mongoose from 'mongoose';
 // Agregar inventario a una sucursal
 export const addInventoryToBranch = async (req, res) => {
     try {
@@ -64,6 +64,60 @@ export const addInventoryToBranch = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error al crear el inventario',
+            error: error.message
+        });
+    }
+};
+
+export const getInventoryById = async (req, res) => {
+    try {
+        const { nameBranch, id } = req.params;
+
+        // Validar que el ID sea un ObjectId válido
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: 'ID de inventario inválido'
+            });
+        }
+
+        // Primero buscar la sucursal
+        const branch = await Branch.findOne({ 
+            nameBranch: nameBranch.toLowerCase(),
+            inventories: id  // Verifica que el inventario pertenezca a esta sucursal
+        });
+
+        if (!branch) {
+            return res.status(404).json({
+                success: false,
+                message: 'Sucursal no encontrada o el inventario no pertenece a esta sucursal'
+            });
+        }
+
+        // Buscar el inventario
+        const inventory = await DailyInventory.findById(id);
+
+        if (!inventory) {
+            return res.status(404).json({
+                success: false,
+                message: 'Inventario no encontrado'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Inventario obtenido exitosamente',
+            inventory,
+            branch: {
+                id: branch._id,
+                name: branch.nameBranch
+            }
+        });
+    } catch (error) {
+        console.error("Error al obtener el inventario:", error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al obtener el inventario',
             error: error.message
         });
     }

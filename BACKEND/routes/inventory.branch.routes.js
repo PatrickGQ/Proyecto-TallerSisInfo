@@ -6,6 +6,7 @@ import {
     getInventoryByDateAndBranch,
     updateBranchInventory,
     getInventoryStatsByBranch,
+    getInventoryById,
     closeInventory
 } from '../controllers/inventory.branch.controller.js';
 import validateDailyInventory from '../middlewares/inventory.middleware.js';
@@ -22,7 +23,7 @@ inventoryBranchRouter.get('/branch/:nameBranch', getDailyInventoryByBranch);
 inventoryBranchRouter.get('/current/:nameBranch', getCurrentDayInventoryByBranch);
 inventoryBranchRouter.get('/date/:nameBranch/:date', getInventoryByDateAndBranch);
 inventoryBranchRouter.get('/stats/:nameBranch', getInventoryStatsByBranch);
-
+inventoryBranchRouter.get('/branch/:nameBranch/:id', getInventoryById);
 // PUT - Actualización de inventario
 inventoryBranchRouter.put('/update/:id', validateDailyInventory, updateBranchInventory);
 

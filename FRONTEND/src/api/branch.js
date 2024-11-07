@@ -28,13 +28,16 @@ export const getEmployeeByIdRequest = (id) => axios.get(`${API}/branch/employees
 // Solicitud para obtener empleados con filtros
 export const getEmployeesWithFiltersRequest = (branchName, filters) => {
     return axios.get(`${API}/branch/employees/getEmployeesWithFilters`, { 
-        params: { branchName, ...filters } 
+        params: { branchName, ...filters }
     });
 };
 
 // Funciones de inventario relacionadas con sucursales
 export const addInventoryToBranchRequest = (data) => 
     axios.post(`${API}/branch/inventory/addInventory`, data);
+
+export const closeInventoryToBranchRequest = (data) => 
+    axios.post(`${API}/branch/inventory/closeInventory`, data);
   
 export const getDailyInventoryByBranchRequest = (nameBranch) => 
     axios.get(`${API}/branch/inventory/branch/${nameBranch}`);
@@ -44,7 +47,10 @@ export const getCurrentDayInventoryByBranchRequest = (nameBranch) =>
   
 export const getInventoryByDateAndBranchRequest = (nameBranch, date) => 
     axios.get(`${API}/branch/inventory/date/${nameBranch}/${date}`);
-  
+
+export const getInventoryByIdRequest = (nameBranch, id) => 
+    axios.get(`${API}/branch/inventory/branch/${nameBranch}/${id}`);
+
 export const updateBranchInventoryRequest = (id, data) => 
     axios.put(`${API}/branch/inventory/update/${id}`, data);
   

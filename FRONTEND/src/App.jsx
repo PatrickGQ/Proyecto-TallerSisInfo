@@ -10,6 +10,7 @@ import ViewEmployees from './PAGES/ViewEmployees/components/ViewEmployees';
 import ViewSales from './PAGES/ViewSales/ViewSales';
 import RegisterInventory from './PAGES/RegisterInventory/RegisterInventory';
 import ViewInventory from './PAGES/ViewInventory/ViewInventory';
+import InventoryDetails from './PAGES/InventoryDetails/InventoryDetails';
 import RegisterIngredient from "./PAGES/RegisterIngredient/RegisterIngredient";
 import ViewIngredients from './PAGES/ViewIngredients/ViewIngredients';
 import EditRecipeProduct from './PAGES/EditRecipeProduct/EditRecipeProduct';
@@ -34,6 +35,7 @@ function App() {
           {/* Nuevas rutas de inventario */}
           <Route path="/inventario/registrar" element={<RegisterInventory />} />
           <Route path="/inventario/ver" element={<ViewInventory />} />
+          <Route path="/inventario/detalles/:id" element={<InventoryDetails />} />
           <Route path="/insumos/registrar" element={<RegisterIngredient />} />
           <Route path="/insumos/ver" element={<ViewIngredients />} />
         </Routes>
