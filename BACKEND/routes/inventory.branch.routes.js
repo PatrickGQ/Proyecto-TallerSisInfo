@@ -25,6 +25,6 @@ inventoryBranchRouter.get('/date/:nameBranch/:date', getInventoryByDateAndBranch
 inventoryBranchRouter.get('/stats/:nameBranch', getInventoryStatsByBranch);
 inventoryBranchRouter.get('/branch/:nameBranch/:id', getInventoryById);
 // PUT - Actualización de inventario
-inventoryBranchRouter.put('/update/:id', validateDailyInventory, updateBranchInventory);
+inventoryBranchRouter.put('/update/:id', updateBranchInventory);
 
 export default inventoryBranchRouter;

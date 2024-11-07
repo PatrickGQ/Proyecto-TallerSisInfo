@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useLocation, useNavigate  } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { getInventoryByIdRequest } from '../../api/branch';
 import { useBranch } from '../../CONTEXTS/BranchContext';
 import InventoryActions from './components/InventoryActions';
