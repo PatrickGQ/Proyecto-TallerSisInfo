@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaBox, FaUsers, FaReceipt, FaBuilding, FaClipboardList } from 'react-icons/fa';
+import { FaBox, FaUsers, FaReceipt, FaBuilding, FaClipboardList, FaWarehouse } from 'react-icons/fa';
 
 const NavBar = ({ closeNavBar, userRole }) => {
   const [ventasOpen, setVentasOpen] = useState(false);
@@ -8,12 +8,14 @@ const NavBar = ({ closeNavBar, userRole }) => {
   const [empleadosOpen, setEmpleadosOpen] = useState(false);
   const [sucursalesOpen, setSucursalesOpen] = useState(false);
   const [inventarioOpen, setInventarioOpen] = useState(false);
+  const [insumosOpen, setInsumosOpen] = useState(false);
 
   const toggleVentas = () => setVentasOpen(!ventasOpen);
   const toggleProductos = () => setProductosOpen(!productosOpen);
   const toggleEmpleados = () => setEmpleadosOpen(!empleadosOpen);
   const toggleSucursales = () => setSucursalesOpen(!sucursalesOpen);
   const toggleInventario = () => setInventarioOpen(!inventarioOpen);
+  const toggleInsumos = () => setInsumosOpen(!insumosOpen);
 
   return (
     <nav className="absolute z-40 left-0 w-64 bg-red-700 text-white shadow-lg overflow-y-auto">
@@ -43,6 +45,35 @@ const NavBar = ({ closeNavBar, userRole }) => {
           </li>
         )}
 
+        {/* Sección de Insumos */}
+        <li>
+          <button
+            onClick={toggleInsumos}
+            className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors w-full text-left">
+            <FaWarehouse className="text-xl" />
+            <span className="font-medium">Insumos</span>
+          </button>
+          {insumosOpen && (
+            <ul className="pl-8 space-y-2">
+              <li>
+                <Link
+                  to="/insumos/registrar"
+                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors"
+                  onClick={closeNavBar}>
+                  <span>Registrar Insumo</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/insumos/ver"
+                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors"
+                  onClick={closeNavBar}>
+                  <span>Ver Insumos</span>
+                </Link>
+              </li>
+            </ul>
+          )}
+        </li>
         {/* Inventario visible solo para admin */}
         {(userRole === 'admin' || userRole === 'worker') && (
           <li>

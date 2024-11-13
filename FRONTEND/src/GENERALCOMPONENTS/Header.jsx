@@ -1,4 +1,4 @@
-import { FaBars, FaUser, FaChevronDown } from 'react-icons/fa';
+import { FaBars, FaUser, FaChevronDown, FaShoppingCart } from 'react-icons/fa';
 import { useState } from 'react';
 import NavBar from './NavBar';
 import { useAuth } from '../GENERALCOMPONENTS/AuthContext';
@@ -13,6 +13,8 @@ const Header = () => {
   const { user, logOut, isLoading } = useAuth();
   const { selectedBranch, setSelectedBranch, branches } = useBranch();
   const navigate = useNavigate();
+
+  const cartCount = 3; // Esta variable debe estar vinculada al estado del carrito (número de productos en el carrito)
 
   const toggleNavBar = () => setShowNavBar(!showNavBar);
   const toggleUserMenu = () => setShowUserMenu(!showUserMenu);
@@ -76,6 +78,16 @@ const Header = () => {
             </div>
           </div>
           <div className="relative flex items-center space-x-4">
+            {/* Aquí está el carrito con la cantidad visible si es mayor a 0 */}
+            <Link to="/cart" className="relative text-white hover:text-yellow-300 transition-colors">
+              <FaShoppingCart className="text-2xl" />
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
+            {/* Menú de usuario */}
             <button
               onClick={toggleUserMenu}
               className="flex items-center space-x-2 bg-white text-red-600 py-1 px-3 mr-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
