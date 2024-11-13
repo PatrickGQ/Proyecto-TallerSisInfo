@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBranch } from '../../CONTEXTS/BranchContext';
-import { FaBook, FaEdit, FaShoppingCart, FaTrash } from 'react-icons/fa';
+import { FaEdit, FaShoppingCart, FaTrash } from 'react-icons/fa';
 import { CartContext } from '../cart/cartContext';
 import {
   getProductsByBranchRequest,
@@ -199,9 +199,9 @@ const ViewProducts = () => {
             
               <button
                 onClick={(e) => handleEditRecipe(e, product)}
-                className="text-red-500 hover:text-red-700"
+                className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2"
               >
-                <FaBook size={20} />
+                <FaEdit /> Editar Receta
               </button>
               <button
                 title="Eliminar producto"

@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useBranch } from '../../CONTEXTS/BranchContext';
 import { deleteProductRequest, getProductsByBranchRequest, editProductRequest } from '../../api/branch';
 import { CartContext } from '../cart/cartContext';
-import { FaEdit, FaTrash, FaShoppingCart, FaBook } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaShoppingCart } from 'react-icons/fa';
 import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
 
 const ProductDetails = () => {
@@ -42,11 +42,6 @@ const ProductDetails = () => {
 
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount(); // Llama a la función para actualizar el contador
-  };
-
-  const handleEditRecipe = (e, product) => {
-    e.stopPropagation(); // Evitar que el click se propague al contenedor
-    navigate('/productos/editar-receta', { state: { product } });
   };
 
   const handleEditClick = () => {
@@ -119,13 +114,6 @@ const ProductDetails = () => {
         className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition duration-200 mb-4"
       >
         <FaShoppingCart className="inline mr-2" /> Añadir al Carrito
-      </button>
-
-      <button
-        onClick={(e) => handleEditRecipe(e, product)}
-        className="w-full bg-purple-500 text-white py-3 rounded-lg font-medium hover:bg-purple-600 transition duration-200 mb-4"
-      >
-        <FaBook className="inline mr-2" /> Editar Receta
       </button>
 
       <div className="flex space-x-4">
