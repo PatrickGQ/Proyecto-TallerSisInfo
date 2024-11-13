@@ -74,7 +74,7 @@ const NavBar = ({ closeNavBar, userRole }) => {
             </ul>
           )}
         </li>
-        {/* Inventario visible solo para admin y worker */}
+        {/* Inventario visible solo para admin */}
         {(userRole === 'admin' || userRole === 'worker') && (
           <li>
             <button onClick={toggleInventario} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors w-full text-left">
@@ -83,11 +83,14 @@ const NavBar = ({ closeNavBar, userRole }) => {
             </button>
             {inventarioOpen && (
               <ul className="pl-8 space-y-2">
-                <li>
-                  <Link to="/inventarios/registrarInventario" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
-                    <span>Registrar Inventario</span>
-                  </Link>
-                </li>
+                {/* Registrar inventario solo para admin */}
+                {userRole === 'admin' && (
+                  <li>
+                    <Link to="/inventarios/registrarInventario" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
+                      <span>Registrar Inventario</span>
+                    </Link>
+                  </li>
+                )}
                 <li>
                   <Link to="/inventarios/verInventarios" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
                     <span>Ver Inventarios</span>
@@ -98,7 +101,7 @@ const NavBar = ({ closeNavBar, userRole }) => {
           </li>
         )}
 
-        {/* Productos visibles para todos los roles, pero registrar solo para admin y worker */}
+        {/* Productos visibles para todos los roles, pero registrar solo para admin */}
         <li>
           <button onClick={toggleProductos} className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors w-full text-left">
             <FaBox className="text-xl" />
@@ -106,15 +109,14 @@ const NavBar = ({ closeNavBar, userRole }) => {
           </button>
           {productosOpen && (
             <ul className="pl-8 space-y-2">
-              {userRole === 'admin' || userRole === 'worker' ? ( // Mostrar opciones de registrar solo para admin y worker
-                <>
-                  <li>
-                    <Link to="/productos/registrarProducto" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
-                      <span>Registrar Producto</span>
-                    </Link>
-                  </li>
-                </>
-              ) : null} 
+              {/* Registrar producto solo para admin */}
+              {userRole === 'admin' && (
+                <li>
+                  <Link to="/productos/registrarProducto" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
+                    <span>Registrar Producto</span>
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link to="/productos/menu" className="flex items-center space-x-2 p-2 rounded-lg hover:bg-red-600 transition-colors" onClick={closeNavBar}>
                   <span>Ver Productos</span>

@@ -20,12 +20,13 @@ import Home from "./PAGES/HomePage/Home";
 import ProductDetails from "./PAGES/ProductDetail/productDetail";
 import Cart from "./PAGES/cart/cart";
 import { CartProvider } from "./PAGES/cart/cartContext";
+import UserProfile from "./PAGES/UserProfile";
 
 // Componente que verifica si el usuario está autenticado
 const PrivateRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth(); // Obteniendo el estado de autenticación
+  const { isAuthenticated, isLoading } = useAuth(); // Obteniendo el estado de autenticación
 
-  if (loading) return <div>Cargando...</div>; // Muestra un loader mientras se verifica la autenticación
+  if (isLoading) return <div>Cargando...</div>; // Muestra un loader mientras se verifica la autenticación
 
   return isAuthenticated ? children : <Navigate to="/login" />;
 };
@@ -33,7 +34,7 @@ const PrivateRoute = ({ children }) => {
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <AuthProvider>
         <BranchProvider>
           <CartProvider> {/* Envuelve Main en CartProvider */}
@@ -47,9 +48,9 @@ function App() {
 
 function Main() {
   const location = useLocation();
-  const { isAuthenticated, loading } = useAuth(); // Aquí también puedes obtener el estado de autenticación
+  const { isAuthenticated, isLoading } = useAuth(); // Aquí también puedes obtener el estado de autenticación
 
-  if (loading) return <div>Cargando...</div>; // Muestra un loader mientras se verifica la autenticación
+  if (isLoading) return <div>Cargando...</div>; // Muestra un loader mientras se verifica la autenticación
 
   // Si el usuario no está autenticado y está accediendo a una página diferente de /login, redirige a /login
   if (!isAuthenticated && location.pathname !== '/login') {
@@ -60,8 +61,9 @@ function Main() {
     <>
       {location.pathname !== '/login' && <Header />}
       <Routes>
+          <Route path="/profile" element={<UserProfile />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/inicio" element= {<Home/>}/>
+          <Route path="/inicio" element={<Home />} />
           {/* Rutas protegidas */}
           <Route path="/productos/registrarProducto" element={<PrivateRoute><RegisterProduct /></PrivateRoute>} />
           <Route path="/productos/menu" element={<PrivateRoute><ViewProducts /></PrivateRoute>} />

@@ -2,15 +2,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBranch } from '../../CONTEXTS/BranchContext';
-import { FaEdit, FaShoppingCart, FaTrash } from 'react-icons/fa';
+import { FaBook, FaEdit, FaShoppingCart, FaTrash } from 'react-icons/fa';
 import { CartContext } from '../cart/cartContext';
-import {
-  getProductsByBranchRequest,
-  editProductRequest,
-  deleteProductRequest,
-} from "../../api/branch";
+import { getProductsByBranchRequest, editProductRequest, deleteProductRequest } from "../../api/branch"; // Keep a single import line
 import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
 import AcceptMessage from "../../GENERALCOMPONENTS/AcceptMessage";
+import { useAuth } from '../../GENERALCOMPONENTS/AuthContext'; // Importa el contexto de autenticación
 
 const ViewProducts = () => {
   const [products, setProducts] = useState([]);
@@ -22,6 +19,9 @@ const ViewProducts = () => {
   const navigate = useNavigate();
   const { updateCartCount } = useContext(CartContext);
   const { selectedBranch } = useBranch();
+  const { user } = useAuth(); // Obtén la información del usuario
+
+  const userRole = user ? user.role : null; // Obtén el rol del usuario
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -195,13 +195,11 @@ const ViewProducts = () => {
               >
                 <FaShoppingCart size={20} />
               </button>
-              {/* Botón de Editar Receta */}
-            
               <button
                 onClick={(e) => handleEditRecipe(e, product)}
-                className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-2"
+                className="text-red-500 hover:text-red-700"
               >
-                <FaEdit /> Editar Receta
+                <FaBook size={20} />
               </button>
               <button
                 title="Eliminar producto"
