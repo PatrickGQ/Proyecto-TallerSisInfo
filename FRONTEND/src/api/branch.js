@@ -70,7 +70,11 @@ export const getSalesByBranchRequest = (nameBranch) => axios.post(`${API}/branch
 
 export const getTodaySalesByBranchRequest = (nameBranch) => axios.post(`${API}/branch/sales/getTodaySales`, { "nameBranch": nameBranch });
 
-export const getSalesByDateRequest = (nameBranch, date) => axios.post(`${API}/branch/sales/getByDate/${date}`, { "nameBranch": nameBranch });
+export const getSalesByDateRequest = (nameBranch, date) => 
+  axios.get(`${API}/branch/sales/getByDate/${nameBranch}/${date}`);
+
+export const getWeeklyProfitsByBranchRequest = (nameBranch) => 
+  axios.get(`${API}/branch/sales/weeklyProfits/${nameBranch}`);
 
 export const addEmployeeToBranchRequest = (data) => axios.post(`${API}/branch/employees/addEmployee`, data);
 

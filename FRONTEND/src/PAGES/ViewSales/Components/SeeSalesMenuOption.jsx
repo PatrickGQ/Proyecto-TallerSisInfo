@@ -33,15 +33,13 @@ const SeeSalesMenuOption = ({ setSelectedOption }) => {
             >
               Hoy
             </button>
-            
-            {/* 
             <button
               onClick={() => handleOptionSelect('date')}
               className="w-full py-2 px-4 rounded-lg bg-white hover:bg-gray-100 text-left mt-1"
             >
               Obtener ventas por fecha
             </button>
-            <button
+            {/*<button
               onClick={() => handleOptionSelect('time')}
               className="w-full py-2 px-4 rounded-lg bg-white hover:bg-gray-100 text-left mt-1"
             >

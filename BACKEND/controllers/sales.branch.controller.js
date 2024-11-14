@@ -167,8 +167,7 @@ export const getSalesByHourDB = async (req, res) => {
     }
 };
 export const getSalesByDateDB = async (req, res) => {
-    const { date } = req.params; 
-    const { nameBranch } = req.body; 
+    const { date, nameBranch } = req.params;
 
     console.log("Fecha recibida:", date);
     console.log("Sucursal recibida:", nameBranch);
@@ -199,5 +198,63 @@ export const getSalesByDateDB = async (req, res) => {
     } catch (error) {
         console.error("Error en getSalesByDateDB:", error);
         res.status(500).json({ success: false, message: "Error al obtener las ventas por fecha.", error: error.message });
+    }
+};
+
+export const getWeeklyProfitsByBranch = async (req, res) => {
+    try {
+        const { nameBranch } = req.params;
+        const branch = await Branch.findOne({ nameBranch: nameBranch.toLowerCase() });
+        if (!branch) {
+            return res.status(404).json({ success: false, message: 'Sucursal no encontrada' });
+        }
+
+        const endDate = new Date();
+        const startDate = new Date();
+        startDate.setDate(endDate.getDate() - 7);
+
+        const sales = await Sale.find({
+            saleDate: {
+                $gte: startDate,
+                $lt: endDate
+            },
+            _id: { $in: branch.sales }
+        });
+
+        const totalRevenue = sales.reduce((sum, sale) => sum + sale.totalAmount, 0);
+        
+        // Calcular costo total de ingredientes
+        let totalCost = 0;
+        for (const sale of sales) {
+            for (const item of sale.products) {
+                const product = await Product.findById(item.productId).populate('recipe.ingredientId');
+                if (product && product.recipe) {
+                    const productCost = product.recipe.reduce((cost, ingredient) => {
+                        return cost + (ingredient.amount * ingredient.ingredientId.costPerUnit);
+                    }, 0);
+                    totalCost += productCost * item.quantity;
+                }
+            }
+        }
+
+        const profit = totalRevenue - totalCost;
+
+        res.status(200).json({
+            success: true,
+            data: {
+                totalRevenue,
+                totalCost,
+                profit,
+                salesCount: sales.length,
+                startDate,
+                endDate
+            }
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: 'Error al calcular ganancias semanales',
+            error: error.message
+        });
     }
 };

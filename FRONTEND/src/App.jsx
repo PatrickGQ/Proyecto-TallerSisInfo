@@ -21,6 +21,7 @@ import ProductDetails from "./PAGES/ProductDetail/productDetail";
 import Cart from "./PAGES/cart/cart";
 import { CartProvider } from "./CONTEXTS/cartContext";
 import UserProfile from "./PAGES/UserProfile";
+import Report from "./PAGES/Report/Report";
 import PrivateRoute from "./GENERALCOMPONENTS/PrivateRoute";
 import Index from "./PAGES/Index";
 
@@ -75,6 +76,7 @@ function Main() {
         <Route path="/insumos/ver" element={<PrivateRoute allowedRoles={["admin"]}><ViewIngredients /></PrivateRoute>} />
         <Route path="/product/:id" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><ProductDetails /></PrivateRoute>} />
         <Route path="/cart" element={<PrivateRoute allowedRoles={["client"]}><Cart /></PrivateRoute>} />
+          <Route path="/reports" element={<PrivateRoute allowedRoles={["admin"]}><Report /></PrivateRoute>} /> 
       </Routes>
     </>
   );

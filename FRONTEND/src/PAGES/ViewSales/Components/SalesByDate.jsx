@@ -1,36 +1,32 @@
 import { useState } from 'react';
+import { format } from 'date-fns';
+import { useBranch } from "../../../CONTEXTS/BranchContext.tsx";
+import { getSalesByDateRequest } from '../../../api/branch.js';
+import SalesList from './SalesList'; 
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useBranch } from "../../../CONTEXTS/BranchContext.tsx";
-import SalesList from './SalesList'; 
-import { getSalesByDateRequest } from '../../../api/branch.js';
 
 const SalesByDate = ({ setError, setViewSale }) => {
   const [selectedDate, setSelectedDate] = useState(null);
   const { selectedBranch } = useBranch();
   const [sales, setSales] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleDateChange = async (saleDate) => {
     setSelectedDate(saleDate);
-    if (saleDate) {
-      const formattedDate = `${saleDate.getFullYear()}-${(saleDate.getMonth() + 1).toString().padStart(2, '0')}-${saleDate.getDate().toString().padStart(2, '0')}`;
-      
-      console.log("Sale Date:", saleDate);
-      console.log("Formatted Date:", formattedDate);
-      console.log("Selected Branch:", selectedBranch);
-
-      if (!selectedBranch) {
-        setError("Por favor, selecciona una sucursal.");
-        return;
-      }
-
-      try {
-        const response = await getSalesByDateRequest(formattedDate, selectedBranch);
-        setSales(response.data);
-      } catch (error) {
-        setError("Error al obtener las ventas por fecha");
-        console.error("Error fetching sales by date:", error);
-      }
+    if (!saleDate || !selectedBranch) return;
+  
+    const formattedDate = format(saleDate, 'yyyy-MM-dd');
+    const branchName = typeof selectedBranch === 'string' ? selectedBranch : selectedBranch.nameBranch;
+  
+    try {
+      console.log('Formatted Date:', formattedDate);
+      console.log('Branch Name:', branchName);
+      const response = await getSalesByDateRequest(formattedDate, branchName);
+      setSales(response.data.sales || []);
+    } catch (error) {
+      console.error('Error:', error);
+      setError(error);
     }
   };
 
