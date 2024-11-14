@@ -7,6 +7,50 @@ export const getBranchsRequest = () => axios.get(`${API}/branches`);
 export const deleteBranchRequest = (id) => axios.delete(`${API}/branches/${id}`);
 export const editBranchRequest = (id, data) => axios.put(`${API}/branches/${id}`, data);
 
+export const addImageToBranchesRequest = (imageFile, branchIds) => {
+    const formData = new FormData();
+    formData.append('image', imageFile); // Agregar la imagen al FormData
+    formData.append('branchIds', JSON.stringify(branchIds)); // Agregar las sucursales seleccionadas al FormData
+  
+    return axios.patch(`${API}/branches/add-image`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  };  
+
+  export const addTextToBranchesRequest = async (textContent, branchIds) => {
+    try {
+      const response = await axios.patch(`${API}/branches/branch-text`, {
+        textContent,
+        branchIds,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error al agregar el texto a las sucursales:', error);
+      throw error;
+    }
+  };  
+
+ export const getBranchImagesRequest = (id) => {
+    return axios.get(`http://localhost:3000/api/branches/${id}/images`)
+      .then(response => response.data)  // Retorna los datos de la respuesta
+      .catch(error => {
+        console.error('Error al obtener las imágenes de la sucursal:', error);
+        throw error;  // Lanzamos el error para que el componente o función pueda manejarlo
+      });
+  };
+  
+  export const getBranchTextsRequest = (id) => {
+    console.log("IDDDD", id)
+    return axios.get(`http://localhost:3000/api/branches/${id}/texts`)
+      .then(response => response.data)  // Retorna los datos de la respuesta
+      .catch(error => {
+        console.error('Error al obtener los textos de la sucursal:', error);
+        throw error;  // Lanzamos el error para que el componente o función pueda manejarlo
+      });
+  };
+  
 
 
 export const addProductToBranchRequest = ( data ) => axios.post(`${API}/branch/products/addProduct`, data);

@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
-import BranchList from './Components/BranchList';
-import RegisterBranch from './Components/RegisterBranch';
-import { FaImage, FaTextWidth, FaEdit } from 'react-icons/fa';
-import { getBranchsRequest } from '../../api/branch';
+import { useState, useEffect } from "react";
+import BranchList from "./Components/BranchList";
+import RegisterBranch from "./Components/RegisterBranch";
+import { FaImage, FaTextWidth, FaEdit } from "react-icons/fa";
+import { addImageToBranchesRequest, addTextToBranchesRequest, getBranchsRequest } from "../../api/branch";
+import { useBranch } from "../../CONTEXTS/BranchContext";
 
 const BranchesPage = () => {
   const [showManageBranches, setShowManageBranches] = useState(false);
@@ -19,9 +20,9 @@ const BranchesPage = () => {
       setLoading(true);
       try {
         const response = await getBranchsRequest();
-        setBranches(response.data); // Suponiendo que la respuesta tiene un arreglo de sucursales
+        setBranches(response.data);
       } catch (error) {
-        console.error('Error al obtener las sucursales:', error);
+        console.error("Error al obtener las sucursales:", error);
       } finally {
         setLoading(false);
       }
@@ -46,7 +47,9 @@ const BranchesPage = () => {
   // Función para manejar la selección de sucursales
   const handleBranchSelection = (branchId) => {
     setSelectedBranches((prev) =>
-      prev.includes(branchId) ? prev.filter((id) => id !== branchId) : [...prev, branchId]
+      prev.includes(branchId)
+        ? prev.filter((id) => id !== branchId)
+        : [...prev, branchId]
     );
   };
 
@@ -60,12 +63,47 @@ const BranchesPage = () => {
     setTextContent(e.target.value);
   };
 
-  // Función para confirmar la acción
-  const handleConfirm = () => {
-    if ((selectedOption === 'image' && imageFile && selectedBranches.length > 0) || 
-        (selectedOption === 'text' && textContent.trim().length > 0 && selectedBranches.length > 0)) {
-      console.log('Acción confirmada');
-      // Aquí puedes agregar la lógica para procesar la imagen o el texto
+  const handleConfirm = async () => {
+    if (
+      (selectedOption === "image" &&
+        imageFile &&
+        selectedBranches.length > 0) ||
+      (selectedOption === "text" &&
+        textContent.trim().length > 0 &&
+        selectedBranches.length > 0)
+    ) {
+      try {
+        // Si seleccionó 'image' y hay una imagen
+        if (selectedOption === "image" && imageFile) {
+          await addImageToBranchesRequest(
+            imageFile,
+            selectedBranches.length === branches.length
+              ? ["all"]
+              : selectedBranches
+          );
+        }
+
+        // Si seleccionó 'text' y hay contenido de texto
+        if (selectedOption === "text" && textContent.trim().length > 0) {
+          await addTextToBranchesRequest(
+            textContent,
+            selectedBranches.length === branches.length
+              ? ["all"]
+              : selectedBranches
+          );
+        }
+
+        setShowManageBranches(false);
+        setSelectedOption(null);
+        setSelectedBranches([]);
+        setImageFile(null);
+        setTextContent("");
+
+        alert("Acción confirmada correctamente");
+      } catch (error) {
+        console.error("Error al procesar la acción:", error);
+        alert("Hubo un error al procesar la acción.");
+      }
     }
   };
 
@@ -81,7 +119,9 @@ const BranchesPage = () => {
   return (
     <div className="bg-gray-50 min-h-screen font-sans">
       <div className="container mx-auto p-6">
-        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">Gestión de Sucursales</h1>
+        <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">
+          Gestión de Sucursales
+        </h1>
 
         <div className="text-center mb-8">
           <button
@@ -95,20 +135,22 @@ const BranchesPage = () => {
         {/* Sección de gestión de sucursales */}
         {showManageBranches && (
           <div className="bg-white p-6 rounded-lg shadow-xl mb-10">
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">¿Qué deseas hacer?</h2>
+            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+              ¿Qué deseas hacer?
+            </h2>
             <div className="flex justify-center gap-8">
               <button
-                onClick={() => setSelectedOption('image')}
+                onClick={() => setSelectedOption("image")}
                 className={`${
-                  selectedOption === 'image' ? 'bg-green-500' : 'bg-green-400'
+                  selectedOption === "image" ? "bg-green-500" : "bg-green-400"
                 } text-white py-3 px-8 rounded-full hover:bg-green-600 transition-all`}
               >
                 <FaImage className="mr-2" /> Subir Imagen
               </button>
               <button
-                onClick={() => setSelectedOption('text')}
+                onClick={() => setSelectedOption("text")}
                 className={`${
-                  selectedOption === 'text' ? 'bg-blue-500' : 'bg-blue-400'
+                  selectedOption === "text" ? "bg-blue-500" : "bg-blue-400"
                 } text-white py-3 px-8 rounded-full hover:bg-blue-600 transition-all`}
               >
                 <FaTextWidth className="mr-2" /> Subir Texto
@@ -116,10 +158,17 @@ const BranchesPage = () => {
             </div>
 
             {/* Selección de imagen */}
-            {selectedOption === 'image' && (
+            {selectedOption === "image" && (
               <div className="mt-6">
-                <input type="file" className="block w-full mb-4 p-2" onChange={handleImageChange} />
-                <label className="text-lg">Selecciona las sucursales a las que deseas publicar esta imagen</label>
+                <input
+                  type="file"
+                  className="block w-full mb-4 p-2"
+                  onChange={handleImageChange}
+                />
+                <label className="text-lg">
+                  Selecciona las sucursales a las que deseas publicar esta
+                  imagen
+                </label>
                 <button
                   onClick={handleSelectAllBranches}
                   className="bg-blue-500 text-white py-2 px-6 rounded-full mt-4 hover:bg-blue-600 transition-all"
@@ -139,7 +188,9 @@ const BranchesPage = () => {
                           onChange={() => handleBranchSelection(branch._id)}
                           className="mr-2"
                         />
-                        <label htmlFor={branch._id} className="ml-2">{branch.nameBranch}</label>
+                        <label htmlFor={branch._id} className="ml-2">
+                          {branch.nameBranch}
+                        </label>
                       </div>
                     ))
                   )}
@@ -148,7 +199,7 @@ const BranchesPage = () => {
             )}
 
             {/* Selección de texto */}
-            {selectedOption === 'text' && (
+            {selectedOption === "text" && (
               <div className="mt-6">
                 <textarea
                   value={textContent}
@@ -157,7 +208,9 @@ const BranchesPage = () => {
                   rows="4"
                   placeholder="Escribe tu texto aquí..."
                 ></textarea>
-                <label className="text-lg">Selecciona las sucursales a las que deseas publicar este texto</label>
+                <label className="text-lg">
+                  Selecciona las sucursales a las que deseas publicar este texto
+                </label>
                 <button
                   onClick={handleSelectAllBranches}
                   className="bg-blue-500 text-white py-2 px-6 rounded-full mt-4 hover:bg-blue-600 transition-all"
@@ -177,7 +230,9 @@ const BranchesPage = () => {
                           onChange={() => handleBranchSelection(branch._id)}
                           className="mr-2"
                         />
-                        <label htmlFor={branch._id} className="ml-2">{branch.nameBranch}</label>
+                        <label htmlFor={branch._id} className="ml-2">
+                          {branch.nameBranch}
+                        </label>
                       </div>
                     ))
                   )}
@@ -189,11 +244,19 @@ const BranchesPage = () => {
             <div className="mt-8 text-center flex justify-center gap-4">
               <button
                 onClick={handleConfirm}
-                disabled={!(selectedBranches.length > 0 && (textContent.trim().length > 0 || imageFile))}
+                disabled={
+                  !(
+                    selectedBranches.length > 0 &&
+                    (textContent.trim().length > 0 || imageFile)
+                  )
+                }
                 className={`${
-                  !(selectedBranches.length > 0 && (textContent.trim().length > 0 || imageFile)) 
-                    ? 'bg-gray-400' 
-                    : 'bg-yellow-500'
+                  !(
+                    selectedBranches.length > 0 &&
+                    (textContent.trim().length > 0 || imageFile)
+                  )
+                    ? "bg-gray-400"
+                    : "bg-yellow-500"
                 } text-white py-3 px-8 rounded-full hover:bg-yellow-600 transition-all`}
               >
                 Confirmar

@@ -36,6 +36,26 @@ const branchModel = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Ingredient'
   }],
+  images: [{
+    url: {
+      type: String, // URL de la imagen subida
+      required: false,
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  texts: [{
+    content: {
+      type: String, // Texto subido
+      required: false
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
   createdAt: {
     type: Date,
     default: Date.now,
@@ -46,12 +66,9 @@ const branchModel = new Schema({
   }
 });
 
-// Middleware para actualizar el campo updatedAt antes de guardar
 branchModel.pre('save', function(next) {
   this.updatedAt = Date.now();
   next();
 });
 
 export default mongoose.model('Branch', branchModel);
-
-

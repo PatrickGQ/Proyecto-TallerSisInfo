@@ -143,3 +143,161 @@ export const editBranch = async (req, res) => {
     });
   }
 };
+
+export const addImageToBranches = async (req, res) => {
+  try {
+    console.log("hola");
+    // La imagen se encuentra en req.file
+    const imageUrl = req.file ? req.file.path : null;  // Obtener la ruta de la imagen subida
+    const branchIds = JSON.parse(req.body.branchIds);  // Obtener branchIds desde req.body
+
+    console.log(imageUrl, branchIds);
+
+    // Verificar si la imagen o las sucursales están presentes
+    if (!imageUrl || !branchIds || branchIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Imagen o sucursales no especificadas correctamente.",
+      });
+    }
+
+    let branchesToUpdate;
+    if (branchIds.length === 1 && branchIds[0] === 'all') {
+      // Si el array tiene 'all', actualizamos todas las sucursales
+      branchesToUpdate = await Branch.find();
+    } else {
+      // Si hay sucursales seleccionadas, actualizamos solo esas
+      branchesToUpdate = await Branch.find({ _id: { $in: branchIds } });
+    }
+
+    // Asegurarse de que se encontraron sucursales para actualizar
+    if (branchesToUpdate.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No se encontraron sucursales para actualizar.",
+      });
+    }
+
+    // Agregar la imagen a cada sucursal seleccionada
+    for (let branch of branchesToUpdate) {
+      branch.images.push({ url: imageUrl });
+      await branch.save(); // Guardar la sucursal actualizada
+    }
+
+    // Responder con éxito
+    res.status(200).json({
+      success: true,
+      message: `Imagen agregada exitosamente a ${branchesToUpdate.length} sucursales.`,
+    });
+  } catch (error) {
+    console.error("Error al agregar la imagen a las sucursales:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al agregar la imagen.",
+      error: error.message,
+    });
+  }
+};
+
+export const getBranchImages = async (req, res) => {
+  try {
+    // Obtener el ID de la sucursal desde los parámetros de la URL
+    const { id } = req.params;
+
+    // Buscar la sucursal por su ID
+    const branch = await Branch.findById(id);
+
+    if (!branch) {
+      return res.status(404).json({
+        success: false,
+        message: "Sucursal no encontrada.",
+      });
+    }
+
+    // Retornar las imágenes asociadas a la sucursal
+    res.status(200).json({
+      success: true,
+      images: branch.images, // Devolver el arreglo de imágenes
+    });
+  } catch (error) {
+    console.error("Error al obtener las imágenes de la sucursal:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener las imágenes.",
+      error: error.message,
+    });
+  }
+};
+
+
+export const addTextToBranches = async (req, res) => {
+  try {
+    const { textContent, branchIds } = req.body;
+    console.log("holaaaaaaaaaaaaaaaaaaaaaaaa")
+
+    if (!textContent || !branchIds || branchIds.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Texto o sucursales no especificados correctamente.",
+      });
+    }
+
+    let branchesToUpdate;
+    if (branchIds.length === 1 && branchIds[0] === 'all') {
+      branchesToUpdate = await Branch.find();
+    } else {
+      branchesToUpdate = await Branch.find({ _id: { $in: branchIds } });
+    }
+
+    if (branchesToUpdate.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No se encontraron sucursales para actualizar.",
+      });
+    }
+
+    for (let branch of branchesToUpdate) {
+      branch.texts.push({ content: textContent });
+      await branch.save();
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Texto agregado exitosamente a ${branchesToUpdate.length} sucursales.`,
+    });
+  } catch (error) {
+    console.error("Error al agregar el texto a las sucursales:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al agregar el texto.",
+      error: error.message,
+    });
+  }
+};
+
+
+export const getBranchTexts = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const branch = await Branch.findById(id);
+
+    if (!branch) {
+      return res.status(404).json({
+        success: false,
+        message: "Sucursal no encontrada.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      texts: branch.texts,
+    });
+  } catch (error) {
+    console.error("Error al obtener los textos de la sucursal:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener los textos.",
+      error: error.message,
+    });
+  }
+};

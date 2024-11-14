@@ -1,40 +1,43 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'; 
 import Slider from 'react-slick';
-import axios from 'axios';
 import { FaEye, FaBullhorn } from 'react-icons/fa';
-
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { useBranch } from '../../CONTEXTS/BranchContext';
+import { getBranchImagesRequest, getBranchTextsRequest } from '../../api/branch';
 
 const HomeWorker = () => {
-  const [motivationalImages, setMotivationalImages] = useState([]);
   const [branchMessages, setBranchMessages] = useState([]);
+  const [branchImages, setBranchImages] = useState([]);
+  const { selectedBranch, branches } = useBranch();
 
-  // Fetch motivational images
-  useEffect(() => {
-    const fetchMotivationalImages = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/motivational-images');
-        setMotivationalImages(response.data);
-      } catch (error) {
-        console.error('Error al obtener imágenes motivacionales:', error);
+  const fetchBranchData = async (branchId) => {
+    try {
+      if (branchId) {
+        // Fetch mensajes de la sucursal
+        const messageResponse = await getBranchTextsRequest(branchId);
+        console.log(messageResponse.texts)
+        setBranchMessages(messageResponse.texts || []);
+        
+        // Fetch imágenes de la sucursal
+        const imageResponse = await getBranchImagesRequest(branchId);
+        setBranchImages(imageResponse.images || []);
+      } else {
+        setBranchMessages([]); 
+        setBranchImages([]); 
       }
-    };
-    fetchMotivationalImages();
-  }, []);
+    } catch (error) {
+      console.error("Error al obtener los datos de la sucursal:", error);
+    }
+  };
 
-  // Fetch branch messages
   useEffect(() => {
-    const fetchBranchMessages = async () => {
-      try {
-        const response = await axios.get('http://localhost:3000/api/branch-messages');
-        setBranchMessages(response.data);
-      } catch (error) {
-        console.error('Error al obtener mensajes de la sucursal:', error);
-      }
-    };
-    fetchBranchMessages();
-  }, []);
+    const branchId = selectedBranch
+      ? branches.find(branch => branch.nameBranch === selectedBranch)?._id
+      : null;
+    
+    fetchBranchData(branchId);
+  }, [selectedBranch, branches]);  // Reemplazar dos useEffects por uno solo
 
   // Configuración del carrusel de imágenes motivacionales
   const motivationalSliderSettings = {
@@ -45,38 +48,35 @@ const HomeWorker = () => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
-    fade: true, // Efecto de desvanecimiento entre las imágenes
+    fade: true,
   };
 
   // Configuración del carrusel de mensajes
   const messagesSliderSettings = {
-    dots: false,
+    dots: true,
     infinite: true,
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 5000,
-    arrows: false, // Quitar las flechas para hacerlo más limpio
+    arrows: false,
+    fade: true
   };
 
   return (
     <div className="bg-gray-50 min-h-screen font-sans flex flex-col">
-
-      {/* Carrusel de Imágenes Motivacionales */}
+      {/* Carrusel de Imágenes de la Sucursal */}
       <section className="my-10">
-        <h2 className="text-center text-3xl font-bold mb-6 text-gray-800">Imágenes Motivacionales</h2>
-        <Slider {...motivationalSliderSettings} className="max-w-screen-xl mx-auto">
-          {motivationalImages.map((image, index) => (
+        <h2 className="text-center text-3xl font-bold mb-6 text-gray-800">Imágenes de la Sucursal</h2>
+        <Slider {...motivationalSliderSettings} className="w-1/2 mx-auto">
+          {branchImages.map((image, index) => (
             <div key={index} className="relative transform transition-all hover:scale-105">
               <img
-                src={`http://localhost:3000/uploads/${image.imageUrl}`}
-                alt={`Motivational image ${index + 1}`}
+                src={`http://localhost:3000/${image.url}`}
+                alt={`Branch image ${index + 1}`}
                 className="w-full h-64 sm:h-96 object-cover rounded-xl shadow-lg"
               />
-              <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 p-4 text-white">
-                <p className="text-xl">{image.caption}</p>
-              </div>
             </div>
           ))}
         </Slider>
@@ -91,7 +91,6 @@ const HomeWorker = () => {
               <div key={index} className="bg-white text-gray-800 p-8 rounded-lg shadow-2xl transform hover:scale-105 transition-all">
                 <div className="flex items-center justify-center mb-4">
                   <FaBullhorn className="text-3xl text-yellow-400 mr-2" />
-                  <p className="text-xl font-semibold">{message.title}</p>
                 </div>
                 <p className="mt-4">{message.content}</p>
               </div>
