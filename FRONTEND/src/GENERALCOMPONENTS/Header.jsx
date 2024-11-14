@@ -1,5 +1,5 @@
 import { FaBars, FaUser, FaChevronDown, FaShoppingCart } from 'react-icons/fa';
-import { useContext, useState } from 'react';
+import { useContext, useState, useRef, useEffect } from 'react';
 import NavBar from './NavBar';
 import { useAuth } from '../GENERALCOMPONENTS/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -14,16 +14,16 @@ const Header = () => {
   const { user, logOut, isLoading } = useAuth();
   const { selectedBranch, setSelectedBranch, branches } = useBranch();
   const navigate = useNavigate();
+  const { cartCount } = useContext(CartContext);
 
+  const toggleNavBar = () => {
+    setShowNavBar(prevState => !prevState);
+  };
 
-  const toggleNavBar = () => setShowNavBar(!showNavBar);
   const toggleUserMenu = () => setShowUserMenu(!showUserMenu);
   const toggleBranchesMenu = () => setShowBranches(!showBranches);
 
   const closeNavBar = () => setShowNavBar(false);
-
-  // Usa el contexto del carrito para el contador en tiempo real
-  const { cartCount } = useContext(CartContext);
 
   const handleLogoutClick = async () => {
     try {
@@ -36,20 +36,24 @@ const Header = () => {
 
   const handleBranchSelect = (branch) => {
     setSelectedBranch(branch.nameBranch);
-    setShowBranches(false); // Cierra el menú de sucursales
+    setShowBranches(false); 
   };
 
-  const userRole = user ? user.role : null; // Obtener el rol del usuario
+  const userRole = user ? user.role : null;
 
-  // Mostrar un cargador mientras se verifica la autenticación
   if (isLoading) return <div>Cargando...</div>;
+
+
 
   return (
     <>
-      {user && (
+      {(userRole === "admin" || userRole === "client" || userRole === "worker") && (
         <header className="flex items-center justify-between p-4 bg-red-600 text-white shadow-lg">
           <div className="flex items-center space-x-4">
-            <button onClick={toggleNavBar} className="text-3xl hover:text-yellow-300 transition-colors">
+            <button
+              onClick={toggleNavBar} 
+              className="text-3xl hover:text-yellow-300 transition-colors"
+            >
               <FaBars />
             </button>
             <Link to="/inicio" className="text-2xl font-semibold hover:text-yellow-300 transition-colors">
@@ -64,37 +68,32 @@ const Header = () => {
                   {branches.length > 0 ? (
                     <ul className="max-h-48 overflow-y-auto custom-scrollbar">
                       {branches.map((branch) => (
-                        <li
-                          key={branch._id}
-                          className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors"
-                          onClick={() => handleBranchSelect(branch)}
-                        >
+                        <li key={branch._id} className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors" onClick={() => handleBranchSelect(branch)}>
                           {branch.nameBranch}
                         </li>
                       ))}
                     </ul>
                   ) : (
-                    <div className="px-4 py-2 text-gray-500">No hay sucursales disponibles</div>
+                    <div className="px-4 py-2 text-gray-500">
+                      No hay sucursales disponibles
+                    </div>
                   )}
                 </div>
               )}
             </div>
           </div>
           <div className="relative flex items-center space-x-4">
-            {/* Aquí está el carrito con la cantidad visible si es mayor a 0 */}
-            <Link to="/cart" className="relative text-white hover:text-yellow-300 transition-colors">
-              <FaShoppingCart className="text-2xl" />
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
-            {/* Menú de usuario */}
-            <button
-              onClick={toggleUserMenu}
-              className="flex items-center space-x-2 bg-white text-red-600 py-1 px-3 mr-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
-            >
+            {userRole === "client" && (
+              <Link to="/cart" className="relative text-white hover:text-yellow-300 transition-colors">
+                <FaShoppingCart className="text-2xl" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-yellow-400 text-red-600 text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
+            <button onClick={toggleUserMenu} className="flex items-center space-x-2 bg-white text-red-600 py-1 px-3 mr-2 rounded-full shadow-md hover:bg-gray-100 transition-colors">
               <span className="text-lg font-medium">{user.name}</span>
               <FaUser className="text-2xl" />
             </button>
@@ -102,12 +101,9 @@ const Header = () => {
               <div className="absolute right-0 top-full mt-2 w-48 bg-white text-red-600 shadow-lg rounded-lg z-10">
                 <ul>
                   <li className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-t-lg">
-                    <Link to="/profile">Ver Usuario</Link> {/* Enlace al perfil */}
+                    <Link to="/profile">Ver Usuario</Link>
                   </li>
-                  <li
-                    className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-b-lg"
-                    onClick={handleLogoutClick}
-                  >
+                  <li className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-b-lg" onClick={handleLogoutClick}>
                     Cerrar Sesión
                   </li>
                 </ul>
@@ -116,7 +112,9 @@ const Header = () => {
           </div>
         </header>
       )}
-      {showNavBar && <NavBar closeNavBar={closeNavBar} userRole={userRole} />} {/* Pasa el rol a NavBar */}
+      {showNavBar && (
+        <NavBar closeNavBar={closeNavBar} userRole={userRole} />
+      )}
     </>
   );
 };

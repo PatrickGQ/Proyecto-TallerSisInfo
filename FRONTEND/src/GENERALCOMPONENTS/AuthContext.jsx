@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, useEffect } from "react";
-import { loginRequest, logoutRequest, validateTokenRequest } from "../api/authentication";
+import { loginRequest, logoutRequest, validateTokenRequest, refreshTokenRequest } from "../api/authentication";
 import Cookies from 'js-cookie';
 
 // Creamos el contexto de autenticación
@@ -14,7 +14,6 @@ export const useAuth = () => {
 
 // Componente que provee el contexto de autenticación
 export const AuthProvider = ({ children }) => {
-  // Inicializamos el estado con el token y los datos del usuario almacenados
   const [user, setUser] = useState(() => {
     const storedUser = localStorage.getItem("user");
     return storedUser ? JSON.parse(storedUser) : null;
@@ -22,31 +21,25 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(!!Cookies.get("token"));
   const [isLoading, setIsLoading] = useState(true);
 
-  // Función para iniciar sesión
   const signIn = async (data) => {
     try {
-      const res = await loginRequest(data);
+      const res = await loginRequest(data, { withCredentials: true });
+  
+  
       if (res && res.data) {
-        const { token, foundUser } = res.data;
-
-        // Guardamos el token en una cookie y los datos del usuario en localStorage
-        Cookies.set("token", token, { expires: 1 }); // El token dura 1 día
+        const { foundUser } = res.data;
+      
+  
         localStorage.setItem("user", JSON.stringify({
           name: foundUser.name,
           email: foundUser.email,
           role: foundUser.role,
-          phone: foundUser.phone,
-          university: foundUser.university,
-          position: foundUser.position,
         }));
-
+  
         setUser({
           name: foundUser.name,
           email: foundUser.email,
           role: foundUser.role,
-          phone: foundUser.phone,
-          university: foundUser.university,
-          position: foundUser.position,
         });
         setIsAuthenticated(true);
       }
@@ -62,6 +55,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await logoutRequest();
       Cookies.remove("token");
+      Cookies.remove("refreshToken");
       localStorage.removeItem("user");
       setUser(null);
       setIsAuthenticated(false);
@@ -72,56 +66,81 @@ export const AuthProvider = ({ children }) => {
 
   // Función para actualizar los datos del usuario
   const updateUser = (updatedUserData) => {
-    setUser(updatedUserData); // Actualizamos el estado
+    setUser(updatedUserData);
     localStorage.setItem("user", JSON.stringify(updatedUserData)); // Guardamos en localStorage
   };
 
-  // useEffect para verificar el token al recargar la página
   useEffect(() => {
     const verifyJWT = async () => {
       const token = Cookies.get("token");
-
-      // Si no hay token, no hay usuario autenticado
-      if (!token) {
+      const refreshToken = Cookies.get("refreshToken");
+  
+      if (!token && !refreshToken) {
+       
         setUser(null);
         setIsAuthenticated(false);
         setIsLoading(false);
         return;
       }
-
       try {
-        // Validar el token con la API
+        // Intentamos validar el token existente
         const res = await validateTokenRequest();
+  
         if (res && res.data) {
           const userData = {
-            name: res.data.name,
-            email: res.data.email,
-            role: res.data.role,
-            phone: res.data.phone,  // Suponiendo que también te pasen el teléfono y otros datos
-            university: res.data.university,
-            position: res.data.position,
+            name: res.data.user.name,
+            email: res.data.user.email,
+            role: res.data.user.role,
           };
 
-          // Si el token es válido, actualizamos el estado
           setUser(userData);
           setIsAuthenticated(true);
-          localStorage.setItem("user", JSON.stringify(userData)); // Guardamos en localStorage
+
+          localStorage.setItem("user", JSON.stringify(userData));
+
         } else {
-          setUser(null);
-          setIsAuthenticated(false);
-          localStorage.removeItem("user");
+          const refreshRes = await refreshTokenRequest(refreshToken);
+  
+          if (refreshRes && refreshRes.data) {
+            const { token: newToken, refreshToken: newRefreshToken } = refreshRes.data;
+  
+            // Guardamos los nuevos tokens en las cookies
+            Cookies.set("token", newToken, { expires: 1 });
+            Cookies.set("refreshToken", newRefreshToken, { expires: 7 });
+  
+            // Actualizamos los datos del usuario
+            const userData = {
+              name: refreshRes.data.name,
+              email: refreshRes.data.email,
+              role: refreshRes.data.role,
+              phone: refreshRes.data.phone,
+              university: refreshRes.data.university,
+              position: refreshRes.data.position,
+            };
+  
+            setUser(userData);
+            setIsAuthenticated(true);
+            localStorage.setItem("user", JSON.stringify(userData));
+          } else {
+            // Si no se pudo refrescar el token, cerramos sesión
+            setUser(null);
+            setIsAuthenticated(false);
+            Cookies.remove("token");
+            Cookies.remove("refreshToken");
+            localStorage.removeItem("user");
+          }
         }
       } catch (error) {
-        console.log("Error al validar el token:", error);
         setUser(null);
         setIsAuthenticated(false);
         Cookies.remove("token");
+        Cookies.remove("refreshToken");
         localStorage.removeItem("user");
       } finally {
         setIsLoading(false);
       }
     };
-
+  
     verifyJWT();
   }, []);
 

@@ -1,7 +1,17 @@
 // src/pages/Cart.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../GENERALCOMPONENTS/AuthContext';
+
 
 const Cart = () => {
+  const { user } = useAuth(); 
+
+  if (!user) {
+    return <div>Cargando...</div>; 
+  }
+
+  const userRole = user.role; 
+
   const [cartItems, setCartItems] = useState([]);
 
   // Obtener el carrito desde el `localStorage` al cargar el componente
@@ -35,7 +45,9 @@ const Cart = () => {
   };
 
   return (
-    <div className="container mx-auto p-8 bg-white rounded-lg shadow-lg max-w-2xl">
+    <>
+    { userRole === "client" && (
+      <div className="container mx-auto p-8 bg-white rounded-lg shadow-lg max-w-2xl">
       <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Carrito de Compras</h1>
 
       {cartItems.length === 0 ? (
@@ -90,6 +102,8 @@ const Cart = () => {
         </div>
       )}
     </div>
+    )}
+    </>
   );
 };
 

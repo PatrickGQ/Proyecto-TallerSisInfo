@@ -21,16 +21,7 @@ import ProductDetails from "./PAGES/ProductDetail/productDetail";
 import Cart from "./PAGES/cart/cart";
 import { CartProvider } from "./PAGES/cart/cartContext";
 import UserProfile from "./PAGES/UserProfile";
-
-// Componente que verifica si el usuario está autenticado
-const PrivateRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth(); // Obteniendo el estado de autenticación
-
-  if (isLoading) return <div>Cargando...</div>; // Muestra un loader mientras se verifica la autenticación
-
-  return isAuthenticated ? children : <Navigate to="/login" />;
-};
-
+import PrivateRoute from "./GENERALCOMPONENTS/PrivateRoute";
 
 function App() {
   return (
@@ -48,11 +39,10 @@ function App() {
 
 function Main() {
   const location = useLocation();
-  const { isAuthenticated, isLoading } = useAuth(); // Aquí también puedes obtener el estado de autenticación
+  const { isAuthenticated, isLoading } = useAuth(); 
 
-  if (isLoading) return <div>Cargando...</div>; // Muestra un loader mientras se verifica la autenticación
+  if (isLoading) return <div>Cargando...</div>; 
 
-  // Si el usuario no está autenticado y está accediendo a una página diferente de /login, redirige a /login
   if (!isAuthenticated && location.pathname !== '/login') {
     return <Navigate to="/login" />;
   }
@@ -61,26 +51,26 @@ function Main() {
     <>
       {location.pathname !== '/login' && <Header />}
       <Routes>
-          <Route path="/profile" element={<UserProfile />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/inicio" element={<Home />} />
-          {/* Rutas protegidas */}
-          <Route path="/productos/registrarProducto" element={<PrivateRoute><RegisterProduct /></PrivateRoute>} />
-          <Route path="/productos/menu" element={<PrivateRoute><ViewProducts /></PrivateRoute>} />
-          <Route path="/productos/editar-receta" element={<EditRecipeProduct />} />
-          <Route path="/ventas/nuevaVenta" element={<PrivateRoute><RegisterSale /></PrivateRoute>} />
-          <Route path="/ventas/verVentas" element={<PrivateRoute><ViewSales /></PrivateRoute>} />
-          <Route path="/empleados/registrarEmpleado" element={<PrivateRoute><RegisterEmployee /></PrivateRoute>} />
-          <Route path="/empleados/verEmpleados" element={<PrivateRoute><ViewEmployees /></PrivateRoute>} />
-          <Route path="/sucursales" element={<PrivateRoute><BranchesPage /></PrivateRoute>} />
-          {/* Nuevas rutas de inventario */}
-          <Route path="/inventarios/registrarInventario" element={<PrivateRoute><RegisterInventory /></PrivateRoute>} />
-          <Route path="/inventarios/verInventarios" element={<PrivateRoute><ViewInventory /></PrivateRoute>} />
-          <Route path="/inventario/detalles/:id" element={<InventoryDetails />} />
-          <Route path="/insumos/registrar" element={<RegisterIngredient />} />
-          <Route path="/insumos/ver" element={<ViewIngredients />} />
-          <Route path="/product/:id" element={<ProductDetails />} /> {/* Ruta para detalles */}
-          <Route path="/cart" element={<Cart />} /> {/* Ruta para carrito */}
+
+          <Route path="/inicio" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><Home /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}> <UserProfile /> </PrivateRoute>} />
+          <Route path="/productos/registrarProducto" element={<PrivateRoute allowedRoles={["admin"]}> <RegisterProduct /> </PrivateRoute>} />
+          
+          <Route path="/productos/menu" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><ViewProducts /></PrivateRoute>} />
+          <Route path="/productos/editar-receta" element={<PrivateRoute allowedRoles={["admin"]}><EditRecipeProduct /></PrivateRoute>} />
+          <Route path="/ventas/nuevaVenta" element={<PrivateRoute allowedRoles={["admin", "worker"]}><RegisterSale /></PrivateRoute>} />
+          <Route path="/ventas/verVentas" element={<PrivateRoute allowedRoles={["admin", "worker"]}><ViewSales /></PrivateRoute>} />
+          <Route path="/empleados/registrarEmpleado" element={<PrivateRoute allowedRoles={["admin"]}><RegisterEmployee /></PrivateRoute>} />
+          <Route path="/empleados/verEmpleados" element={<PrivateRoute allowedRoles={["admin"]}><ViewEmployees /></PrivateRoute>} />
+          <Route path="/sucursales" element={<PrivateRoute allowedRoles={["admin"]}><BranchesPage /></PrivateRoute>} />
+          <Route path="/inventarios/registrarInventario" element={<PrivateRoute allowedRoles={["admin"]}><RegisterInventory /></PrivateRoute>} />
+          <Route path="/inventarios/verInventarios" element={<PrivateRoute allowedRoles={["admin", "worker"]}><ViewInventory /></PrivateRoute>} />
+          <Route path="/inventario/detalles/:id" element={<PrivateRoute allowedRoles={["admin", "worker"]}><InventoryDetails /></PrivateRoute>} />
+          <Route path="/insumos/registrar" element={<PrivateRoute allowedRoles={["admin"]}><RegisterIngredient /></PrivateRoute>} />
+          <Route path="/insumos/ver" element={<PrivateRoute allowedRoles={["admin"]}><ViewIngredients /></PrivateRoute>} />
+          <Route path="/product/:id" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><ProductDetails /></PrivateRoute>} /> 
+          <Route path="/cart" element={<PrivateRoute allowedRoles={["client"]}><Cart /></PrivateRoute>} /> 
       </Routes>
     </>
   );

@@ -1,27 +1,16 @@
 import jwt from 'jsonwebtoken';
+import { SECRET_KEY } from '../controllers/auth.controller';
 
-// Token: true, is a token related issue
+export const authenticate = (req, res, next) => {
+  const token = req.cookies.token;
 
-function verifyJwT(req, res, next){
-    const { token } = req.cookies;
+  if (!token) return res.status(403).json({ message: 'No token provided' });
 
-    if(!token) return res.status(401).json({
-        message: "No token authorization denied",
-        token: true,
-    });
-
-    jwt.verify(token, 'SECRET', (err, decoded) => {
-        if(err) return res.status(403).json({
-            message: 'Invalid Token',
-            token: true,
-        });
-
-        req.user = decoded;
-
-        console.log("correct");
-        
-        next();
-    }); 
-}
-
-export default verifyJwT;
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(403).json({ message: 'Invalid token', error: error.message });
+  }
+};
