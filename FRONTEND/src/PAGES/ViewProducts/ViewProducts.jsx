@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 import { useBranch } from '../../CONTEXTS/BranchContext';
 import { FaBook, FaEdit, FaShoppingCart, FaTrash } from 'react-icons/fa';
 import { CartContext } from '../cart/cartContext';
-import { getProductsByBranchRequest, editProductRequest, deleteProductRequest } from "../../api/branch"; // Keep a single import line
+import { getProductsByBranchRequest, editProductRequest, deleteProductRequest } from "../../api/branch";
 import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
 import AcceptMessage from "../../GENERALCOMPONENTS/AcceptMessage";
-import { useAuth } from '../../GENERALCOMPONENTS/AuthContext'; // Importa el contexto de autenticación
+import { useAuth } from '../../GENERALCOMPONENTS/AuthContext';
 
 const ViewProducts = () => {
   const [products, setProducts] = useState([]);
@@ -19,86 +19,76 @@ const ViewProducts = () => {
   const navigate = useNavigate();
   const { updateCartCount } = useContext(CartContext);
   const { selectedBranch } = useBranch();
-  const { user } = useAuth(); // Obtén la información del usuario
-
-  const userRole = user ? user.role : null; // Obtén el rol del usuario
+  const { user } = useAuth();
+  const userRole = user ? user.role : null;
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await getProductsByBranchRequest(selectedBranch);
-        console.log("HOLA");
         setProducts(response.data.products);
       } catch (error) {
         console.error("Error al obtener los productos:", error);
       }
     };
-
     fetchProducts();
   }, [selectedBranch]);
-
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleEditRecipe = (e, product) => {
-    e.stopPropagation(); // Evitar que el click se propague al contenedor
-    navigate('/productos/editar-receta', { state: { product } });
-  };
-
-  const handleEditClick = (event, product) => {
-    event.stopPropagation(); // Evita que el clic se propague al contenedor principal
-    setIsEditing(true);
-    setEditProduct({ ...product });
-  };
 
   const handleAddToCart = (product) => {
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     const existingProduct = cart.find((item) => item._id === product._id);
-
     if (existingProduct) {
       existingProduct.quantity += 1;
     } else {
       cart.push({ ...product, quantity: 1 });
     }
-
     localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCount(); // Actualiza el contador del carrito
+    updateCartCount();
   };
 
-  const handleEditChange = (e) => {
-    const { name, value } = e.target;
-    setEditProduct({ ...editProduct, [name]: value });
+  const handleEditClick = (event, product) => {
+    event.stopPropagation();
+    setIsEditing(true);
+    setEditProduct({ ...product });
   };
 
   const handleEditSave = async () => {
-    const formData = new FormData();
-    formData.append("id", editProduct.id);
-    formData.append("nameProduct", editProduct.nameProduct);
-    formData.append("price", editProduct.price);
-    formData.append("description", editProduct.description);
-
-    if (editProduct.image instanceof File) {
-      formData.append("image", editProduct.image);
-    }
-
     try {
+      // Crear un FormData para enviar la información, incluyendo la imagen si existe
+      const formData = new FormData();
+      formData.append("id", editProduct.id);
+      formData.append("nameProduct", editProduct.nameProduct);
+      formData.append("price", editProduct.price);
+      formData.append("description", editProduct.description);
+  
+      // Solo agregar la imagen si es un nuevo archivo
+      if (editProduct.image instanceof File) {
+        formData.append("image", editProduct.image);
+      }
+  
+      // Enviar los datos al servidor
       const response = await editProductRequest(editProduct._id, formData);
-      setProducts(
-        products.map((p) =>
-          p._id === editProduct._id ? response.data.product : p
+  
+      // Actualizar el estado de productos para reflejar los cambios en la interfaz
+      setProducts((prevProducts) =>
+        prevProducts.map((product) =>
+          product._id === editProduct._id ? response.data.product : product
         )
       );
+  
+      // Resetear el estado de edición
       setIsEditing(false);
       setEditProduct(null);
     } catch (error) {
-      console.error("Error al editar el producto:", error);
-      setErrorMessage("Error al guardar la edición del producto. Intente de nuevo más tarde.");
+      console.error("Error al guardar la edición del producto:", error);
+      setErrorMessage("Error al guardar los cambios del producto. Intente de nuevo más tarde.");
+  
+      setErrorMessage("Error al guardar los cambios. Intenta nuevamente.");
     }
   };
-
+  
   const requestDeleteProduct = (event, product) => {
-    event.stopPropagation(); // Evita que el clic se propague al contenedor principal
+    event.stopPropagation();
     setProductToDelete(product);
   };
 
@@ -106,9 +96,7 @@ const ViewProducts = () => {
     if (productToDelete) {
       deleteProductRequest(productToDelete._id)
         .then(() => {
-          setProducts(
-            products.filter((product) => product._id !== productToDelete._id)
-          );
+          setProducts(products.filter((product) => product._id !== productToDelete._id));
           setProductToDelete(null);
         })
         .catch((error) => {
@@ -118,23 +106,7 @@ const ViewProducts = () => {
     }
   };
 
-  const handleCancelDelete = () => {
-    setProductToDelete(null);
-  };
-
-  const handleAcceptError = () => {
-    setErrorMessage("");
-  };
-
-  const filteredProducts = products.filter((product) => {
-    const lowerCaseSearchTerm = searchTerm.toLowerCase();
-    const isNumber = !isNaN(lowerCaseSearchTerm);
-    if (isNumber) {
-      return product.price.toString().includes(lowerCaseSearchTerm);
-    } else {
-      return product.nameProduct.toLowerCase().includes(lowerCaseSearchTerm);
-    }
-  });
+  const handleCancelDelete = () => setProductToDelete(null);
 
   return (
     <div className="container mx-auto p-4">
@@ -145,11 +117,11 @@ const ViewProducts = () => {
         type="text"
         placeholder="Buscar productos por nombre o precio..."
         value={searchTerm}
-        onChange={handleSearch}
+        onChange={(event) => setSearchTerm(event.target.value)}
         className="w-full p-3 mb-6 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
       />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
+        {products.map((product) => (
           <div
             key={product._id}
             onClick={() => navigate(`/product/${product._id}`)}
@@ -162,7 +134,6 @@ const ViewProducts = () => {
                 className="w-full h-48 object-cover rounded-t-lg"
               />
             )}
-            <hr className="border-t-2 border-gray-200" />
             <div className="p-4">
               <h2 className="text-xl font-semibold text-gray-800 mb-2">
                 {product.nameProduct}
@@ -178,39 +149,52 @@ const ViewProducts = () => {
               </p>
             </div>
             <div className="flex justify-center p-4 gap-8">
-              <button
-                title="Editar producto"
-                onClick={(event) => handleEditClick(event, product)}
-                className="text-blue-500 hover:text-blue-700"
-              >
-                <FaEdit size={20} />
-              </button>
-              <button
-                title="Añadir al Carrito"
-                onClick={(e) => {
-                  e.stopPropagation(); // Evita que el clic se propague al contenedor principal
-                  handleAddToCart(product);
-                }}
-                className="text-green-500 hover:text-green-700"
-              >
-                <FaShoppingCart size={20} />
-              </button>
-              <button
-                onClick={(e) => handleEditRecipe(e, product)}
-                className="text-red-500 hover:text-red-700"
-              >
-                <FaBook size={20} />
-              </button>
-              <button
-                title="Eliminar producto"
-                onClick={(e) => {
-                  e.stopPropagation(); // Evita la navegación a los detalles del producto
-                  requestDeleteProduct(e, product); // Llama a la función correcta para mostrar el mensaje de confirmación
-                }}
-                className="text-red-500 hover:text-red-700"
-              >
-                <FaTrash size={20} />
-              </button>
+              {userRole === "client" && (
+                <button
+                  title="Añadir al Carrito"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddToCart(product);
+                  }}
+                  className="text-green-500 hover:text-green-700"
+                >
+                  <FaShoppingCart size={20} />
+                </button>
+              )}
+              {userRole === "admin" && (
+                <>
+                  <button
+                    title="Editar producto"
+                    onClick={(event) => handleEditClick(event, product)}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    <FaEdit size={20} />
+                  </button>
+                  <button
+                    title="Eliminar producto"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      requestDeleteProduct(e, product);
+                    }}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <FaTrash size={20} />
+                  </button>
+                </>
+              )}
+              {(userRole === "admin" || userRole === "worker") && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate("/productos/editar-receta", {
+                      state: { product },
+                    });
+                  }}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <FaBook size={20} />
+                </button>
+              )}
             </div>
           </div>
         ))}
@@ -227,7 +211,7 @@ const ViewProducts = () => {
       {errorMessage && (
         <AcceptMessage
           message={errorMessage}
-          onAccept={handleAcceptError}
+          onAccept={() => setErrorMessage("")}
         />
       )}
 
@@ -236,6 +220,22 @@ const ViewProducts = () => {
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-2xl font-bold mb-4">Editar Producto</h2>
 
+            {/* Campo para editar el nombre */}
+            <label className="block mb-2">Nombre:</label>
+            <input
+              type="text"
+              name="nameProduct"
+              value={editProduct.nameProduct}
+              onChange={(e) =>
+                setEditProduct({
+                  ...editProduct,
+                  [e.target.name]: e.target.value,
+                })
+              }
+              className="w-full p-2 mb-4 border border-gray-300 rounded"
+            />
+
+            {/* Campo para editar la imagen */}
             <label className="block mb-2">Imagen:</label>
             <input
               type="file"
@@ -246,51 +246,65 @@ const ViewProducts = () => {
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
+            {/* Campo para editar el ID */}
             <label className="block mb-2">ID:</label>
             <input
               type="text"
               name="id"
               value={editProduct.id}
-              onChange={handleEditChange}
+              onChange={(e) =>
+                setEditProduct({
+                  ...editProduct,
+                  [e.target.name]: e.target.value,
+                })
+              }
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
-            <label className="block mb-2">Nombre:</label>
-            <input
-              type="text"
-              name="nameProduct"
-              value={editProduct.nameProduct}
-              onChange={handleEditChange}
-              className="w-full p-2 mb-4 border border-gray-300 rounded"
-            />
+            {/* Campo para editar el precio */}
             <label className="block mb-2">Precio:</label>
             <input
               type="number"
               name="price"
               value={editProduct.price}
-              onChange={handleEditChange}
+              onChange={(e) =>
+                setEditProduct({
+                  ...editProduct,
+                  [e.target.name]: e.target.value,
+                })
+              }
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
+
+            {/* Campo para editar la descripción */}
             <label className="block mb-2">Descripción:</label>
             <textarea
               name="description"
               value={editProduct.description}
-              onChange={handleEditChange}
+              onChange={(e) =>
+                setEditProduct({
+                  ...editProduct,
+                  [e.target.name]: e.target.value,
+                })
+              }
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
-            <button
-              onClick={handleEditSave}
-              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 mr-2"
-            >
-              Guardar
-            </button>
-            <button
-              onClick={() => setIsEditing(false)}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
-            >
-              Cancelar
-            </button>
+            {/* Botones para guardar o cancelar */}
+            <div className="flex justify-end">
+              <button
+                onClick={handleEditSave} // Llama a la función para guardar los cambios
+                className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 mr-2"
+              >
+                Guardar
+              </button>
+              <button
+                onClick={() => setIsEditing(false)}
+                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
+              >
+                Cancelar
+              </button>
+            </div>
           </div>
         </div>
       )}

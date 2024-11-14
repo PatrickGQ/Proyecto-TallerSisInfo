@@ -58,7 +58,7 @@ function Main() {
           <Route path="/productos/registrarProducto" element={<PrivateRoute allowedRoles={["admin"]}> <RegisterProduct /> </PrivateRoute>} />
           
           <Route path="/productos/menu" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><ViewProducts /></PrivateRoute>} />
-          <Route path="/productos/editar-receta" element={<PrivateRoute allowedRoles={["admin"]}><EditRecipeProduct /></PrivateRoute>} />
+          <Route path="/productos/editar-receta" element={<PrivateRoute allowedRoles={["admin", "worker"]}><EditRecipeProduct /></PrivateRoute>} />
           <Route path="/ventas/nuevaVenta" element={<PrivateRoute allowedRoles={["admin", "worker"]}><RegisterSale /></PrivateRoute>} />
           <Route path="/ventas/verVentas" element={<PrivateRoute allowedRoles={["admin", "worker"]}><ViewSales /></PrivateRoute>} />
           <Route path="/empleados/registrarEmpleado" element={<PrivateRoute allowedRoles={["admin"]}><RegisterEmployee /></PrivateRoute>} />

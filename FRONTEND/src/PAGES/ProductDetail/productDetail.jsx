@@ -1,4 +1,3 @@
-// src/pages/ProductDetails.jsx
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useBranch } from '../../CONTEXTS/BranchContext';
@@ -6,6 +5,7 @@ import { deleteProductRequest, getProductsByBranchRequest, editProductRequest } 
 import { CartContext } from '../cart/cartContext';
 import { FaEdit, FaTrash, FaShoppingCart, FaBook } from 'react-icons/fa';
 import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
+import { useAuth } from '../../GENERALCOMPONENTS/AuthContext'; // Asumimos que existe este contexto
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -16,6 +16,8 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const { selectedBranch } = useBranch();
   const { updateCartCount } = useContext(CartContext);
+  const { user } = useAuth(); // Obtener el usuario del contexto de autenticación
+  const userRole = user ? user.role : null; // Obtener el rol del usuario
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -103,45 +105,59 @@ const ProductDetails = () => {
     <div className="container mx-auto p-8 bg-white rounded-lg shadow-lg max-w-lg">
       {product.image && (
         <div className="mb-6">
-          <img 
+          <img
             src={`http://localhost:3000/uploads/${product.image}`}
-            alt={product.nameProduct} 
+            alt={product.nameProduct}
             className="w-full h-64 object-cover rounded-lg shadow-md"
           />
         </div>
       )}
-      <h1 className="text-4xl font-semibold text-gray-900 mb-2">{product.nameProduct}</h1>
-      <p className="text-2xl font-medium text-green-600 mb-4">Precio: {product.price} BS</p>
-      <p className="text-gray-700 mb-6 leading-relaxed">{product.description}</p>
+      <h1 className="text-4xl font-semibold text-gray-900 mb-2">
+        {product.nameProduct}
+      </h1>
+      <p className="text-2xl font-medium text-green-600 mb-4">
+        Precio: {product.price} BS
+      </p>
+      <p className="text-gray-700 mb-6 leading-relaxed">
+        {product.description}
+      </p>
 
-      <button
-        onClick={handleAddToCart}
-        className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition duration-200 mb-4"
-      >
-        <FaShoppingCart className="inline mr-2" /> Añadir al Carrito
-      </button>
-
-      <button
-        onClick={(e) => handleEditRecipe(e, product)}
-        className="w-full bg-purple-500 text-white py-3 rounded-lg font-medium hover:bg-purple-600 transition duration-200 mb-4"
-      >
-        <FaBook className="inline mr-2" /> Editar Receta
-      </button>
-
-      <div className="flex space-x-4">
+      {userRole === "client" && (
         <button
-          onClick={handleEditClick}
-          className="flex-1 bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition duration-200 flex items-center justify-center"
+          onClick={handleAddToCart}
+          className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition duration-200 mb-4"
         >
-          <FaEdit className="mr-2" /> Editar
+          <FaShoppingCart className="inline mr-2" /> Añadir al Carrito
         </button>
-        <button
-          onClick={requestDeleteConfirmation} // Solicita confirmación de eliminación
-          className="flex-1 bg-red-500 text-white py-3 rounded-lg font-medium hover:bg-red-600 transition duration-200 flex items-center justify-center"
-        >
-          <FaTrash className="mr-2" /> Eliminar
-        </button>
-      </div>
+      )}
+
+      {(userRole === "admin" || userRole === "worker") && (
+        <>
+          <button
+            onClick={(e) => handleEditRecipe(e, product)}
+            className="w-full bg-purple-500 text-white py-3 rounded-lg font-medium hover:bg-purple-600 transition duration-200 mb-4"
+          >
+            <FaBook className="inline mr-2" /> Editar Receta
+          </button>
+
+          {userRole === "admin" && (
+            <div className="flex space-x-4">
+              <button
+                onClick={handleEditClick}
+                className="flex-1 bg-blue-500 text-white py-3 rounded-lg font-medium hover:bg-blue-600 transition duration-200 flex items-center justify-center"
+              >
+                <FaEdit className="mr-2" /> Editar
+              </button>
+              <button
+                onClick={requestDeleteConfirmation} // Solicita confirmación de eliminación
+                className="flex-1 bg-red-500 text-white py-3 rounded-lg font-medium hover:bg-red-600 transition duration-200 flex items-center justify-center"
+              >
+                <FaTrash className="mr-2" /> Eliminar
+              </button>
+            </div>
+          )}
+        </>
+      )}
 
       {showDeleteConfirmation && (
         <QuestionMessage
@@ -155,12 +171,14 @@ const ProductDetails = () => {
         <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-2xl font-bold mb-4">Editar Producto</h2>
-            
+
             <label className="block mb-2">Imagen:</label>
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => setEditProduct({ ...editProduct, image: e.target.files[0] })}
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, image: e.target.files[0] })
+              }
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
@@ -169,7 +187,9 @@ const ProductDetails = () => {
               type="text"
               name="id"
               value={editProduct.id}
-              onChange={(e) => setEditProduct({ ...editProduct, id: e.target.value })}
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, id: e.target.value })
+              }
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
@@ -178,7 +198,9 @@ const ProductDetails = () => {
               type="text"
               name="nameProduct"
               value={editProduct.nameProduct}
-              onChange={(e) => setEditProduct({ ...editProduct, nameProduct: e.target.value })}
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, nameProduct: e.target.value })
+              }
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
@@ -187,7 +209,9 @@ const ProductDetails = () => {
               type="number"
               name="price"
               value={editProduct.price}
-              onChange={(e) => setEditProduct({ ...editProduct, price: e.target.value })}
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, price: e.target.value })
+              }
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
@@ -195,7 +219,9 @@ const ProductDetails = () => {
             <textarea
               name="description"
               value={editProduct.description}
-              onChange={(e) => setEditProduct({ ...editProduct, description: e.target.value })}
+              onChange={(e) =>
+                setEditProduct({ ...editProduct, description: e.target.value })
+              }
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
