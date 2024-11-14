@@ -1,3 +1,4 @@
+// src/GENERALCOMPONENTS/Header.jsx
 import { FaBars, FaUser, FaChevronDown, FaShoppingCart } from 'react-icons/fa';
 import { useContext, useState, useRef, useEffect } from 'react';
 import NavBar from './NavBar';

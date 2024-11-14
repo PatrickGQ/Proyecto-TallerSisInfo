@@ -22,6 +22,7 @@ import Cart from "./PAGES/cart/cart";
 import { CartProvider } from "./CONTEXTS/cartContext";
 import UserProfile from "./PAGES/UserProfile";
 import PrivateRoute from "./GENERALCOMPONENTS/PrivateRoute";
+import Index from "./PAGES/Index";
 
 function App() {
   return (
@@ -43,14 +44,17 @@ function Main() {
 
   if (isLoading) return <div>Cargando...</div>;
 
-  if (!isAuthenticated && location.pathname !== '/login') {
+  /*if (!isAuthenticated && location.pathname !== '/login') {
     return <Navigate to="/login" />;
-  }
+  }*/
 
   return (
     <>
       {location.pathname !== '/login' && <Header />}
       <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/index" element={<Navigate to="/" replace />} />
+
         <Route path="/login" element={<Login />} />
 
         <Route path="/inicio" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><Home /></PrivateRoute>} />

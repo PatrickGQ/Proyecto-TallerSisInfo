@@ -9,7 +9,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
 
-  const { signIn } = useAuth(); // Usamos el contexto
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmitForm = async (event) => {
@@ -77,7 +77,7 @@ const Login = () => {
             <input
               type={showPassword ? "text" : "password"}
               id="password"
-              className="w-full p-4 border border-black rounded-l focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-150 ease-in-out"
+              className="w-full p-4 border border-black rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-150 ease-in-out"
               placeholder="Ingresa tu contraseña"
               required
               onChange={(e) => {
@@ -94,11 +94,18 @@ const Login = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-900"
+            className="w-full bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-900 mb-4"
           >
             Iniciar Sesión
           </button>
         </form>
+        {/* Botón para ir a la página de Index */}
+        <button
+          onClick={() => navigate('/')}
+          className="w-full text-center text-red-700 mt-4 underline hover:text-red-900 transition-colors"
+        >
+          Ir a la página principal
+        </button>
       </div>
     </div>
   );
