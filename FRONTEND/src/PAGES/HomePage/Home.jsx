@@ -1,6 +1,7 @@
 import { useAuth } from "../../GENERALCOMPONENTS/AuthContext";
 import HomeAdmin from "./HomeAdmin";
 import HomeClient from "./HomeClient";
+import HomeWorker from "./HomeWorker";
 
 
 const Home = () => {
@@ -15,6 +16,10 @@ const Home = () => {
     <>
     { userRole === "admin" && (
       <HomeAdmin></HomeAdmin>
+    )}
+    {
+      userRole === "worker" && (
+        <HomeWorker></HomeWorker>
     )}
     {
       userRole === "client" && (

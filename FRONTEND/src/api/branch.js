@@ -4,14 +4,15 @@ import { API } from './conf/routeApi.js';
 
  
 export const getBranchsRequest = () => axios.get(`${API}/branches`);
+export const deleteBranchRequest = (id) => axios.delete(`${API}/branches/${id}`);
+export const editBranchRequest = (id, data) => axios.put(`${API}/branches/${id}`, data);
 
-// export const addBranchsRequest = () => axios.post(`${API}/branches`);
+
 
 export const addProductToBranchRequest = ( data ) => axios.post(`${API}/branch/products/addProduct`, data);
 
 export const getProductsByBranchRequest = ( nameBranch ) => axios.post(`${API}/branch/products/getProducts`, {"nameBranch": nameBranch});
 
-// Solicitud para editar un producto
 export const editProductRequest = (id, data) => axios.put(`${API}/branch/products/editProduct/${id}`, data);
 
 // Solicitud para eliminar un producto
