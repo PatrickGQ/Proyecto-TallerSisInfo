@@ -4,7 +4,7 @@ import NavBar from './NavBar';
 import { useAuth } from '../GENERALCOMPONENTS/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { useBranch } from '../CONTEXTS/BranchContext';
-import { CartContext } from '../PAGES/cart/cartContext';
+import { CartContext } from '../CONTEXTS/cartContext';
 
 const Header = () => {
   const [showNavBar, setShowNavBar] = useState(false);
@@ -36,7 +36,7 @@ const Header = () => {
 
   const handleBranchSelect = (branch) => {
     setSelectedBranch(branch.nameBranch);
-    setShowBranches(false); 
+    setShowBranches(false);
   };
 
   const userRole = user ? user.role : null;
@@ -51,7 +51,7 @@ const Header = () => {
         <header className="flex items-center justify-between p-4 bg-red-600 text-white shadow-lg">
           <div className="flex items-center space-x-4">
             <button
-              onClick={toggleNavBar} 
+              onClick={toggleNavBar}
               className="text-3xl hover:text-yellow-300 transition-colors"
             >
               <FaBars />

@@ -1,6 +1,14 @@
-import { createContext, useState, useEffect } from 'react';
+// src/CONTEXTS/cartContext.jsx
+import { createContext, useState, useEffect, useContext } from 'react';
 
 export const CartContext = createContext();
+
+// Hook para acceder al contexto del carrito
+export const useCart = () => {
+  const context = useContext(CartContext);
+  if (!context) throw new Error("useCart must be used within a CartProvider");
+  return context;
+};
 
 export const CartProvider = ({ children }) => {
   const [cartCount, setCartCount] = useState(0);
@@ -11,18 +19,20 @@ export const CartProvider = ({ children }) => {
     setCartCount(itemCount);
   };
 
+  const clearCart = () => {
+    localStorage.removeItem('cart');
+    setCartCount(0);
+  };
+
   useEffect(() => {
     updateCartCount();
-
-    // Escucha cambios en el localStorage para actualizar el contador
     window.addEventListener('storage', updateCartCount);
     return () => window.removeEventListener('storage', updateCartCount);
   }, []);
 
   return (
-    <CartContext.Provider value={{ cartCount, updateCartCount }}>
+    <CartContext.Provider value={{ cartCount, updateCartCount, clearCart }}>
       {children}
     </CartContext.Provider>
   );
 };
-

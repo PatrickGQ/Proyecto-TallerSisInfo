@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useBranch } from '../../CONTEXTS/BranchContext';
 import { deleteProductRequest, getProductsByBranchRequest, editProductRequest } from '../../api/branch';
-import { CartContext } from '../cart/cartContext';
+import { CartContext } from '../../CONTEXTS/cartContext';
 import { FaEdit, FaTrash, FaShoppingCart, FaBook } from 'react-icons/fa';
 import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
 import { useAuth } from '../../GENERALCOMPONENTS/AuthContext'; // Asumimos que existe este contexto

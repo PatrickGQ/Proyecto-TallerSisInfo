@@ -3,8 +3,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBranch } from '../../CONTEXTS/BranchContext';
 import { FaBook, FaEdit, FaShoppingCart, FaTrash } from 'react-icons/fa';
-import { CartContext } from '../cart/cartContext';
-import { getProductsByBranchRequest, editProductRequest, deleteProductRequest } from "../../api/branch";
+import { CartContext } from '../../CONTEXTS/cartContext';
+import { getProductsByBranchRequest, editProductRequest, deleteProductRequest } from "../../api/branch"; // Keep a single import line
 import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage";
 import AcceptMessage from "../../GENERALCOMPONENTS/AcceptMessage";
 import { useAuth } from '../../GENERALCOMPONENTS/AuthContext';
@@ -60,33 +60,33 @@ const ViewProducts = () => {
       formData.append("nameProduct", editProduct.nameProduct);
       formData.append("price", editProduct.price);
       formData.append("description", editProduct.description);
-  
+
       // Solo agregar la imagen si es un nuevo archivo
       if (editProduct.image instanceof File) {
         formData.append("image", editProduct.image);
       }
-  
+
       // Enviar los datos al servidor
       const response = await editProductRequest(editProduct._id, formData);
-  
+
       // Actualizar el estado de productos para reflejar los cambios en la interfaz
       setProducts((prevProducts) =>
         prevProducts.map((product) =>
           product._id === editProduct._id ? response.data.product : product
         )
       );
-  
+
       // Resetear el estado de edición
       setIsEditing(false);
       setEditProduct(null);
     } catch (error) {
       console.error("Error al guardar la edición del producto:", error);
       setErrorMessage("Error al guardar los cambios del producto. Intente de nuevo más tarde.");
-  
+
       setErrorMessage("Error al guardar los cambios. Intenta nuevamente.");
     }
   };
-  
+
   const requestDeleteProduct = (event, product) => {
     event.stopPropagation();
     setProductToDelete(product);

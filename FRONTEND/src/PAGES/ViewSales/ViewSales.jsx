@@ -1,3 +1,4 @@
+// src/PAGES/ViewSales.jsx
 import { useState } from 'react';
 import SeeSalesMenuOption from './Components/SeeSalesMenuOption.jsx';
 import ErrorModal from '../../GENERALCOMPONENTS/ErrorModal.jsx';
@@ -18,13 +19,13 @@ const SeeSales = () => {
       <h1 className="text-2xl font-semibold mb-4">Vista de Ventas</h1>
       <SeeSalesMenuOption setSelectedOption={setSelectedOption} />
       {selectedOption === 'todaysSales' && (
-        <TodaysSales 
-          setError={setError} 
+        <TodaysSales
+          setError={setError}
         />
       )}
       {selectedOption === 'allSales' && (
-        <AllSales 
-          setError={setError} 
+        <AllSales
+          setError={setError}
         />
       )}
       {selectedOption === 'date' && (
