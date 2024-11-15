@@ -43,3 +43,13 @@ export const refreshTokenRequest = async (refreshToken) => {
     throw error;  // Lanza el error para manejarlo en el frontend
   }
 };
+// Función para registrar un nuevo usuario
+export const registerRequest = async (newUser) => {
+  try {
+    const response = await axios.post(`${API}/register`, newUser);
+    return response.data; // Retorna los datos proporcionados por el backend
+  } catch (error) {
+    console.error('Error en registerRequest:', error.response?.data || error.message);
+    throw error; // Lanza el error para que pueda manejarse en el frontend
+  }
+};

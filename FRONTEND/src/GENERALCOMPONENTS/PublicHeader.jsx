@@ -1,4 +1,3 @@
-// src/GENERALCOMPONENTS/PublicHeader.jsx
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaChevronDown } from 'react-icons/fa';
@@ -56,7 +55,7 @@ const PublicHeader = () => {
                     Log In
                 </button>
                 <button
-                    onClick={() => navigate('/register')}
+                    onClick={() => navigate('/usuarios/registrar')} 
                     className="bg-white text-red-600 py-1 px-3 rounded-full shadow-md hover:bg-gray-100 transition-colors w-full md:w-auto"
                 >
                     Register

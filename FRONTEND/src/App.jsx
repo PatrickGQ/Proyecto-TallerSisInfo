@@ -24,6 +24,7 @@ import UserProfile from "./PAGES/UserProfile";
 import Report from "./PAGES/Report/Report";
 import PrivateRoute from "./GENERALCOMPONENTS/PrivateRoute";
 import Index from "./PAGES/Index";
+import Register from "./PAGES/RegisterUser/RegisterUser";
 
 function App() {
   return (
@@ -61,6 +62,8 @@ function Main() {
         <Route path="/inicio" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><Home /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}> <UserProfile /> </PrivateRoute>} />
         <Route path="/productos/registrarProducto" element={<PrivateRoute allowedRoles={["admin"]}> <RegisterProduct /> </PrivateRoute>} />
+        <Route path="/usuarios/registrar" element={<Register />} />
+
 
         <Route path="/productos/menu" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><ViewProducts /></PrivateRoute>} />
         <Route path="/productos/editar-receta" element={<PrivateRoute allowedRoles={["admin", "worker"]}><EditRecipeProduct /></PrivateRoute>} />
