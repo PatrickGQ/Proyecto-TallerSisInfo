@@ -1,42 +1,38 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaUser, FaBuilding, FaUniversity, FaChevronDown } from 'react-icons/fa';
 import { useAuth } from '../GENERALCOMPONENTS/AuthContext';
-import { getBranchsRequest } from '../api/branch.js'; // Asegúrate de tener esta función de API importada
+import { getBranchsRequest } from '../api/branch.js';
 
 const UserProfile = () => {
   const { user, updateUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
 
-  // Estado para los campos editables
   const [editedName, setEditedName] = useState(user?.name || '');
   const [editedEmail, setEditedEmail] = useState(user?.email || '');
   const [editedPhone, setEditedPhone] = useState(user?.phone || '');
   const [editedUniversity, setEditedUniversity] = useState(user?.university || '');
   const [editedPosition, setEditedPosition] = useState(user?.position || '');
   const [selectedBranch, setSelectedBranch] = useState(user?.branch || '');
-  const [selectedRole, setSelectedRole] = useState(user?.role || ''); // Estado para el rol
-  const [showBranches, setShowBranches] = useState(false); // Para controlar si se muestra el listado de sucursales
-  const [showRoleDropdown, setShowRoleDropdown] = useState(false); // Para controlar si se muestra el dropdown del rol
+  const [selectedRole, setSelectedRole] = useState(user?.role || '');
+  const [showBranches, setShowBranches] = useState(false);
+  const [showRoleDropdown, setShowRoleDropdown] = useState(false);
   const branchesRef = useRef(null);
 
-  // Lista de sucursales (esto debería venir de una fuente de datos o API real)
   const [branches, setBranches] = useState([]);
 
-  // Obtener las sucursales desde la API cuando el componente se monte
   useEffect(() => {
     const fetchBranches = async () => {
       try {
-        const response = await getBranchsRequest(); // Llamada a la API para obtener las sucursales
-        setBranches(response.data); // Asigna las sucursales al estado
+        const response = await getBranchsRequest();
+        setBranches(response.data);
       } catch (error) {
         console.error('Error al obtener las sucursales:', error);
       }
     };
 
     fetchBranches();
-  }, []); // Solo se ejecuta una vez cuando el componente se monta
+  }, []);
 
-  // Manejo del clic fuera del dropdown de sucursales
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (branchesRef.current && !branchesRef.current.contains(event.target)) {
@@ -49,10 +45,8 @@ const UserProfile = () => {
     };
   }, []);
 
-  // Maneja el envío del formulario de edición (solo en la vista, no en el backend)
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Actualiza el usuario solo en el estado local
     const updatedUser = {
       ...user,
       name: editedName,
@@ -61,28 +55,24 @@ const UserProfile = () => {
       university: editedUniversity,
       position: editedPosition,
       branch: selectedBranch,
-      role: selectedRole || user.role, // Usa el rol actual si no se selecciona uno nuevo
+      role: selectedRole || user.role,
     };
 
-    updateUser(updatedUser); // Actualiza el estado del usuario
-
-    setIsEditing(false); // Termina la edición
+    updateUser(updatedUser);
+    setIsEditing(false);
   };
 
-  // Función para manejar el cambio de sucursal
   const handleBranchChange = (branch) => {
     setSelectedBranch(branch);
-    setShowBranches(false); // Cierra el dropdown una vez se selecciona una sucursal
+    setShowBranches(false);
   };
 
-  // Función para manejar el cambio de rol
   const handleRoleChange = (role) => {
     setSelectedRole(role);
-    setShowRoleDropdown(false); // Cierra el dropdown de roles una vez se selecciona un rol
+    setShowRoleDropdown(false);
   };
 
-  // Lista de roles
-  const roleList = ['admin', 'worker', 'client']; // Los roles permitidos, todos en minúsculas
+  const roleList = ['admin', 'worker', 'client'];
 
   if (!user) {
     return <div>No estás autenticado</div>;
@@ -90,9 +80,9 @@ const UserProfile = () => {
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray-100">
-      <div className="w-2/3 bg-white p-8 rounded-lg shadow-lg flex">
+      <div className="w-full max-w-4xl bg-white p-6 md:p-8 rounded-lg shadow-lg flex flex-col md:flex-row">
         {/* Left Section - User Information */}
-        <div className="w-1/2 border-r border-gray-300 p-6">
+        <div className="w-full md:w-1/2 p-4 md:p-6">
           <div className="flex items-center mb-4">
             <FaUser className="text-6xl text-gray-400" />
             <div className="ml-4">
@@ -149,14 +139,13 @@ const UserProfile = () => {
               <p className="text-gray-500">{editedPhone}</p>
               <p className="text-gray-500">{editedUniversity}</p>
               <p className="text-gray-500">{editedEmail}</p>
-              <p className="text-gray-500 mt-4"><strong>Role:</strong> {selectedRole || user.role}</p> {/* Mostrar el rol */}
+              <p className="text-gray-500 mt-4"><strong>Role:</strong> {selectedRole || user.role}</p>
             </>
           )}
 
           <button className="text-blue-600 hover:underline text-sm">Contact info</button>
           <p className="text-gray-600 text-lg mt-4">{editedPhone}</p>
 
-          {/* Edit and Save buttons - Solo visibles si el rol es admin */}
           <div className="flex space-x-4 mt-6">
             {user.role === 'admin' && (
               <>
@@ -184,7 +173,7 @@ const UserProfile = () => {
         </div>
 
         {/* Right Section - Additional Information */}
-        <div className="w-1/2 p-6">
+        <div className="w-full md:w-1/2 p-4 md:p-6">
           <div className="flex items-center mb-4">
             <FaBuilding className="text-xl text-black" />
             {user.role === 'admin' ? (
@@ -207,7 +196,7 @@ const UserProfile = () => {
                 {branches.length > 0 ? (
                   branches.map((branch) => (
                     <div
-                      key={branch._id || branch.nameBranch} // Usa _id o nameBranch como key
+                      key={branch._id || branch.nameBranch}
                       className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
                       onClick={() => handleBranchChange(branch.nameBranch)}
                     >
@@ -221,7 +210,6 @@ const UserProfile = () => {
             )}
           </div>
 
-          {/* Role Dropdown */}
           {showRoleDropdown && (
             <div className="absolute bg-white border border-gray-300 rounded shadow-lg mt-1 z-10">
               {roleList.map((role) => (
