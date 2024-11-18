@@ -1,6 +1,6 @@
 // src/GENERALCOMPONENTS/Header.jsx
 import { FaBars, FaUser, FaChevronDown, FaShoppingCart } from 'react-icons/fa';
-import { useContext, useState, useRef, useEffect } from 'react';
+import { useContext, useState } from 'react';
 import NavBar from './NavBar';
 import { useAuth } from '../GENERALCOMPONENTS/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ const Header = () => {
   const [showNavBar, setShowNavBar] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showBranches, setShowBranches] = useState(false);
+  const [showModal, setShowModal] = useState(false); // Estado para el modal de cerrar sesión
 
   const { user, logOut, isLoading } = useAuth();
   const { selectedBranch, setSelectedBranch, branches } = useBranch();
@@ -40,11 +41,11 @@ const Header = () => {
     setShowBranches(false);
   };
 
+  const closeUserMenu = () => setShowUserMenu(false); // Cerrar el menú de usuario
+
   const userRole = user ? user.role : null;
 
   if (isLoading) return <div>Cargando...</div>;
-
-
 
   return (
     <>
@@ -69,7 +70,7 @@ const Header = () => {
                   {branches.length > 0 ? (
                     <ul className="max-h-48 overflow-y-auto custom-scrollbar">
                       {branches.map((branch) => (
-                        <li key={branch._id} className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors" onClick={() => handleBranchSelect(branch)}>
+                        <li key={branch._id} className="px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors" onClick={() => handleBranchSelect(branch)} >
                           {branch.nameBranch}
                         </li>
                       ))}
@@ -102,14 +103,14 @@ const Header = () => {
               <div className="absolute right-0 top-full mt-2 w-48 bg-white text-red-600 shadow-lg rounded-lg z-10">
                 <ul>
                   {userRole === "admin" && (
-                    <li className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-t-lg">
+                    <li className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-t-lg" onClick={closeUserMenu}>
                       <Link to="/reports">Informes Financieros</Link>
                     </li>
                   )}
-                  <li className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-t-lg">
+                  <li className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-t-lg" onClick={closeUserMenu}>
                     <Link to="/profile">Ver Usuario</Link>
                   </li>
-                  <li className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-b-lg" onClick={handleLogoutClick}>
+                  <li className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-b-lg" onClick={() => { closeUserMenu(); setShowModal(true); }}>
                     Cerrar Sesión
                   </li>
                 </ul>
@@ -118,6 +119,30 @@ const Header = () => {
           </div>
         </header>
       )}
+
+      {/* Modal de confirmación de cerrar sesión */}
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+            <h3 className="text-lg font-semibold mb-4">¿Estás seguro de que quieres cerrar sesión?</h3>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleLogoutClick}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showNavBar && (
         <NavBar closeNavBar={closeNavBar} userRole={userRole} />
       )}
