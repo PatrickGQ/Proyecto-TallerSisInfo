@@ -50,7 +50,7 @@ const Header = () => {
   return (
     <>
       {(userRole === "admin" || userRole === "client" || userRole === "worker") && (
-        <header className="flex items-center justify-between p-4 bg-red-600 text-white shadow-lg">
+        <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between p-4 bg-red-600 text-white shadow-lg">
           <div className="flex items-center space-x-4">
             <button
               onClick={toggleNavBar}

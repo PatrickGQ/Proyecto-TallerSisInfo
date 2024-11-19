@@ -21,7 +21,7 @@ const NavBar = ({ closeNavBar, userRole }) => {
   const toggleInsumos = () => setInsumosOpen(!insumosOpen);
 
   return (
-    <nav ref={navBarRef} className="absolute z-40 left-0 w-64 bg-red-700 text-white shadow-lg overflow-y-auto">
+    <nav ref={navBarRef} className="fixed top-16 z-40 left-0 w-64 bg-red-700 text-white shadow-lg overflow-y-auto">
       <ul className="space-y-4 p-4">
         <li>
           <Link to="/inicio" onClick={closeNavBar}>

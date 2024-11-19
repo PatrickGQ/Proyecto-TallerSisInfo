@@ -43,7 +43,7 @@ export const refreshTokenRequest = async (refreshToken) => {
     throw error;  // Lanza el error para manejarlo en el frontend
   }
 };
-// Función para registrar un nuevo usuario
+
 export const registerRequest = async (newUser) => {
   try {
     const response = await axios.post(`${API}/register`, newUser);

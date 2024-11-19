@@ -39,7 +39,6 @@ const HomeClient = () => {
     fetchPromotions();
   }, []);
 
-  // Configuración del carrusel
   const settings = {
     dots: true,
     infinite: true,
@@ -48,6 +47,7 @@ const HomeClient = () => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
+    fade: true
   };
 
   return (
