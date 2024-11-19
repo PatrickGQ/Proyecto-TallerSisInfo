@@ -50,20 +50,22 @@ function Main() {
     return <Navigate to="/login" />;
   }*/
 
+  const noMarginRoutes = ['/login', '/usuarios/registrar', '/'];
+
   return (
     <>
       {location.pathname !== '/login' && <Header />}
-      <div className="mt-16">
+      <div className={noMarginRoutes.includes(location.pathname) ? "" : "mt-16"}>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/index" element={<Navigate to="/" replace />} />
 
           <Route path="/login" element={<Login />} />
+          <Route path="/usuarios/registrar" element={<Register />} />
 
           <Route path="/inicio" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><Home /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}> <UserProfile /> </PrivateRoute>} />
           <Route path="/productos/registrarProducto" element={<PrivateRoute allowedRoles={["admin"]}> <RegisterProduct /> </PrivateRoute>} />
-          <Route path="/usuarios/registrar" element={<Register />} />
 
 
           <Route path="/productos/menu" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><ViewProducts /></PrivateRoute>} />

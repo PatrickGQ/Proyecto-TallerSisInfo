@@ -16,7 +16,7 @@ const PublicHeader = () => {
     };
 
     return (
-        <header className="flex flex-col md:flex-row items-center justify-between p-4 bg-red-600 text-white shadow-lg space-y-2 md:space-y-0">
+        <header className="fixed top-0 left-0 right-0 flex flex-col md:flex-row items-center justify-between p-4 bg-red-600 text-white shadow-lg space-y-2 md:space-y-0 z-50">
             <div className="flex items-center space-x-4">
                 <Link to="/" className="text-xl md:text-2xl font-semibold hover:text-yellow-300 transition-colors">
                     Sistema de Administración
