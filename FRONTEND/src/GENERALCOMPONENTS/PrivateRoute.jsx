@@ -10,7 +10,7 @@ const PrivateRoute = ({ children, allowedRoles }) => {
     // Verifica si el usuario está autenticado y si su rol está dentro de los permitidos
     return isAuthenticated && allowedRoles.includes(user?.role)
       ? children
-      : <Navigate to="/login" />;
+      : <Navigate to="/index" />;
   };
 
 export default PrivateRoute;

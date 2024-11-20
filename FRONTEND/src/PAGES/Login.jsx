@@ -99,13 +99,26 @@ const Login = () => {
             Iniciar Sesión
           </button>
         </form>
-        {/* Botón para ir a la página de Index */}
+        {/* Botón para Volver al inicio */}
         <button
           onClick={() => navigate('/')}
           className="w-full text-center text-red-700 mt-4 underline hover:text-red-900 transition-colors"
         >
-          Ir a la página principal
+          Volver al inicio
         </button>
+
+        {/* Pregunta para redirigir a la página de registro */}
+        <div className="text-center mt-4">
+          <p className="text-sm">
+            ¿No tienes cuenta?{" "}
+            <button
+              onClick={() => navigate('/registro')}
+              className="text-blue-600 underline hover:text-blue-800"
+            >
+              Crea una
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );

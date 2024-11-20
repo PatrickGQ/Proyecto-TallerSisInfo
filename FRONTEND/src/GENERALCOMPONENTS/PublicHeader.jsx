@@ -55,7 +55,7 @@ const PublicHeader = () => {
                     Log In
                 </button>
                 <button
-                    onClick={() => navigate('/usuarios/registrar')} 
+                    onClick={() => navigate('/registro')} 
                     className="bg-white text-red-600 py-1 px-3 rounded-full shadow-md hover:bg-gray-100 transition-colors w-full md:w-auto"
                 >
                     Register

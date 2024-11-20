@@ -61,8 +61,8 @@ const Header = () => {
 
   const handleLogoutClick = async () => {
     try {
+      setShowModal(false);
       await logOut();
-      navigate('/', { replace: true });
     } catch (error) {
       console.error(error);
     }

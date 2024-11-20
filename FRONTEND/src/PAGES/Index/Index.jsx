@@ -1,5 +1,5 @@
 // src/PAGES/Index.jsx
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getProductsByBranchRequest } from "../../api/branch";
 import PublicHeader from "../../GENERALCOMPONENTS/PublicHeader";
@@ -40,7 +40,7 @@ const Index = () => {
             </div>
 
             <div className="container mx-auto p-4">
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-6">Productos</h2>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-6">Nuestros Productos</h2>
                 <input
                     type="text"
                     placeholder="Buscar productos por nombre o precio..."
@@ -57,7 +57,7 @@ const Index = () => {
                         .map((product) => (
                             <div
                                 key={product._id}
-                                onClick={() => navigate(`/product/${product._id}`)}
+                                onClick={() => navigate(`/login`)}
                                 className="flex flex-col border rounded-lg shadow hover:shadow-lg transition-shadow duration-300 cursor-pointer"
                             >
                                 {product.image && (
@@ -69,7 +69,6 @@ const Index = () => {
                                 )}
                                 <div className="p-3 md:p-4">
                                     <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-1 md:mb-2">{product.nameProduct}</h2>
-                                    <p className="text-gray-600 text-sm md:text-base mb-1"><strong>ID:</strong> {product.id}</p>
                                     <p className="text-gray-600 text-sm md:text-base mb-1"><strong>Precio:</strong> {product.price} BS</p>
                                     <p className="text-gray-600 text-sm md:text-base"><strong>Descripción:</strong> {product.description}</p>
                                 </div>
@@ -78,7 +77,6 @@ const Index = () => {
                 </div>
             </div>
 
-            {/* Pie de página */}
             <footer className="bg-red-600 text-white text-center p-4 mt-10">
                 <p>&copy; {new Date().getFullYear()} Pollos Fritos - Todos los derechos reservados.</p>
             </footer>

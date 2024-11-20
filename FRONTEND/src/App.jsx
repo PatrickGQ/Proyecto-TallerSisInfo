@@ -50,7 +50,7 @@ function Main() {
     return <Navigate to="/login" />;
   }*/
 
-  const noMarginRoutes = ['/login', '/usuarios/registrar', '/'];
+  const noMarginRoutes = ['/login', '/registro', '/'];
 
   return (
     <>
@@ -61,7 +61,7 @@ function Main() {
           <Route path="/index" element={<Navigate to="/" replace />} />
 
           <Route path="/login" element={<Login />} />
-          <Route path="/usuarios/registrar" element={<Register />} />
+          <Route path="/registro" element={<Register />} />
 
           <Route path="/inicio" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><Home /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}> <UserProfile /> </PrivateRoute>} />
