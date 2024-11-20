@@ -233,7 +233,6 @@ export const getBranchImages = async (req, res) => {
 export const addTextToBranches = async (req, res) => {
   try {
     const { textContent, branchIds } = req.body;
-    console.log("holaaaaaaaaaaaaaaaaaaaaaaaa")
 
     if (!textContent || !branchIds || branchIds.length === 0) {
       return res.status(400).json({
@@ -299,5 +298,80 @@ export const getBranchTexts = async (req, res) => {
       message: "Error al obtener los textos.",
       error: error.message,
     });
+  }
+};
+
+
+export const getBranch = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const branch = await Branch.findById(id).populate('images').populate('texts'); 
+
+    if (!branch) {
+      return res.status(404).json({
+        success: false,
+        message: "Sucursal no encontrada.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      branch,
+    });
+  } catch (error) {
+    console.error("Error al obtener la sucursal:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error al obtener la sucursal.",
+      error: error.message,
+    });
+  }
+};
+
+export const deleteImageFromBranch = async (req, res) => {
+  const { id, imageId } = req.params;
+
+  console.log("iumage")
+
+  try {
+    const branch = await Branch.findById(id);
+    if (!branch) return res.status(404).json({ message: 'Sucursal no encontrada' });
+
+    const updatedImages = branch.images.filter(image => image._id.toString() !== imageId);
+    branch.images = updatedImages;
+
+    await branch.save();
+
+    res.status(200).json({ message: 'Imagen eliminada con éxito' });
+  } catch (error) {
+    console.error('Error al eliminar la imagen:', error);
+    res.status(500).json({ message: 'Hubo un error al eliminar la imagen', error });
+  }
+};
+
+export const deleteTextFromBranch = async (req, res) => {
+  const { id, textId } = req.params;
+  console.log(req.params)
+
+  console.log("text");
+
+  try {
+    const branch = await Branch.findById(id);  // Encuentra la sucursal por ID
+
+    await console.log(branch)
+    if (!branch) return res.status(404).json({ message: 'Sucursal no encontrada' });
+
+    // Filtra y elimina el texto con el ID proporcionado
+    const updatedTexts = branch.texts.filter(text => text._id.toString() !== textId);
+    branch.texts = updatedTexts;
+
+    // Guarda los cambios en la base de datos
+    await branch.save();
+
+    res.status(200).json({ message: 'Texto eliminado con éxito' });
+  } catch (error) {
+    console.error('Error al eliminar el texto:', error);
+    res.status(500).json({ message: 'Hubo un error al eliminar el texto', error });
   }
 };

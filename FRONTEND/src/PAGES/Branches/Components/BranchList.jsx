@@ -58,7 +58,7 @@ const BranchList = () => {
         {branches.map((branch) => (
           <Link
             key={branch._id}
-            to={`/branch-details/${branch._id}`}
+            to={`/sucursal/${branch._id}`}
             className="bg-white p-4 rounded-lg shadow-lg transform hover:scale-105 transition-all"
           >
             <h3 className="text-xl font-semibold text-gray-800">{branch.nameBranch}</h3>

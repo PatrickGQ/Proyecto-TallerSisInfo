@@ -25,6 +25,7 @@ import Report from "./PAGES/Report/Report";
 import PrivateRoute from "./GENERALCOMPONENTS/PrivateRoute";
 import Index from "./PAGES/Index";
 import Register from "./PAGES/RegisterUser/RegisterUser";
+import ViewBranchPage from "./PAGES/ViewBranch/ViewBranchPage";
 
 function App() {
   return (
@@ -74,7 +75,8 @@ function Main() {
           <Route path="/ventas/verVentas" element={<PrivateRoute allowedRoles={["admin", "worker"]}><ViewSales /></PrivateRoute>} />
           <Route path="/empleados/registrarEmpleado" element={<PrivateRoute allowedRoles={["admin"]}><RegisterEmployee /></PrivateRoute>} />
           <Route path="/empleados/verEmpleados" element={<PrivateRoute allowedRoles={["admin"]}><ViewEmployees /></PrivateRoute>} />
-          <Route path="/sucursales" element={<PrivateRoute allowedRoles={["admin"]}><BranchesPage /></PrivateRoute>} />
+          <Route path="/sucursales" element={<PrivateRoute allowedRoles={["admin"]}><BranchesPage/></PrivateRoute>} />
+          <Route path="/sucursal/:id" element={<PrivateRoute allowedRoles={["admin"]}><ViewBranchPage /></PrivateRoute>} />
           <Route path="/inventarios/registrarInventario" element={<PrivateRoute allowedRoles={["admin"]}><RegisterInventory /></PrivateRoute>} />
           <Route path="/inventarios/verInventarios" element={<PrivateRoute allowedRoles={["admin", "worker"]}><ViewInventory /></PrivateRoute>} />
           <Route path="/inventario/detalles/:id" element={<PrivateRoute allowedRoles={["admin", "worker"]}><InventoryDetails /></PrivateRoute>} />
@@ -82,7 +84,7 @@ function Main() {
           <Route path="/insumos/ver" element={<PrivateRoute allowedRoles={["admin"]}><ViewIngredients /></PrivateRoute>} />
           <Route path="/product/:id" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><ProductDetails /></PrivateRoute>} />
           <Route path="/cart" element={<PrivateRoute allowedRoles={["client"]}><Cart /></PrivateRoute>} />
-            <Route path="/reports" element={<PrivateRoute allowedRoles={["admin"]}><Report /></PrivateRoute>} /> 
+          <Route path="/reports" element={<PrivateRoute allowedRoles={["admin"]}><Report /></PrivateRoute>} /> 
         </Routes>
       </div>
     </>

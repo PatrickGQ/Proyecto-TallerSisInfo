@@ -52,6 +52,27 @@ export const getBranchTextsRequest = (id) => {
     });
 };
 
+export const getBranchDetailsRequest = (id) => {
+  return axios.get(`${API}/branches/branch/${id}`)
+}
+
+export const deleteBranchText = (branchId, textId) => {
+  return axios.delete(`http://localhost:3000/api/branches/${branchId}/text/${textId}`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error('Error al eliminar el texto:', error);
+      throw error;  
+    });
+};
+
+export const deleteBranchImage = (branchId, imageId) => {
+  return axios.delete(`http://localhost:3000/api/branches/${branchId}/image/${imageId}`)
+    .then(response => response.data)
+    .catch(error => {
+      console.error('Error al eliminar la imagen:', error);
+      throw error;  // Lanzamos el error para manejarlo en el componente
+    });
+};
 
 
 export const addProductToBranchRequest = (data) => axios.post(`${API}/branch/products/addProduct`, data);
