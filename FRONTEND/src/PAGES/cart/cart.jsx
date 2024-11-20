@@ -1,8 +1,7 @@
-// src/pages/Cart.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../GENERALCOMPONENTS/AuthContext';
-import { addSaleToBranchRequest } from '../../api/branch'; // Importa la función para registrar la venta
+import { addSaleToBranchRequest } from '../../api/branch';
 
 const Cart = () => {
   const { user } = useAuth();
@@ -14,8 +13,9 @@ const Cart = () => {
 
   const userRole = user.role;
   const [cartItems, setCartItems] = useState([]);
+  const [showQR, setShowQR] = useState(false); // Estado para mostrar el QR y el botón de confirmar pago
+  const [showPurchaseButton, setShowPurchaseButton] = useState(true); // Estado para controlar la visibilidad del botón "Comprar"
 
-  // Obtener el carrito desde el `localStorage` al cargar el componente
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
     setCartItems(storedCart);
@@ -41,18 +41,15 @@ const Cart = () => {
     return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2);
   };
 
-  // Nueva función para manejar la compra
   const handlePurchase = async () => {
-
+    setShowPurchaseButton(false); // Oculta el botón "Comprar"
     const nameBranch = JSON.parse(localStorage.getItem('selectedBranch'));
-    console.log(nameBranch);
-
     try {
       const saleData = {
         nameBranch,
         clientName: user.name,
-        clientCI: "12345678", // Ajusta según tu implementación
-        paymentMethod: "efectivo", // Ajusta según tu implementación
+        clientCI: "12345678",
+        paymentMethod: "efectivo",
         saleDate: new Date().toISOString(),
         products: cartItems.map(item => ({
           productId: item._id,
@@ -62,22 +59,24 @@ const Cart = () => {
         total: calculateTotal()
       };
 
-      // Llama a la función para registrar la venta
-      console.log(saleData);
       const res = await addSaleToBranchRequest(saleData);
       console.log("Venta registrada:", res);
 
-      // Limpia el carrito después de la compra
-      setCartItems([]);
-      localStorage.removeItem('cart');
-      window.dispatchEvent(new Event('storage'));
-
-      alert("Venta registrada exitosamente");
-
+      // Muestra el QR y el botón de confirmar pago
+      setShowQR(true);
     } catch (error) {
       console.error("Error al registrar la venta:", error);
       alert("Ocurrió un error al registrar la venta");
+      setShowPurchaseButton(true); // Vuelve a mostrar el botón si ocurre un error
     }
+  };
+
+  const handleConfirmPayment = () => {
+    setCartItems([]);
+    localStorage.removeItem('cart');
+    window.dispatchEvent(new Event('storage'));
+    // Redirige a la página de inicio
+    navigate('/inicio');
   };
 
   return (
@@ -128,13 +127,31 @@ const Cart = () => {
                   <span>Total:</span>
                   <span>{calculateTotal()} BS</span>
                 </div>
-                <button
-                  className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition duration-200"
-                  onClick={handlePurchase} // Llama a handlePurchase
-                >
-                  Comprar
-                </button>
+                {showPurchaseButton && ( // Condicional para mostrar el botón "Comprar"
+                  <button
+                    className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition duration-200"
+                    onClick={handlePurchase}
+                  >
+                    Comprar
+                  </button>
+                )}
               </div>
+            </div>
+          )}
+
+          {showQR && (
+            <div className="mt-8 text-center">
+              <img
+                src="./qr.jpg" // Reemplaza con la URL del QR dinámico o imagen
+                alt="QR Code"
+                className="mx-auto mb-4"
+              />
+              <button
+                className="bg-blue-500 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-600 transition duration-200"
+                onClick={handleConfirmPayment}
+              >
+                Confirmar Pago
+              </button>
             </div>
           )}
         </div>
