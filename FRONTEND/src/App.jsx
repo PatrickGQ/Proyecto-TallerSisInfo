@@ -26,6 +26,7 @@ import PrivateRoute from "./GENERALCOMPONENTS/PrivateRoute";
 import Index from "./PAGES/Index";
 import Register from "./PAGES/RegisterUser/RegisterUser";
 import ViewBranchPage from "./PAGES/ViewBranch/ViewBranchPage";
+import CardDetailsPage from "./GENERALCOMPONENTS/CardDetailsForm";
 
 function App() {
   return (
@@ -51,11 +52,11 @@ function Main() {
     return <Navigate to="/login" />;
   }*/
 
-  const noMarginRoutes = ['/login', '/registro', '/'];
+  const noMarginRoutes = ['/login', '/registro', '/pago/tarjeta', '/'];
 
   return (
     <>
-      {location.pathname !== '/login' && <Header />}
+      {location.pathname !== '/login' && location.pathname !== '/pago/tarjeta' && <Header />}
       <div className={noMarginRoutes.includes(location.pathname) ? "" : "mt-16"}>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -63,6 +64,7 @@ function Main() {
 
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Register />} />
+          <Route path="/pago/tarjeta" element={<PrivateRoute allowedRoles={["admin", "worker"]}><CardDetailsPage /></PrivateRoute>} />
 
           <Route path="/inicio" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><Home /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}> <UserProfile /> </PrivateRoute>} />
@@ -84,7 +86,7 @@ function Main() {
           <Route path="/insumos/ver" element={<PrivateRoute allowedRoles={["admin"]}><ViewIngredients /></PrivateRoute>} />
           <Route path="/product/:id" element={<PrivateRoute allowedRoles={["admin", "worker", "client"]}><ProductDetails /></PrivateRoute>} />
           <Route path="/cart" element={<PrivateRoute allowedRoles={["client"]}><Cart /></PrivateRoute>} />
-          <Route path="/reports" element={<PrivateRoute allowedRoles={["admin"]}><Report /></PrivateRoute>} /> 
+          <Route path="/reports" element={<PrivateRoute allowedRoles={["admin"]}><Report /></PrivateRoute>} />
         </Routes>
       </div>
     </>

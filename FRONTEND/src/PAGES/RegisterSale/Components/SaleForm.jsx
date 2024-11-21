@@ -114,6 +114,24 @@ const SaleForm = () => {
       ...form,
       [name]: value,
     });
+
+    if (name === "paymentMethod" && value === "qr") {
+      // Abre una nueva pestaña con la imagen del QR
+      window.open(
+        "/qr.jpg", // URL de la imagen del QR
+        "_blank",
+        "width=600,height=400,top=100,left=100",
+        "noopener,noreferrer"
+      );
+    }
+    if (name === "paymentMethod" && value === "tarjeta") {
+      // Abrir una nueva ventana para mostrar los campos de la tarjeta
+      window.open(
+        "/pago/tarjeta",
+        "_blank",
+        "width=500,height=500,top=100,left=100,noopener,noreferrer"
+      );
+    }    
   };
 
   const handleQuantityChange = (index, newQuantity) => {
