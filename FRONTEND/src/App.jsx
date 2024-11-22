@@ -56,7 +56,7 @@ function Main() {
 
   return (
     <>
-      {location.pathname !== '/login' && location.pathname !== '/pago/tarjeta' && <Header />}
+      {location.pathname !== '/login' && location.pathname !== '/pago/tarjeta' && location.pathname !== '/' && location.pathname !== '/index' && <Header />}
       <div className={noMarginRoutes.includes(location.pathname) ? "" : "mt-16"}>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -77,7 +77,7 @@ function Main() {
           <Route path="/ventas/verVentas" element={<PrivateRoute allowedRoles={["admin", "worker"]}><ViewSales /></PrivateRoute>} />
           <Route path="/empleados/registrarEmpleado" element={<PrivateRoute allowedRoles={["admin"]}><RegisterEmployee /></PrivateRoute>} />
           <Route path="/empleados/verEmpleados" element={<PrivateRoute allowedRoles={["admin"]}><ViewEmployees /></PrivateRoute>} />
-          <Route path="/sucursales" element={<PrivateRoute allowedRoles={["admin"]}><BranchesPage/></PrivateRoute>} />
+          <Route path="/sucursales" element={<PrivateRoute allowedRoles={["admin"]}><BranchesPage /></PrivateRoute>} />
           <Route path="/sucursal/:id" element={<PrivateRoute allowedRoles={["admin"]}><ViewBranchPage /></PrivateRoute>} />
           <Route path="/inventarios/registrarInventario" element={<PrivateRoute allowedRoles={["admin"]}><RegisterInventory /></PrivateRoute>} />
           <Route path="/inventarios/verInventarios" element={<PrivateRoute allowedRoles={["admin", "worker"]}><ViewInventory /></PrivateRoute>} />
