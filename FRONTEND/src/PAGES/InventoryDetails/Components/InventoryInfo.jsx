@@ -22,7 +22,7 @@ const InventoryInfo = ({ inventory }) => {
   return (
     <div className="bg-white rounded-lg shadow-lg p-6">
       <div className="mb-6">
-        <div className="flex justify-between items-center">
+        "<div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Detalles del Inventario</h1>
           <span className={`px-3 py-1 rounded-full text-sm ${
             inventory.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
