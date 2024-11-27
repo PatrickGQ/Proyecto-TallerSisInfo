@@ -1,5 +1,6 @@
 // controllers/ingredient.branch.controller.js
 import { Ingredient } from '../models/ingredient.model.js';
+import { DailyInventory } from '../models/inventory.model.js';
 import Branch from '../models/branch.model.js';
 
 export const registerIngredientToBranch = async (req, res) => {
@@ -203,6 +204,116 @@ export const removeIngredientFromBranch = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error al eliminar el ingrediente',
+            error: error.message
+        });
+    }
+};
+
+export const updateIngredientStock = async (req, res) => {
+    try {
+        const { nameBranch, ingredientId, quantity, observations } = req.body;
+
+        if (!nameBranch || !ingredientId || !quantity) {
+            return res.status(400).json({
+                success: false,
+                message: 'Faltan datos requeridos (nameBranch, ingredientId, quantity)'
+            });
+        }
+
+        // Verificar sucursal
+        const branch = await Branch.findOne({ nameBranch: nameBranch.toLowerCase() });
+        if (!branch) {
+            return res.status(404).json({
+                success: false,
+                message: 'Sucursal no encontrada'
+            });
+        }
+
+        // Verificar que el ingrediente existe y pertenece a la sucursal
+        const ingredient = await Ingredient.findById(ingredientId);
+        if (!ingredient || !branch.ingredients.includes(ingredientId)) {
+            return res.status(404).json({
+                success: false,
+                message: 'Ingrediente no encontrado en esta sucursal'
+            });
+        }
+
+        // Obtener el inventario activo del día
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        const dailyInventory = await DailyInventory.findOne({
+            _id: { $in: branch.inventories },
+            date: {
+                $gte: today,
+                $lt: new Date(today.getTime() + 24 * 60 * 60 * 1000)
+            },
+            status: 'open'
+        });
+
+        if (!dailyInventory) {
+            return res.status(400).json({
+                success: false,
+                message: 'No hay un inventario abierto para el día de hoy'
+            });
+        }
+
+        // Actualizar el stock del ingrediente
+        const newStock = ingredient.currentStock + quantity;
+        if (newStock < 0) {
+            return res.status(400).json({
+                success: false,
+                message: `No se puede reducir más allá de 0. Stock actual: ${ingredient.currentStock}`
+            });
+        }
+
+        // Actualizar el ingrediente
+        const updatedIngredient = await Ingredient.findByIdAndUpdate(
+            ingredientId,
+            { currentStock: newStock },
+            { new: true }
+        );
+
+        // Registrar el movimiento en el inventario
+        const ingredientRecord = dailyInventory.ingredients.find(
+            i => i.ingredientId.toString() === ingredientId
+        );
+
+        if (!ingredientRecord) {
+            return res.status(400).json({
+                success: false,
+                message: 'Ingrediente no encontrado en el inventario del día'
+            });
+        }
+
+        const movement = {
+            type: quantity > 0 ? 'purchase' : 'adjustment',
+            ingredientId: ingredient._id,
+            ingredientName: ingredient.name,
+            quantity: quantity,
+            unit: ingredient.unit,
+            reference: `STK-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+            date: new Date()
+        };
+
+        ingredientRecord.movements.push(movement);
+        ingredientRecord.finalStock = ingredientRecord.initialStock + 
+            ingredientRecord.movements.reduce((sum, mov) => sum + mov.quantity, 0);
+
+        await dailyInventory.save();
+
+        res.json({
+            success: true,
+            message: 'Stock actualizado exitosamente',
+            ingredient: updatedIngredient,
+            movement: movement
+        });
+
+    } catch (error) {
+        console.error("Error al actualizar stock:", error);
+        res.status(500).json({
+            success: false,
+            message: 'Error al actualizar el stock',
             error: error.message
         });
     }

@@ -1,16 +1,17 @@
 import Branch from '../models/branch.model.js';
 import { DailyInventory } from '../models/inventory.model.js';
+import { Ingredient } from '../models/ingredient.model.js';
 import mongoose from 'mongoose';
-// Agregar inventario a una sucursal
+
 export const addInventoryToBranch = async (req, res) => {
     try {
-        const { nameBranch, employees, ingredients, observations } = req.body;
+        const { nameBranch, employees, observations } = req.body;
 
         // Validaciones básicas
-        if (!nameBranch || !employees || !ingredients) {
+        if (!nameBranch || !employees) {
             return res.status(400).json({
                 success: false,
-                message: 'Faltan datos requeridos (nameBranch, employees, ingredients)'
+                message: 'Faltan datos requeridos (nameBranch, employees)'
             });
         }
 
@@ -42,11 +43,26 @@ export const addInventoryToBranch = async (req, res) => {
             });
         }
 
+        // Obtener todos los ingredientes de la sucursal
+        const branchIngredients = await Ingredient.find({
+            _id: { $in: branch.ingredients }
+        });
+
+        // Preparar los ingredientes para el inventario
+        const inventoryIngredients = branchIngredients.map(ingredient => ({
+            ingredientId: ingredient._id,
+            name: ingredient.name,
+            initialStock: ingredient.currentStock,
+            finalStock: ingredient.currentStock, // Inicialmente igual al stock actual
+            movements: [] // Inicia sin movimientos
+        }));
+
         // Crear nuevo inventario
         const newInventory = new DailyInventory({
             employees,
-            ingredients,
-            observations
+            ingredients: inventoryIngredients,
+            observations,
+            date: new Date() // Aseguramos que se guarde la fecha actual
         });
 
         const savedInventory = await newInventory.save();
@@ -61,6 +77,7 @@ export const addInventoryToBranch = async (req, res) => {
             inventory: savedInventory
         });
     } catch (error) {
+        console.error("Error al crear el inventario:", error);
         res.status(500).json({
             success: false,
             message: 'Error al crear el inventario',
