@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { useBranch } from '../../../CONTEXTS/BranchContext';
 
-const InventoryList = ({ inventories, setViewInventory }) => {
+const InventoryList = ({ inventories }) => {
   const navigate = useNavigate();
   const { selectedBranch } = useBranch();
 
@@ -13,11 +13,10 @@ const InventoryList = ({ inventories, setViewInventory }) => {
     
     navigate(`/inventario/detalles/${inventory._id}`, {
       state: { 
-        inventoryId: inventory._id,
         branchName: branchName
       }
     });
-};
+  };
 
   return (
     <div className="overflow-x-auto shadow-md rounded-lg">

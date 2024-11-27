@@ -5,6 +5,26 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 const PrintInventory = ({ inventory, onClose }) => {
+  const calculateMovementsByType = (movements) => {
+    return movements.reduce((acc, mov) => {
+      const quantity = Math.abs(mov.quantity);
+      switch (mov.type) {
+        case 'sale':
+          acc.sales += quantity;
+          break;
+        case 'purchase':
+          acc.purchases += quantity;
+          break;
+        case 'adjustment':
+          if (mov.quantity < 0) {
+            acc.adjustments += Math.abs(mov.quantity);
+          }
+          break;
+      }
+      return acc;
+    }, { sales: 0, purchases: 0, adjustments: 0 });
+  };
+
   const handleDownloadPDF = () => {
     const doc = new jsPDF();
     
@@ -32,15 +52,20 @@ const PrintInventory = ({ inventory, onClose }) => {
     // Tabla de ingredientes
     doc.autoTable({
       startY: 70,
-      head: [["Ingrediente", "Stock Inicial", "Stock Final", "Ventas"]],
-      body: inventory.ingredients.map((item) => [
-        item.name,
-        `${item.initialStock} kg`,
-        `${item.finalStock} kg`,
-        `${(item.initialStock - item.finalStock).toFixed(2)} kg`
-      ]),
+      head: [["Ingrediente", "Stock Inicial", "Ventas", "Compras", "Ajustes", "Stock Final"]],
+      body: inventory.ingredients.map((item) => {
+        const movements = calculateMovementsByType(item.movements || []);
+        return [
+          item.name,
+          `${item.initialStock.toFixed(2)} kg`,
+          movements.sales > 0 ? `-${movements.sales.toFixed(2)} kg` : '0.00 kg',
+          movements.purchases > 0 ? `+${movements.purchases.toFixed(2)} kg` : '0.00 kg',
+          movements.adjustments > 0 ? `-${movements.adjustments.toFixed(2)} kg` : '0.00 kg',
+          `${item.finalStock.toFixed(2)} kg`
+        ];
+      }),
       headStyles: {
-        fillColor: [220, 53, 69], // Color rojo similar a tu tema
+        fillColor: [220, 53, 69],
         textColor: 255,
         fontSize: 12,
         halign: 'center'

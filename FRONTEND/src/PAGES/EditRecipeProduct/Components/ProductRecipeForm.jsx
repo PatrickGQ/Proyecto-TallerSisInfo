@@ -5,6 +5,8 @@ import {
   updateProductRecipeRequest 
 } from '../../../api/branch';
 import { FaPlus, FaMinus, FaUtensils } from 'react-icons/fa';
+import QuestionMessage from "../../../GENERALCOMPONENTS/QuestionMessage.jsx";
+import AcceptMessage from "../../../GENERALCOMPONENTS/AcceptMessage.tsx";
 
 const ProductRecipeForm = ({ product, onClose }) => {
   const { selectedBranch } = useBranch();
@@ -12,7 +14,10 @@ const ProductRecipeForm = ({ product, onClose }) => {
   const [ingredients, setIngredients] = useState([]);
   const [recipe, setRecipe] = useState(product.recipe || []);
   const [selectedIngredient, setSelectedIngredient] = useState('');
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState('');
+  const [showQuestion, setShowQuestion] = useState(false);
+  const [showAccept, setShowAccept] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchIngredients = async () => {
@@ -28,7 +33,8 @@ const ProductRecipeForm = ({ product, onClose }) => {
         setIngredients(response.data.ingredients || []);
       } catch (error) {
         console.error('Error al obtener ingredientes:', error);
-        alert('Error al cargar los ingredientes');
+        setMessage('Error al cargar los ingredientes');
+        setShowAccept(true);
       } finally {
         setIsLoading(false);
       }
@@ -39,22 +45,23 @@ const ProductRecipeForm = ({ product, onClose }) => {
 
   const handleAddIngredient = () => {
     if (!selectedIngredient) {
-      alert('Por favor seleccione un ingrediente');
+      setMessage('Por favor seleccione un ingrediente');
+      setShowAccept(true);
       return;
     }
 
-    // Permitimos valor 0, solo validamos que no sea negativo
     if (amount < 0) {
-      alert('La cantidad no puede ser negativa');
+      setMessage('La cantidad no puede ser negativa');
+      setShowAccept(true);
       return;
     }
 
     const ingredient = ingredients.find(i => i._id === selectedIngredient);
     if (!ingredient) return;
 
-    // Verificar si el ingrediente ya existe en la receta
     if (recipe.some(r => r.ingredientId === selectedIngredient)) {
-      alert('Este ingrediente ya está en la receta');
+      setMessage('Este ingrediente ya está en la receta');
+      setShowAccept(true);
       return;
     }
 
@@ -65,37 +72,54 @@ const ProductRecipeForm = ({ product, onClose }) => {
       unit: ingredient.unit
     }]);
 
-    // Limpiar campos
     setSelectedIngredient('');
-    setAmount(0);
+    setAmount('');
   };
 
   const handleRemoveIngredient = (ingredientId) => {
-    setRecipe(prev => prev.filter(item => item.ingredientId !== ingredientId));
+    const ingredient = recipe.find(r => r.ingredientId === ingredientId);
+    setMessage(`¿Está seguro que desea eliminar ${ingredient.name} de la receta?`);
+    setShowQuestion(true);
+    setSelectedIngredient(ingredientId); // Guardamos temporalmente el ID para eliminar
   };
 
-  const handleSubmit = async (e) => {
+  const confirmRemoveIngredient = () => {
+    setRecipe(prev => prev.filter(item => item.ingredientId !== selectedIngredient));
+    setShowQuestion(false);
+    setSelectedIngredient('');
+  };
+
+  const handleSubmitClick = (e) => {
     e.preventDefault();
     
     if (!selectedBranch) {
-      alert('Por favor, seleccione una sucursal');
+      setMessage('Por favor, seleccione una sucursal');
+      setShowAccept(true);
       return;
     }
 
-    // Ya no validamos que la receta tenga que tener ingredientes
+    setMessage('¿Deseas modificar la receta?');
+    setShowQuestion(true);
+  };
+
+  const handleSubmit = async () => {
+    setShowQuestion(false);
+    
     try {
       setIsLoading(true);
       const response = await updateProductRecipeRequest(product._id, { recipe });
       
       if (response.data && response.data.success) {
-        alert('Receta actualizada exitosamente');
+        setMessage('Receta actualizada exitosamente');
+        setShowAccept(true);
         onClose();
       } else {
         throw new Error(response.data?.message || 'Error al actualizar la receta');
       }
     } catch (error) {
       console.error('Error al actualizar la receta:', error);
-      alert(error.response?.data?.message || 'Error al actualizar la receta');
+      setMessage(error.response?.data?.message || 'Error al actualizar la receta');
+      setShowAccept(true);
     } finally {
       setIsLoading(false);
     }
@@ -118,7 +142,7 @@ const ProductRecipeForm = ({ product, onClose }) => {
             <p>Cargando ingredientes...</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form className="space-y-6">
             {/* Agregar nuevo ingrediente */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
               <div>
@@ -214,7 +238,8 @@ const ProductRecipeForm = ({ product, onClose }) => {
                 Cancelar
               </button>
               <button
-                type="submit"
+                type="button"
+                onClick={handleSubmitClick}
                 disabled={isLoading}
                 className={`px-4 py-2 text-white rounded-md transition-colors duration-200 
                   ${isLoading 
@@ -228,6 +253,22 @@ const ProductRecipeForm = ({ product, onClose }) => {
           </form>
         )}
       </div>
+      {showQuestion && (
+        <QuestionMessage
+          message={message}
+          onConfirm={selectedIngredient ? confirmRemoveIngredient : handleSubmit}
+          onCancel={() => {
+            setShowQuestion(false);
+            setSelectedIngredient('');
+          }}
+        />
+      )}
+      {showAccept && (
+        <AcceptMessage
+          message={message}
+          onAccept={() => setShowAccept(false)}
+        />
+      )}
     </div>
   );
 };

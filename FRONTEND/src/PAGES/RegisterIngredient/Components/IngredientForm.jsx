@@ -1,22 +1,28 @@
 import { useState } from 'react';
 import { useBranch } from '../../../CONTEXTS/BranchContext.tsx';
 import { registerIngredientToBranchRequest } from '../../../api/branch.js';
+import QuestionMessage from "../../../GENERALCOMPONENTS/QuestionMessage.jsx";
+import AcceptMessage from "../../../GENERALCOMPONENTS/AcceptMessage.tsx";
 
 const IngredientForm = () => {
   const { selectedBranch } = useBranch();
   const [isLoading, setIsLoading] = useState(false);
+  const [showQuestion, setShowQuestion] = useState(false);
+  const [showAccept, setShowAccept] = useState(false);
+  const [message, setMessage] = useState("");
   const [form, setForm] = useState({
     name: '',
     unit: 'kg',
-    currentStock: 0,
-    cost: 0
+    currentStock: '',
+    cost: ''
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmitClick = (e) => {
     e.preventDefault();
 
     if (!selectedBranch) {
-      alert("Por favor, seleccione una sucursal");
+      setMessage("Por favor, seleccione una sucursal");
+      setShowAccept(true);
       return;
     }
 
@@ -25,19 +31,33 @@ const IngredientForm = () => {
       : selectedBranch.nameBranch;
 
     if (!branchName) {
-      alert("Error con el nombre de la sucursal");
+      setMessage("Error con el nombre de la sucursal");
+      setShowAccept(true);
       return;
     }
 
     if (!form.name.trim()) {
-      alert("Por favor, ingrese el nombre del ingrediente");
+      setMessage("Por favor, ingrese el nombre del ingrediente");
+      setShowAccept(true);
       return;
     }
 
     if (form.currentStock < 0 || form.cost < 0) {
-      alert("Los valores no pueden ser negativos");
+      setMessage("Los valores no pueden ser negativos");
+      setShowAccept(true);
       return;
     }
+
+    setMessage(`¿Está seguro que desea registrar el ingrediente ${form.name}?`);
+    setShowQuestion(true);
+  };
+
+  const handleSubmit = async () => {
+    setShowQuestion(false);
+    
+    const branchName = typeof selectedBranch === 'string' 
+      ? selectedBranch 
+      : selectedBranch.nameBranch;
 
     try {
       setIsLoading(true);
@@ -50,13 +70,15 @@ const IngredientForm = () => {
       
       if (response.data && response.data.success) {
         resetForm();
-        alert("Ingrediente registrado exitosamente");
+        setMessage("Ingrediente registrado exitosamente");
+        setShowAccept(true);
       } else {
         throw new Error(response.data?.message || "Error al registrar el ingrediente");
       }
     } catch (error) {
       console.error("Error al registrar ingrediente:", error);
-      alert(error.response?.data?.message || "Error al registrar el ingrediente");
+      setMessage(error.response?.data?.message || "Error al registrar el ingrediente");
+      setShowAccept(true);
     } finally {
       setIsLoading(false);
     }
@@ -80,11 +102,10 @@ const IngredientForm = () => {
 
         {isLoading ? (
           <div className="text-center py-4">
-            <p>Cargando...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Nombre del Ingrediente */}
+          <form onSubmit={handleSubmitClick} className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Nombre del Ingrediente
@@ -93,12 +114,11 @@ const IngredientForm = () => {
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border rounded-md focus:ring-red-500 focus:border-red-500"
                 placeholder="Ej: Pollo, Papas, Tomate..."
               />
             </div>
 
-            {/* Unidad de Medida */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Unidad de Medida
@@ -106,7 +126,7 @@ const IngredientForm = () => {
               <select
                 value={form.unit}
                 onChange={(e) => setForm(prev => ({ ...prev, unit: e.target.value }))}
-                className="w-full p-2 border rounded-md"
+                className="w-full p-2 border rounded-md focus:ring-red-500 focus:border-red-500"
               >
                 <option value="kg">Kilogramos (kg)</option>
                 <option value="g">Gramos (g)</option>
@@ -116,7 +136,6 @@ const IngredientForm = () => {
               </select>
             </div>
 
-            {/* Stock Actual */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Stock Actual
@@ -126,12 +145,12 @@ const IngredientForm = () => {
                 min="0"
                 step="0.01"
                 value={form.currentStock}
-                onChange={(e) => setForm(prev => ({ ...prev, currentStock: Number(e.target.value) }))}
-                className="w-full p-2 border rounded-md"
+                onChange={(e) => setForm(prev => ({ ...prev, currentStock: e.target.value }))}
+                className="w-full p-2 border rounded-md focus:ring-red-500 focus:border-red-500"
+                placeholder={`Ingrese el stock en ${form.unit}`}
               />
             </div>
 
-            {/* Costo */}
             <div>
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Costo por {form.unit}
@@ -141,19 +160,19 @@ const IngredientForm = () => {
                 min="0"
                 step="0.01"
                 value={form.cost}
-                onChange={(e) => setForm(prev => ({ ...prev, cost: Number(e.target.value) }))}
-                className="w-full p-2 border rounded-md"
+                onChange={(e) => setForm(prev => ({ ...prev, cost: e.target.value }))}
+                className="w-full p-2 border rounded-md focus:ring-red-500 focus:border-red-500"
+                placeholder={`Ingrese el costo por ${form.unit}`}
               />
             </div>
 
-            {/* Botón de Submit */}
             <button
               type="submit"
               disabled={isLoading}
               className={`w-full py-2 px-4 rounded-md text-white transition-colors duration-200 
                 ${isLoading 
                   ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-blue-500 hover:bg-blue-600'
+                  : 'bg-red-500 hover:bg-red-600'
                 }`}
             >
               {isLoading ? 'Registrando...' : 'Registrar Ingrediente'}
@@ -161,6 +180,20 @@ const IngredientForm = () => {
           </form>
         )}
       </div>
+
+      {showQuestion && (
+        <QuestionMessage
+          message={message}
+          onConfirm={handleSubmit}
+          onCancel={() => setShowQuestion(false)}
+        />
+      )}
+      {showAccept && (
+        <AcceptMessage
+          message={message}
+          onAccept={() => setShowAccept(false)}
+        />
+      )}
     </div>
   );
 };

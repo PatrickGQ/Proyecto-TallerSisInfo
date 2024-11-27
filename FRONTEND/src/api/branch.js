@@ -154,6 +154,9 @@ export const updateIngredientInBranchRequest = (id, data) =>
 export const removeIngredientFromBranchRequest = (data) =>
   axios.delete(`${API}/branch/ingredients/removeIngredient`, { data });
 
+export const updateIngredientStockInBranchRequest = (data) =>
+  axios.post(`${API}/branch/ingredients/updateStock`, data);
+
 // Recetas de productos
 export const updateProductRecipeRequest = (productId, data) =>
   axios.put(`${API}/branch/products/updateRecipe/${productId}`, data);

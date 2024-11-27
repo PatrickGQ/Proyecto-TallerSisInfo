@@ -2,24 +2,30 @@ import { useState, useEffect } from "react";
 import { useBranch } from "../../../CONTEXTS/BranchContext.tsx";
 import { 
   addInventoryToBranchRequest,
-  getEmployeesByBranchRequest,
-  getIngredientsByBranchRequest 
+  getEmployeesByBranchRequest
 } from "../../../api/branch.js";
+import QuestionMessage from "../../../GENERALCOMPONENTS/QuestionMessage.jsx";
+import AcceptMessage from "../../../GENERALCOMPONENTS/AcceptMessage.tsx";
 
 const AutomatedInventoryForm = () => {
   const { selectedBranch } = useBranch();
   const [employees, setEmployees] = useState([]);
-  const [ingredients, setIngredients] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
+  const [observations, setObservations] = useState("");
+  
+  // Estados para mensajes
+  const [showQuestion, setShowQuestion] = useState(false);
+  const [showAccept, setShowAccept] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     if (selectedBranch) {
-      loadInitialData();
+      loadEmployees();
     }
   }, [selectedBranch]);
 
-  const loadInitialData = async () => {
+  const loadEmployees = async () => {
     const branchName = typeof selectedBranch === 'string' 
       ? selectedBranch 
       : selectedBranch.nameBranch;
@@ -28,22 +34,13 @@ const AutomatedInventoryForm = () => {
 
     setIsLoading(true);
     try {
-      // Cargar empleados e ingredientes
-      const [employeesResponse, ingredientsResponse] = await Promise.all([
-        getEmployeesByBranchRequest(branchName),
-        getIngredientsByBranchRequest(branchName)
-      ]);
-
-      if (employeesResponse.data?.employees) {
-        setEmployees(employeesResponse.data.employees);
-      }
-
-      if (ingredientsResponse.data?.ingredients) {
-        setIngredients(ingredientsResponse.data.ingredients);
+      const response = await getEmployeesByBranchRequest(branchName);
+      if (response.data?.employees) {
+        setEmployees(response.data.employees);
       }
     } catch (error) {
-      console.error("Error al cargar datos:", error);
-      alert("Error al cargar los datos. Por favor, intente nuevamente.");
+      setMessage("Error al cargar los empleados. Por favor, intente nuevamente.");
+      setShowAccept(true);
     } finally {
       setIsLoading(false);
     }
@@ -64,9 +61,10 @@ const AutomatedInventoryForm = () => {
     });
   };
 
-  const handleStartInventory = async () => {
+  const handleStartInventory = () => {
     if (selectedEmployees.length === 0) {
-      alert("Por favor, seleccione al menos un empleado");
+      setMessage("Por favor, seleccione al menos un empleado");
+      setShowAccept(true);
       return;
     }
 
@@ -75,38 +73,44 @@ const AutomatedInventoryForm = () => {
       : selectedBranch.nameBranch;
 
     if (!branchName) {
-      alert("Error con el nombre de la sucursal");
+      setMessage("Error con el nombre de la sucursal");
+      setShowAccept(true);
       return;
     }
+
+    setMessage(`¿Está seguro que desea iniciar el inventario para la sucursal ${branchName}?`);
+    setShowQuestion(true);
+  };
+
+  const handleConfirmInventory = async () => {
+    setShowQuestion(false);
+    const branchName = typeof selectedBranch === 'string' 
+      ? selectedBranch 
+      : selectedBranch.nameBranch;
 
     try {
       setIsLoading(true);
       
-      // Mapeo corregido según el modelo del backend
       const inventoryData = {
         nameBranch: branchName,
         employees: selectedEmployees,
-        ingredients: ingredients.map(ingredient => ({
-          ingredientId: ingredient._id,
-          name: ingredient.name,
-          initialStock: ingredient.currentStock, // Corregido: usando currentStock
-          finalStock: ingredient.currentStock,   // Corregido: igual al initialStock
-          movements: []
-        })),
-        observations: "Inventario inicial del día"
+        observations: observations || "Inventario inicial del día"
       };
 
       const response = await addInventoryToBranchRequest(inventoryData);
       
       if (response.data && response.data.success) {
-        alert("Inventario iniciado exitosamente");
+        setMessage("Inventario iniciado exitosamente");
+        setShowAccept(true);
         setSelectedEmployees([]);
+        setObservations("");
       } else {
         throw new Error(response.data?.message || "Error al iniciar el inventario");
       }
     } catch (error) {
       console.error("Error al iniciar inventario:", error);
-      alert(error.response?.data?.message || "Error al iniciar el inventario");
+      setMessage(error.response?.data?.message || "Error al iniciar el inventario");
+      setShowAccept(true);
     } finally {
       setIsLoading(false);
     }
@@ -121,7 +125,7 @@ const AutomatedInventoryForm = () => {
 
         {isLoading ? (
           <div className="text-center py-4">
-            <p>Cargando...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mx-auto"></div>
           </div>
         ) : (
           <div className="space-y-6">
@@ -135,7 +139,7 @@ const AutomatedInventoryForm = () => {
                     key={employee._id}
                     className={`p-3 rounded-lg cursor-pointer transition-colors duration-200 ${
                       selectedEmployees.some(e => e.employeeCi === employee._id)
-                        ? 'bg-blue-500 text-white'
+                        ? 'bg-red-500 text-white'
                         : 'bg-gray-100 hover:bg-gray-200'
                     }`}
                     onClick={() => handleEmployeeSelection(employee)}
@@ -147,13 +151,26 @@ const AutomatedInventoryForm = () => {
               </div>
             </div>
 
+            <div>
+              <h3 className="text-lg font-semibold mb-3 text-gray-700">
+                Observaciones
+              </h3>
+              <textarea
+                value={observations}
+                onChange={(e) => setObservations(e.target.value)}
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
+                rows="3"
+                placeholder="Observaciones opcionales para el inventario"
+              />
+            </div>
+
             <button
               onClick={handleStartInventory}
               disabled={isLoading || selectedEmployees.length === 0}
               className={`w-full py-2 px-4 rounded-md text-white transition-colors duration-200 
                 ${isLoading || selectedEmployees.length === 0
                   ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-blue-500 hover:bg-blue-600'
+                  : 'bg-red-500 hover:bg-red-600'
                 }`}
             >
               Iniciar Inventario del Día
@@ -161,6 +178,20 @@ const AutomatedInventoryForm = () => {
           </div>
         )}
       </div>
+
+      {showQuestion && (
+        <QuestionMessage
+          message={message}
+          onConfirm={handleConfirmInventory}
+          onCancel={() => setShowQuestion(false)}
+        />
+      )}
+      {showAccept && (
+        <AcceptMessage
+          message={message}
+          onAccept={() => setShowAccept(false)}
+        />
+      )}
     </div>
   );
 };

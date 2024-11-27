@@ -1,57 +1,78 @@
 import { useState, useEffect } from 'react';
 import { useBranch } from '../../../CONTEXTS/BranchContext';
-import { getIngredientsByBranchRequest } from '../../../api/branch';
-import { FaCubes } from 'react-icons/fa';
+import { getIngredientsByBranchRequest, removeIngredientFromBranchRequest } from '../../../api/branch';
+import { FaCubes, FaTrash } from 'react-icons/fa';
+import AcceptMessage from "../../../GENERALCOMPONENTS/AcceptMessage.tsx";
+import QuestionMessage from "../../../GENERALCOMPONENTS/QuestionMessage.jsx";
 
 const ViewIngredientsGrid = () => {
   const [ingredients, setIngredients] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { selectedBranch } = useBranch();
+  const [showAccept, setShowAccept] = useState(false);
+  const [showQuestion, setShowQuestion] = useState(false);
+  const [message, setMessage] = useState("");
+  const [selectedIngredient, setSelectedIngredient] = useState(null);
+
+  const fetchIngredients = async () => {
+    if (!selectedBranch) {
+      setMessage("No hay sucursal seleccionada");
+      setShowAccept(true);
+      return;
+    }
+
+    const branchName = typeof selectedBranch === 'string' 
+      ? selectedBranch 
+      : selectedBranch.nameBranch;
+
+    try {
+      setIsLoading(true);
+      const response = await getIngredientsByBranchRequest(branchName);
+      setIngredients(response.data.ingredients);
+    } catch (error) {
+      console.error("Error al obtener los ingredientes:", error);
+      setMessage("Error al cargar los ingredientes. Por favor, intente nuevamente.");
+      setShowAccept(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchIngredients = async () => {
-      if (!selectedBranch) {
-        console.log("No hay sucursal seleccionada");
-        return;
-      }
-
-      const branchName = typeof selectedBranch === 'string' 
-        ? selectedBranch 
-        : selectedBranch.nameBranch;
-
-      if (!branchName) {
-        console.log("Nombre de sucursal no disponible");
-        return;
-      }
-
-      try {
-        setIsLoading(true);
-        const response = await getIngredientsByBranchRequest(branchName);
-        setIngredients(response.data.ingredients);
-      } catch (error) {
-        console.error("Error al obtener los ingredientes:", error);
-        alert("Error al cargar los ingredientes. Por favor, intente nuevamente.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchIngredients();
   }, [selectedBranch]);
+
+  const handleDeleteClick = (ingredient) => {
+    setSelectedIngredient(ingredient);
+    setMessage(`¿Está seguro que desea eliminar el ingrediente ${ingredient.name}?`);
+    setShowQuestion(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setShowQuestion(false);
+    const branchName = typeof selectedBranch === 'string' 
+      ? selectedBranch 
+      : selectedBranch.nameBranch;
+
+    try {
+      await removeIngredientFromBranchRequest({
+        nameBranch: branchName,
+        ingredientId: selectedIngredient._id
+      });
+      
+      setMessage("Ingrediente eliminado exitosamente");
+      setShowAccept(true);
+      await fetchIngredients();
+    } catch (error) {
+      setMessage("Error al eliminar el ingrediente. Por favor, intente nuevamente.");
+      setShowAccept(true);
+    }
+  };
 
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <p className="text-xl text-gray-600">Cargando ingredientes...</p>
-      </div>
-    );
-  }
-
-  if (!ingredients || ingredients.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <FaCubes className="text-6xl text-gray-400 mb-4" />
-        <p className="text-xl text-gray-600">No hay ingredientes registrados</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
       </div>
     );
   }
@@ -64,15 +85,21 @@ const ViewIngredientsGrid = () => {
         {ingredients.map((ingredient) => (
           <div
             key={ingredient._id}
-            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6"
+            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6 relative"
           >
+            <button
+              onClick={() => handleDeleteClick(ingredient)}
+              className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition-colors"
+              title="Eliminar ingrediente"
+            >
+              <FaTrash />
+            </button>
+
             <div className="flex flex-col items-center">
-              {/* Ícono del ingrediente */}
               <div className="w-16 h-16 flex items-center justify-center bg-red-100 rounded-full mb-4">
                 <FaCubes className="text-3xl text-red-600" />
               </div>
               
-              {/* Información del ingrediente */}
               <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center">
                 {ingredient.name}
               </h2>
@@ -99,6 +126,20 @@ const ViewIngredientsGrid = () => {
           </div>
         ))}
       </div>
+
+      {showQuestion && (
+        <QuestionMessage
+          message={message}
+          onConfirm={handleDeleteConfirm}
+          onCancel={() => setShowQuestion(false)}
+        />
+      )}
+      {showAccept && (
+        <AcceptMessage
+          message={message}
+          onAccept={() => setShowAccept(false)}
+        />
+      )}
     </div>
   );
 };
