@@ -2,10 +2,15 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../GENERALCOMPONENTS/AuthContext';
 import { addSaleToBranchRequest } from '../../api/branch';
+import QuestionMessage from "../../GENERALCOMPONENTS/QuestionMessage.jsx";
+import AcceptMessage from "../../GENERALCOMPONENTS/AcceptMessage.tsx";
 
 const Cart = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [showQuestion, setShowQuestion] = useState(false);
+  const [showAcceptMessage, setShowAcceptMessage] = useState(false);
+  const [acceptMessageText, setAcceptMessageText] = useState("");
 
   if (!user) {
     return <div>Cargando...</div>;
@@ -13,8 +18,6 @@ const Cart = () => {
 
   const userRole = user.role;
   const [cartItems, setCartItems] = useState([]);
-  const [showQR, setShowQR] = useState(false); // Estado para mostrar el QR y el botón de confirmar pago
-  const [showPurchaseButton, setShowPurchaseButton] = useState(true); // Estado para controlar la visibilidad del botón "Comprar"
 
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -41,15 +44,24 @@ const Cart = () => {
     return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2);
   };
 
-  const handlePurchase = async () => {
-    setShowPurchaseButton(false); // Oculta el botón "Comprar"
+  const handleConfirmPurchase = () => {
+    setShowQuestion(true);
+  };
+
+  const handleCancel = () => {
+    setShowQuestion(false);
+  };
+
+  const handlePurchase = async (event) => {
+    event.preventDefault();
+    setShowQuestion(false);
+    
     const nameBranch = JSON.parse(localStorage.getItem('selectedBranch'));
     try {
       const saleData = {
         nameBranch,
         clientName: user.name,
         clientCI: "12345678",
-        paymentMethod: "efectivo",
         saleDate: new Date().toISOString(),
         products: cartItems.map(item => ({
           productId: item._id,
@@ -61,21 +73,24 @@ const Cart = () => {
 
       const res = await addSaleToBranchRequest(saleData);
       console.log("Venta registrada:", res);
-
-      // Muestra el QR y el botón de confirmar pago
-      setShowQR(true);
+      
+      // Limpiar carrito
+      setCartItems([]);
+      localStorage.removeItem('cart');
+      window.dispatchEvent(new Event('storage'));
+      
+      // Mostrar mensaje de éxito
+      setAcceptMessageText("Compra realizada exitosamente");
+      setShowAcceptMessage(true);
     } catch (error) {
       console.error("Error al registrar la venta:", error);
-      alert("Ocurrió un error al registrar la venta");
-      setShowPurchaseButton(true); // Vuelve a mostrar el botón si ocurre un error
+      setAcceptMessageText("Ocurrió un error al procesar la compra");
+      setShowAcceptMessage(true);
     }
   };
 
-  const handleConfirmPayment = () => {
-    setCartItems([]);
-    localStorage.removeItem('cart');
-    window.dispatchEvent(new Event('storage'));
-    // Redirige a la página de inicio
+  const handleAcceptMessage = () => {
+    setShowAcceptMessage(false);
     navigate('/inicio');
   };
 
@@ -127,32 +142,29 @@ const Cart = () => {
                   <span>Total:</span>
                   <span>{calculateTotal()} BS</span>
                 </div>
-                {showPurchaseButton && ( // Condicional para mostrar el botón "Comprar"
-                  <button
-                    className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition duration-200"
-                    onClick={handlePurchase}
-                  >
-                    Comprar
-                  </button>
-                )}
+                <button
+                  className="w-full bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition duration-200"
+                  onClick={handleConfirmPurchase}
+                >
+                  Comprar
+                </button>
               </div>
             </div>
           )}
 
-          {showQR && (
-            <div className="mt-8 text-center">
-              <img
-                src="./qr.jpg" // Reemplaza con la URL del QR dinámico o imagen
-                alt="QR Code"
-                className="mx-auto mb-4"
-              />
-              <button
-                className="bg-blue-500 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-600 transition duration-200"
-                onClick={handleConfirmPayment}
-              >
-                Confirmar Pago
-              </button>
-            </div>
+          {showQuestion && (
+            <QuestionMessage
+              message="¿Estás seguro de realizar esta compra?"
+              onConfirm={handlePurchase}
+              onCancel={handleCancel}
+            />
+          )}
+
+          {showAcceptMessage && (
+            <AcceptMessage
+              message={acceptMessageText}
+              onAccept={handleAcceptMessage}
+            />
           )}
         </div>
       )}

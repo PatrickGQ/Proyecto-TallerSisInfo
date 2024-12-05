@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useBranch } from '../../CONTEXTS/BranchContext';
-import { getWeeklyProfitsByBranchRequest } from '../../api/branch';
+import { getWeeklyProfitsByBranchRequest, getIngredientsByBranchRequest } from '../../api/branch';
 import LoadingMessage from '../../GENERALCOMPONENTS/LoandingMessage';
 import AcceptMessage from '../../GENERALCOMPONENTS/AcceptMessage';
 

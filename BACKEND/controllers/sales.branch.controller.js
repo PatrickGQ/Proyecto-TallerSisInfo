@@ -4,7 +4,7 @@ import Product from '../models/product.model.js';
 
 export const addSaleToBranch = async (req, res) => {
     try {
-        const { nameBranch, clientName, clientCI, products, discount = 0, paymentMethod } = req.body;
+        const { nameBranch, clientName, clientCI, products, discount = 0 } = req.body;
 
         const branch = await Branch.findOne({ nameBranch: nameBranch.toLowerCase() });
         if (!branch) {
@@ -40,7 +40,6 @@ export const addSaleToBranch = async (req, res) => {
             products: saleProducts,
             discount,
             totalAmount,
-            paymentMethod,
         });
 
         const savedSale = await newSale.save();

@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { getInventoryByIdRequest } from '../../api/branch';
 import { useBranch } from '../../CONTEXTS/BranchContext';
-import InventoryActions from './components/InventoryActions';
-import InventoryInfo from './components/InventoryInfo';
-import EditInventory from './components/EditInventory';
-import PrintInventory from './components/PrintInventory';
+import InventoryActions from './Components/InventoryActions';
+import InventoryInfo from './Components/InventoryInfo';
+import EditInventory from './Components/EditInventory';
+import PrintInventory from './Components/PrintInventory';
 
 const InventoryDetails = () => {
   const { id } = useParams();

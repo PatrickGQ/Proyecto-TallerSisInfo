@@ -13,19 +13,17 @@ const SaleForm = () => {
   const [showAcceptMessage, setShowAcceptMessage] = useState(false);
   const [acceptMessageText, setAcceptMessageText] = useState("");
 
-
   const handleConfirmSale = () => {
     setShowQuestion(true); 
   };
 
   const handleCancel = () => {
-    setShowQuestion(false); // Oculta el mensaje al cancelar
+    setShowQuestion(false);
   };
 
   const [form, setForm] = useState({
     clientName: "",
     clientCI: "",
-    paymentMethod: "",
     discount: 0,
     saleDate: new Date().toISOString(),
   });
@@ -80,7 +78,6 @@ const SaleForm = () => {
         nameBranch: selectedBranch,
         clientName: form.clientName,
         clientCI: form.clientCI,
-        paymentMethod: form.paymentMethod,
         discount: form.discount,
         saleDate: form.saleDate,
         products: productsData,
@@ -93,12 +90,10 @@ const SaleForm = () => {
       setForm({
         clientName: "",
         clientCI: "",
-        paymentMethod: "",
         discount: 0,
         saleDate: new Date().toISOString(),
       });
       setCart([]);
-      // Mostrar mensaje de éxito
       setAcceptMessageText("Venta registrada exitosamente, vaya a la vista de ver ventas para verla");
       setShowAcceptMessage(true);
     } catch (error) {
@@ -114,24 +109,6 @@ const SaleForm = () => {
       ...form,
       [name]: value,
     });
-
-    if (name === "paymentMethod" && value === "qr") {
-      // Abre una nueva pestaña con la imagen del QR
-      window.open(
-        "/qr.jpg", // URL de la imagen del QR
-        "_blank",
-        "width=600,height=400,top=100,left=100",
-        "noopener,noreferrer"
-      );
-    }
-    if (name === "paymentMethod" && value === "tarjeta") {
-      // Abrir una nueva ventana para mostrar los campos de la tarjeta
-      window.open(
-        "/pago/tarjeta",
-        "_blank",
-        "width=500,height=500,top=100,left=100,noopener,noreferrer"
-      );
-    }    
   };
 
   const handleQuantityChange = (index, newQuantity) => {
@@ -320,24 +297,6 @@ const SaleForm = () => {
             <p className="text-lg font-semibold">Total:</p>
             <p className="text-lg font-semibold">{calculateCartTotal()} Bs.</p>
           </div>
-
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700">
-              Método de Pago
-            </label>
-            <select
-              name="paymentMethod"
-              value={form.paymentMethod}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full border rounded-md p-2"
-            >
-              <option value="">Seleccionar Método de Pago</option>
-              <option value="efectivo">Efectivo</option>
-              <option value="qr">QR</option>
-              <option value="tarjeta">Tarjeta</option>
-            </select>
-          </div>
         </div>
 
         {/* Factura */}
@@ -402,13 +361,11 @@ const SaleForm = () => {
             disabled={
               !form.clientName.trim() ||
               !form.clientCI.trim() ||
-              !form.paymentMethod ||
               cart.length === 0
             }
             className={`mt-4 px-4 py-2 rounded-md w-full transition duration-300 ${
               !form.clientName.trim() ||
               !form.clientCI.trim() ||
-              !form.paymentMethod ||
               cart.length === 0
                 ? "bg-gray-300 cursor-not-allowed"
                 : "bg-green-500 text-white hover:bg-green-600"
@@ -416,9 +373,8 @@ const SaleForm = () => {
           >
             Confirmar Venta
           </button>
-          {/* Renderiza QuestionMessage solo si showQuestion es true */}
           {showQuestion && (
-            < QuestionMessage
+            <QuestionMessage
               message="¿Estás seguro de que quieres confirmar esta venta?"
               onConfirm={handleSubmit}
               onCancel={handleCancel}
@@ -427,7 +383,7 @@ const SaleForm = () => {
           {showAcceptMessage && (
             <AcceptMessage
               message={acceptMessageText}
-              onAccept={() => setShowAcceptMessage(false)} // Oculta el mensaje al aceptar
+              onAccept={() => setShowAcceptMessage(false)}
             />
           )}
         </div>

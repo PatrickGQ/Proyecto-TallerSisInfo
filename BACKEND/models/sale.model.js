@@ -6,7 +6,6 @@ const saleModel = new Schema({
         required: true,
         unique: true,
         default: function() {
-            // Generar número de ticket basado en timestamp y número aleatorio
             return `TK-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
         }
     },    
@@ -49,11 +48,6 @@ const saleModel = new Schema({
         type: Number,
         required: true,
         min: 0
-    },
-    paymentMethod: {
-        type: String,
-        required: true,
-        enum: ['efectivo', 'qr', 'tarjeta']
     },
     saleDate: {
         type: Date,
