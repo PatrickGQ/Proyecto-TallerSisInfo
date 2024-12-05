@@ -2,12 +2,23 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBranch } from '../../../../CONTEXTS/BranchContext';
 import { getEmployeesWithFiltersRequest, editEmployeeRequest, deleteEmployeeRequest } from '../../../../api/branch';
+import QuestionMessage from "../../../../GENERALCOMPONENTS/QuestionMessage";
+import AcceptMessage from "../../../../GENERALCOMPONENTS/AcceptMessage";
 
 const ViewEmployeesForm = ({ activeFilters }) => {
   const [employees, setEmployees] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [editEmployee, setEditEmployee] = useState(null); // Estado para el empleado que se está editando
+  const [editEmployee, setEditEmployee] = useState(null);
+  
+  // Estados para mensajes
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
   const navigate = useNavigate();
   const { selectedBranch } = useBranch();
 
@@ -15,9 +26,21 @@ const ViewEmployeesForm = ({ activeFilters }) => {
     const fetchFilteredEmployees = async () => {
       try {
         const response = await getEmployeesWithFiltersRequest(selectedBranch, activeFilters);
-        setEmployees(response.data.employees);
+        let filteredEmployees = response.data.employees;
+
+        if (activeFilters?.salaryRange?.min || activeFilters?.salaryRange?.max) {
+          filteredEmployees = filteredEmployees.filter(employee => {
+            const salary = Number(employee.salary);
+            const min = Number(activeFilters.salaryRange.min) || 0;
+            const max = Number(activeFilters.salaryRange.max) || Infinity;
+            return salary >= min && salary <= max;
+          });
+        }
+
+        setEmployees(filteredEmployees);
       } catch (error) {
-        console.error('Error al obtener los empleados con filtros:', error);
+        setErrorMessage("Error al cargar los empleados");
+        setShowErrorMessage(true);
       }
     };
 
@@ -29,27 +52,80 @@ const ViewEmployeesForm = ({ activeFilters }) => {
     setIsEditing(true);
   };
 
-  const handleEditSave = () => {
-    editEmployeeRequest(editEmployee._id, {
-      name: editEmployee.name,
-      salary: editEmployee.salary,
-      email: editEmployee.email,
-      role: editEmployee.role,
-    })
-    .then(response => {
-      setEmployees(employees.map(emp => emp._id === editEmployee._id ? response.data.employee : emp));
-      setIsEditing(false);
-      setEditEmployee(null);
-    })
-    .catch(error => console.error('Error al editar el empleado:', error));
+  const validateEditForm = () => {
+    if (!editEmployee.name?.trim()) {
+      setErrorMessage("El nombre es requerido");
+      setShowErrorMessage(true);
+      return false;
+    }
+    
+    const salary = Number(editEmployee.salary);
+    if (!salary || salary <= 0) {
+      setErrorMessage("El salario debe ser mayor a 0");
+      setShowErrorMessage(true);
+      return false;
+    }
+
+    if (!editEmployee.email?.trim()) {
+      setErrorMessage("El email es requerido");
+      setShowErrorMessage(true);
+      return false;
+    }
+
+    if (!editEmployee.role?.trim()) {
+      setErrorMessage("El rol es requerido");
+      setShowErrorMessage(true);
+      return false;
+    }
+
+    return true;
   };
 
-  const handleDelete = (id) => {
-    deleteEmployeeRequest(id)
-      .then(() => {
-        setEmployees(employees.filter(employee => employee._id !== id));
-      })
-      .catch(error => console.error('Error al eliminar el empleado:', error));
+  const handleEditSave = async () => {
+    if (!validateEditForm()) return;
+
+    try {
+      const response = await editEmployeeRequest(editEmployee._id, {
+        name: editEmployee.name,
+        salary: Number(editEmployee.salary),
+        email: editEmployee.email,
+        role: editEmployee.role,
+      });
+      
+      setEmployees(employees.map(emp => 
+        emp._id === editEmployee._id ? response.data.employee : emp
+      ));
+      setIsEditing(false);
+      setEditEmployee(null);
+      setSuccessMessage("Empleado actualizado exitosamente");
+      setShowSuccessMessage(true);
+    } catch (error) {
+      setErrorMessage("Error al actualizar el empleado");
+      setShowErrorMessage(true);
+    }
+  };
+
+  const handleDeleteClick = (employee) => {
+    setEmployeeToDelete(employee);
+    setShowDeleteConfirmation(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteEmployeeRequest(employeeToDelete._id);
+      setEmployees(employees.filter(emp => emp._id !== employeeToDelete._id));
+      setShowDeleteConfirmation(false);
+      setSuccessMessage("Empleado eliminado exitosamente");
+      setShowSuccessMessage(true);
+    } catch (error) {
+      setErrorMessage("Error al eliminar el empleado");
+      setShowErrorMessage(true);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirmation(false);
+    setEmployeeToDelete(null);
   };
 
   const filteredEmployees = employees.filter(employee => {
@@ -62,8 +138,10 @@ const ViewEmployeesForm = ({ activeFilters }) => {
   });
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">Carnets de Empleados</h1>
+    <div className="w-full">
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-800">
+        Carnets de Empleados
+      </h1>
       <input
         type="text"
         placeholder="Buscar empleados por nombre, CI o email..."
@@ -72,11 +150,12 @@ const ViewEmployeesForm = ({ activeFilters }) => {
         className="w-full p-3 mb-6 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500"
       />
 
-      {/* Tarjeta de edición de empleado */}
+      {/* Modal de edición */}
       {isEditing && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-1/2">
             <h2 className="text-2xl font-bold mb-4">Editar Empleado</h2>
+            
             <input
               type="text"
               placeholder="Nombre"
@@ -88,7 +167,13 @@ const ViewEmployeesForm = ({ activeFilters }) => {
               type="number"
               placeholder="Salario"
               value={editEmployee.salary}
-              onChange={(e) => setEditEmployee({ ...editEmployee, salary: e.target.value })}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value === '' || Number(value) > 0) {
+                  setEditEmployee({ ...editEmployee, salary: value });
+                }
+              }}
+              min="1"
               className="w-full p-3 mb-4 border border-gray-300 rounded"
             />
             <input
@@ -98,13 +183,17 @@ const ViewEmployeesForm = ({ activeFilters }) => {
               onChange={(e) => setEditEmployee({ ...editEmployee, email: e.target.value })}
               className="w-full p-3 mb-4 border border-gray-300 rounded"
             />
-            <input
-              type="text"
-              placeholder="Rol"
+            <select
               value={editEmployee.role}
               onChange={(e) => setEditEmployee({ ...editEmployee, role: e.target.value })}
               className="w-full p-3 mb-4 border border-gray-300 rounded"
-            />
+            >
+              <option value="">Seleccionar Rol</option>
+              <option value="Cajero">Cajero</option>
+              <option value="Cocinero">Cocinero</option>
+              <option value="Mesero">Mesero</option>
+            </select>
+            
             <div className="flex justify-end">
               <button
                 onClick={() => setIsEditing(false)}
@@ -158,7 +247,7 @@ const ViewEmployeesForm = ({ activeFilters }) => {
                 Editar
               </button>
               <button
-                onClick={() => handleDelete(employee._id)}
+                onClick={() => handleDeleteClick(employee)}
                 className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
               >
                 Eliminar
@@ -167,6 +256,29 @@ const ViewEmployeesForm = ({ activeFilters }) => {
           </div>
         ))}
       </div>
+
+      {/* Mensajes de confirmación y respuesta */}
+      {showDeleteConfirmation && (
+        <QuestionMessage
+          message={`¿Estás seguro de que deseas eliminar al empleado ${employeeToDelete?.name}?`}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+        />
+      )}
+
+      {showSuccessMessage && (
+        <AcceptMessage
+          message={successMessage}
+          onAccept={() => setShowSuccessMessage(false)}
+        />
+      )}
+
+      {showErrorMessage && (
+        <AcceptMessage
+          message={errorMessage}
+          onAccept={() => setShowErrorMessage(false)}
+        />
+      )}
     </div>
   );
 };

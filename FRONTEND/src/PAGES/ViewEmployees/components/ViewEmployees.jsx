@@ -19,17 +19,15 @@ const ViewEmployees = () => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 p-4">
-      {/* Panel de Filtros (en pantallas pequeñas ocupará todo el ancho, en pantallas grandes 5% del ancho) */}
-      <div className="w-full sm:w-[20%] min-w-[60px]">
-        <EmployeesFilterPanel 
-          onFilterChange={handleFilterChange}
-          activeFilters={activeFilters}
-        />
-      </div>
+    <div className="relative w-full">
+      {/* Panel de Filtros flotante (ahora a la derecha) */}
+      <EmployeesFilterPanel 
+        onFilterChange={handleFilterChange}
+        activeFilters={activeFilters}
+      />
 
-      {/* Área principal de carnets (en pantallas pequeñas ocupará todo el ancho, en pantallas grandes 95% del ancho) */}
-      <div className="w-full sm:w-[80%]">
+      {/* Contenido principal centrado */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ViewEmployeesForm 
           onFormChange={handleFormChange} 
           activeFilters={activeFilters} 

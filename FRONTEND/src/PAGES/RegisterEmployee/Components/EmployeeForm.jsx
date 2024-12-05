@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { FaEye, FaEyeSlash, FaChevronDown } from "react-icons/fa"; // Importa los íconos necesarios
-import { useBranch } from "../../../CONTEXTS/BranchContext"; // Asegúrate de que este sea el contexto correcto
+import { FaEye, FaEyeSlash, FaChevronDown } from "react-icons/fa";
+import { useBranch } from "../../../CONTEXTS/BranchContext";
 
 const EmployeeForm = ({ onFormChange }) => {
   const [form, setForm] = useState({
-    branchName: "", // Nuevo campo para la sucursal
+    branchName: "",
     name: "",
     ci: "",
     phone: "",
@@ -16,12 +16,66 @@ const EmployeeForm = ({ onFormChange }) => {
     role: "",
     photo: null,
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showBranches, setShowBranches] = useState(false); // Estado para mostrar/ocultar el menú de sucursales
-  const branchesRef = useRef(null);
-  const { branches, selectedBranch, setSelectedBranch } = useBranch(); // Obtener sucursales desde el contexto
 
-  // Manejo de clics fuera del menú de sucursales para cerrar el desplegable
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showBranches, setShowBranches] = useState(false);
+  const branchesRef = useRef(null);
+  const { branches, selectedBranch, setSelectedBranch } = useBranch();
+
+  const validateForm = () => {
+    // Validación básica de campos requeridos
+    if (!form.name || !form.ci || !form.phone || !form.email || !form.password || 
+        !form.contractStart || !form.contractEnd || !form.salary || !form.role) {
+      setError("Por favor complete todos los campos requeridos");
+      return false;
+    }
+
+    // Validaciones básicas de formato
+    if (!/^\d+$/.test(form.phone)) {
+      setError("El teléfono solo debe contener números");
+      return false;
+    }
+
+    if (!/^\d+$/.test(form.ci)) {
+      setError("El CI solo debe contener números");
+      return false;
+    }
+
+    if (form.salary <= 0) {
+      setError("El salario debe ser mayor a 0");
+      return false;
+    }
+
+    setError("");
+    return true;
+  };
+
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
+    
+    // Validaciones básicas durante el ingreso
+    if (name === "phone") {
+      // Solo permite números y máximo 8 dígitos
+      if (!/^\d*$/.test(value)) return;
+      if (value.length > 8) return;
+    }
+    if (name === "ci" && !/^\d*$/.test(value)) return;
+    if (name === "salary" && value < 0) return;
+
+    setForm(prevForm => ({
+      ...prevForm,
+      [name]: type === "file" ? files[0] : value
+    }));
+
+    onFormChange({
+      ...form,
+      [name]: type === "file" ? files[0] : value
+    });
+
+    setError(""); // Limpiar error al modificar cualquier campo
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (branchesRef.current && !branchesRef.current.contains(event.target)) {
@@ -33,15 +87,6 @@ const EmployeeForm = ({ onFormChange }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    setForm((prevForm) => ({
-      ...prevForm,
-      [name]: type === "file" ? files[0] : value,
-    }));
-    onFormChange({ ...form, [name]: type === "file" ? files[0] : value });
-  };
 
   const handleClear = () => {
     setForm({
@@ -57,13 +102,21 @@ const EmployeeForm = ({ onFormChange }) => {
       role: "",
       photo: null,
     });
+    setError("");
     onFormChange({});
   };
 
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg max-h-full overflow-auto">
       <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Registrar Nuevo Empleado</h2>
-      <form className="space-y-4">
+      
+      {error && (
+        <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
+          {error}
+        </div>
+      )}
+
+      <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
         {/* Nombre */}
         <div>
           <label className="block text-gray-700 font-medium">Nombre <span className="text-red-500">*</span></label>
@@ -72,8 +125,10 @@ const EmployeeForm = ({ onFormChange }) => {
             name="name"
             value={form.name}
             onChange={handleChange}
-            required
+            maxLength={15}
+            pattern="\d{15}"
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+            required
           />
         </div>
 
@@ -85,12 +140,13 @@ const EmployeeForm = ({ onFormChange }) => {
             name="ci"
             value={form.ci}
             onChange={handleChange}
-            required
+            maxLength={10}
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+            required
           />
         </div>
 
-        {/* Celular */}
+        {/* Teléfono */}
         <div>
           <label className="block text-gray-700 font-medium">Celular <span className="text-red-500">*</span></label>
           <input
@@ -98,8 +154,11 @@ const EmployeeForm = ({ onFormChange }) => {
             name="phone"
             value={form.phone}
             onChange={handleChange}
-            required
+            maxLength={8}
+            pattern="\d{8}"
+            title="Debe contener 8 números"
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+            required
           />
         </div>
 
@@ -111,8 +170,8 @@ const EmployeeForm = ({ onFormChange }) => {
             name="email"
             value={form.email}
             onChange={handleChange}
-            required
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+            required
           />
         </div>
 
@@ -125,22 +184,26 @@ const EmployeeForm = ({ onFormChange }) => {
               name="password"
               value={form.password}
               onChange={handleChange}
-              required
               className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+              required
             />
-            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-2 top-1/2 transform -translate-y-1/2">
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-2 top-1/2 transform -translate-y-1/2"
+            >
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
         </div>
 
-        {/* Selección de sucursal */}
+        {/* Sucursal */}
         <div className="relative" ref={branchesRef}>
           <label className="block text-gray-700 font-medium">Sucursal <span className="text-red-500">*</span></label>
           <button
             type="button"
             onClick={() => setShowBranches(!showBranches)}
-            className="w-full p-2 border border-gray-300 rounded mt-1 flex items-center justify-between focus:outline-none"
+            className="w-full p-2 border border-gray-300 rounded mt-1 flex items-center justify-between"
           >
             {selectedBranch || "Seleccionar Sucursal"}
             <FaChevronDown />
@@ -154,9 +217,7 @@ const EmployeeForm = ({ onFormChange }) => {
                     className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
                     onClick={() => {
                       setSelectedBranch(branch.nameBranch);
-                      console.log(branch.nameBranch);
                       setForm({ ...form, branchName: branch.nameBranch });
-                      console.log(form);
                       setShowBranches(false);
                     }}
                   >
@@ -170,29 +231,28 @@ const EmployeeForm = ({ onFormChange }) => {
           )}
         </div>
 
-        {/* Fecha de Inicio del Contrato */}
+        {/* Fechas */}
         <div>
-          <label className="block text-gray-700 font-medium">Fecha de Inicio del Contrato <span className="text-red-500">*</span></label>
+          <label className="block text-gray-700 font-medium">Fecha de Inicio <span className="text-red-500">*</span></label>
           <input
             type="date"
             name="contractStart"
             value={form.contractStart}
             onChange={handleChange}
-            required
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+            required
           />
         </div>
 
-        {/* Fecha de Fin del Contrato */}
         <div>
-          <label className="block text-gray-700 font-medium">Fecha de Fin del Contrato <span className="text-red-500">*</span></label>
+          <label className="block text-gray-700 font-medium">Fecha de Fin <span className="text-red-500">*</span></label>
           <input
             type="date"
             name="contractEnd"
             value={form.contractEnd}
             onChange={handleChange}
-            required
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+            required
           />
         </div>
 
@@ -204,8 +264,9 @@ const EmployeeForm = ({ onFormChange }) => {
             name="salary"
             value={form.salary}
             onChange={handleChange}
-            required
+            min="1"
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+            required
           />
         </div>
 
@@ -216,8 +277,8 @@ const EmployeeForm = ({ onFormChange }) => {
             name="role"
             value={form.role}
             onChange={handleChange}
-            required
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
+            required
           >
             <option value="">Seleccionar Rol</option>
             <option value="Cajero">Cajero</option>
@@ -239,7 +300,13 @@ const EmployeeForm = ({ onFormChange }) => {
         </div>
 
         <div className="flex justify-between mt-6">
-          <button type="button" onClick={handleClear} className="p-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition duration-300">Limpiar</button>
+          <button
+            type="button"
+            onClick={handleClear}
+            className="p-2 rounded-md bg-red-600 hover:bg-red-700 text-white transition duration-300"
+          >
+            Limpiar
+          </button>
         </div>
       </form>
     </div>

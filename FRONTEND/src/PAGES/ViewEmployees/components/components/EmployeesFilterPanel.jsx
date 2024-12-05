@@ -28,32 +28,30 @@ const EmployeesFilterPanel = ({ onFilterChange, activeFilters }) => {
   };
 
   return (
-    <div className="fixed left-4 top-1/2 transform -translate-y-1/2 z-10">
+    <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50">
       <button
         onClick={() => setIsOpen(true)}
-        className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full shadow-lg transition duration-300"
+        className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full shadow-lg transition duration-300"
       >
-        <FaFilter size={20} />
+        <FaFilter size={16} />
       </button>
 
-      {/* Panel de filtros flotante */}
       {isOpen && (
         <>
-          {/* Overlay para cerrar al hacer clic fuera */}
           <div 
             className="fixed inset-0 bg-black bg-opacity-50 z-40"
             onClick={() => setIsOpen(false)}
           />
           
           {/* Panel de filtros */}
-          <div className="fixed left-16 top-1/2 transform -translate-y-1/2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50">
+          <div className="fixed right-16 top-1/2 -translate-y-1/2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 p-4 z-50">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-800">Filtrar Empleados</h3>
               <button 
                 onClick={() => setIsOpen(false)}
                 className="p-1 hover:bg-gray-100 rounded-full transition duration-300"
               >
-                <FaTimes size={20} />
+                <FaTimes size={16} />
               </button>
             </div>
 
