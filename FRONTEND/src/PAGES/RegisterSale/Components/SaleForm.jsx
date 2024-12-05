@@ -181,6 +181,8 @@ const SaleForm = () => {
                 name="clientName"
                 value={form.clientName}
                 onChange={handleChange}
+                maxLength={15}
+                pattern="\d{15}"
                 required
                 className="mt-1 block w-full border rounded-md p-2"
               />
@@ -191,7 +193,7 @@ const SaleForm = () => {
                 CI del Cliente
               </label>
               <input
-                type="text"
+                type="number"
                 name="clientCI"
                 value={form.clientCI}
                 onChange={handleChange}

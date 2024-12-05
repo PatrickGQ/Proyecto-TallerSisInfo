@@ -206,6 +206,8 @@ const BranchesPage = () => {
                   onChange={handleTextChange}
                   className="block w-full mb-4 p-2 border border-gray-300 rounded-lg"
                   rows="4"
+                  maxLength={200}
+                  pattern="\d{200}"
                   placeholder="Escribe tu texto aquí..."
                 ></textarea>
                 <label className="text-lg">

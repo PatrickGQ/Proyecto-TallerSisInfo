@@ -61,6 +61,8 @@ const RegisterBranch = () => {
             name="nameBranch"
             value={formData.nameBranch}
             onChange={handleInputChange}
+            maxLength={25}
+            pattern="\d{25}"
             className="w-full p-2 border rounded-md"
             required
           />
@@ -72,6 +74,8 @@ const RegisterBranch = () => {
             name="address"
             value={formData.address}
             onChange={handleInputChange}
+            maxLength={30}
+            pattern="\d{30}"
             className="w-full p-2 border rounded-md"
             required
           />
@@ -79,7 +83,7 @@ const RegisterBranch = () => {
         <div className="mb-4">
           <label className="block text-gray-700">Teléfono</label>
           <input
-            type="text"
+            type="number"
             name="phone"
             value={formData.phone}
             onChange={handleInputChange}
