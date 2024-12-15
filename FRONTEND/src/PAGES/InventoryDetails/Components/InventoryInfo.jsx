@@ -66,12 +66,12 @@ const InventoryInfo = ({ inventory }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Ventas
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {/*<th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Compras
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Ajustes
-                </th>
+                </th>*/}
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Stock Final
                 </th>
@@ -91,12 +91,12 @@ const InventoryInfo = ({ inventory }) => {
                     <td className="px-6 py-4 whitespace-nowrap text-red-600">
                       {movements.sales > 0 ? `-${movements.sales.toFixed(2)}` : '0.00'} {unit}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-green-600">
+                    {/*<td className="px-6 py-4 whitespace-nowrap text-green-600">
                       {movements.purchases > 0 ? `+${movements.purchases.toFixed(2)}` : '0.00'} {unit}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-yellow-600">
                       {movements.adjustments > 0 ? `-${movements.adjustments.toFixed(2)}` : '0.00'} {unit}
-                    </td>
+                    </td>*/}
                     <td className="px-6 py-4 whitespace-nowrap">
                       {item.finalStock.toFixed(2)} {unit}
                     </td>

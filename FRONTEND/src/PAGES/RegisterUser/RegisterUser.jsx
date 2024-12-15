@@ -77,6 +77,8 @@ const Register = () => {
                 setName(e.target.value);
                 setError(null);
               }}
+              maxLength={40}
+              // // pattern="\d{40}"
             />
           </div>
           <div className="mb-6">
@@ -93,6 +95,8 @@ const Register = () => {
                 setEmail(e.target.value);
                 setError(null);
               }}
+              maxLength={50}
+              // // pattern="\d{50}"
             />
           </div>
           <div className="mb-6 relative">
@@ -109,6 +113,9 @@ const Register = () => {
                 setPassword(e.target.value);
                 setError(null);
               }}
+              min={8}
+              maxLength={16}
+              // // pattern="\d{16}"
             />
           </div>
           <div className="mb-6 relative">

@@ -79,7 +79,6 @@ const ProductForm = () => {
             value={form.nameProduct}
             onChange={handleChange}
             maxLength={15}
-            pattern="\d{15}"
             required
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
           />
@@ -92,6 +91,7 @@ const ProductForm = () => {
             name="price"
             value={form.price}
             onChange={handleChange}
+            maxLength={5}
             required
             min="0"
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
@@ -118,7 +118,6 @@ const ProductForm = () => {
             onChange={handleChange}
             rows="5"
             maxLength={100}
-            pattern="\d{100}"
             required
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
           />

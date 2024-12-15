@@ -158,6 +158,7 @@ const AutomatedInventoryForm = () => {
               <textarea
                 value={observations}
                 onChange={(e) => setObservations(e.target.value)}
+                maxLength={200}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"
                 rows="3"
                 placeholder="Observaciones opcionales para el inventario"

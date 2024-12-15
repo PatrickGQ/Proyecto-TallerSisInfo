@@ -201,6 +201,7 @@ const ProductDetails = () => {
               onChange={(e) =>
                 setEditProduct({ ...editProduct, nameProduct: e.target.value })
               }
+              maxLength={30}
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
@@ -212,6 +213,7 @@ const ProductDetails = () => {
               onChange={(e) =>
                 setEditProduct({ ...editProduct, price: e.target.value })
               }
+              maxLength={5}
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 
@@ -222,6 +224,7 @@ const ProductDetails = () => {
               onChange={(e) =>
                 setEditProduct({ ...editProduct, description: e.target.value })
               }
+              maxLength={100}
               className="w-full p-2 mb-4 border border-gray-300 rounded"
             />
 

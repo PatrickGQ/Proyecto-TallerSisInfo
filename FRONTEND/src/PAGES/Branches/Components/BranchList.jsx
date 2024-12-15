@@ -165,7 +165,6 @@ const BranchList = () => {
                   value={editedBranch.nameBranch}
                   onChange={handleChange}
                   maxLength={25}
-                  pattern="\d{25}"
                   className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                 />
               </div>
@@ -177,7 +176,6 @@ const BranchList = () => {
                   value={editedBranch.address}
                   onChange={handleChange}
                   maxLength={30}
-                  pattern="\d{30}"
                   className="mt-1 p-2 w-full border border-gray-300 rounded-md"
                 />
               </div>

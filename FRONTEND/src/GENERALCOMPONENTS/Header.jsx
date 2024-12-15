@@ -158,14 +158,14 @@ const Header = () => {
               {showUserMenu && (
                 <div className="absolute right-0 top-full mt-2 w-48 bg-white text-red-600 shadow-lg rounded-lg z-10">
                   <ul>
-                    {userRole === "admin" && (
+                    {/*{userRole === "admin" && (
                       <li
                         className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-t-lg"
                         onClick={handleOptionUserMenuSelect}
                       >
                         <Link to="/reports">Informes Financieros</Link>
                       </li>
-                    )}
+                    )}*/}
                     <li
                       className="px-4 py-2 hover:bg-red-100 cursor-pointer rounded-t-lg"
                       onClick={handleOptionUserMenuSelect}

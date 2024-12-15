@@ -125,8 +125,7 @@ const EmployeeForm = ({ onFormChange }) => {
             name="name"
             value={form.name}
             onChange={handleChange}
-            maxLength={15}
-            pattern="\d{15}"
+            maxLength={40}
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
             required
           />
@@ -140,7 +139,7 @@ const EmployeeForm = ({ onFormChange }) => {
             name="ci"
             value={form.ci}
             onChange={handleChange}
-            maxLength={10}
+            maxLength={14}
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
             required
           />
@@ -155,7 +154,6 @@ const EmployeeForm = ({ onFormChange }) => {
             value={form.phone}
             onChange={handleChange}
             maxLength={8}
-            pattern="\d{8}"
             title="Debe contener 8 números"
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
             required
@@ -170,6 +168,7 @@ const EmployeeForm = ({ onFormChange }) => {
             name="email"
             value={form.email}
             onChange={handleChange}
+            maxLength={50}
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
             required
           />
@@ -184,6 +183,8 @@ const EmployeeForm = ({ onFormChange }) => {
               name="password"
               value={form.password}
               onChange={handleChange}
+              minLength={8}
+              maxLength={16}
               className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
               required
             />
@@ -264,6 +265,7 @@ const EmployeeForm = ({ onFormChange }) => {
             name="salary"
             value={form.salary}
             onChange={handleChange}
+            maxLength={5}
             min="1"
             className="w-full p-2 border border-gray-300 rounded mt-1 focus:outline-none focus:ring focus:ring-red-500"
             required

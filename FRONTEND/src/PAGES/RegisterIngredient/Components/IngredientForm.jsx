@@ -114,6 +114,7 @@ const IngredientForm = () => {
                 type="text"
                 value={form.name}
                 onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))}
+                maxLength={30}
                 className="w-full p-2 border rounded-md focus:ring-red-500 focus:border-red-500"
                 placeholder="Ej: Pollo, Papas, Tomate..."
               />

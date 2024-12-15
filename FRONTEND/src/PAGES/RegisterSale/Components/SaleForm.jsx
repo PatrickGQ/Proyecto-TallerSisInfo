@@ -124,12 +124,11 @@ const SaleForm = () => {
   };
 
   const handleAddToCart = (product) => {
-    console.log(product);
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.name === product.name);
+      const existingItem = prevCart.find((item) => item.nameProduct === product.nameProduct);
       if (existingItem) {
         return prevCart.map((item) =>
-          item.name === product.name
+          item.nameProduct === product.nameProduct
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -182,7 +181,7 @@ const SaleForm = () => {
                 value={form.clientName}
                 onChange={handleChange}
                 maxLength={15}
-                pattern="\d{15}"
+                 
                 required
                 className="mt-1 block w-full border rounded-md p-2"
               />

@@ -52,15 +52,13 @@ const PrintInventory = ({ inventory, onClose }) => {
     // Tabla de ingredientes
     doc.autoTable({
       startY: 70,
-      head: [["Ingrediente", "Stock Inicial", "Ventas", "Compras", "Ajustes", "Stock Final"]],
+      head: [["Ingrediente", "Stock Inicial", "Ventas", "Stock Final"]],
       body: inventory.ingredients.map((item) => {
         const movements = calculateMovementsByType(item.movements || []);
         return [
           item.name,
           `${item.initialStock.toFixed(2)} kg`,
           movements.sales > 0 ? `-${movements.sales.toFixed(2)} kg` : '0.00 kg',
-          movements.purchases > 0 ? `+${movements.purchases.toFixed(2)} kg` : '0.00 kg',
-          movements.adjustments > 0 ? `-${movements.adjustments.toFixed(2)} kg` : '0.00 kg',
           `${item.finalStock.toFixed(2)} kg`
         ];
       }),
